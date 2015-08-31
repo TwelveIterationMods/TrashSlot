@@ -3,7 +3,6 @@ package net.blay09.mods.trashslot.coremod;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -41,8 +40,21 @@ public class TrashSlotClassTransformer implements IClassTransformer {
                 mn.visitVarInsn(Opcodes.ILOAD, 2); // push mouseY
                 mn.visitMethodInsn(Opcodes.INVOKESTATIC, "net/blay09/mods/trashslot/TrashSlot", "canDropStack", "(ZII)Z", false);
                 mn.visitVarInsn(Opcodes.ISTORE, 7); // pop into flag1
-                final int insertOffset = 55;
-                method.instructions.insertBefore(method.instructions.get(insertOffset), mn.instructions);
+                AbstractInsnNode insertBefore = null;
+                for(int i = 0; i < method.instructions.size(); i++) {
+                    AbstractInsnNode node = method.instructions.get(i);
+                    if(node instanceof VarInsnNode) {
+                        if(node.getOpcode() == Opcodes.ISTORE && ((VarInsnNode) node).var == 7) {
+                            insertBefore = node;
+                            break;
+                        }
+                    }
+                }
+                if(insertBefore != null) {
+                    method.instructions.insert(insertBefore, mn.instructions);
+                } else {
+                    System.err.println("TrashSlot failed to patch mouseMovedOrUp!");
+                }
             } else if(method.name.equals(methodNameClicked) && method.desc.equals(METHOD_DESC)) {
                 MethodNode mn = new MethodNode();
                 mn.visitVarInsn(Opcodes.ILOAD, 10); // push flag1
@@ -50,8 +62,21 @@ public class TrashSlotClassTransformer implements IClassTransformer {
                 mn.visitVarInsn(Opcodes.ILOAD, 2); // push mouseY
                 mn.visitMethodInsn(Opcodes.INVOKESTATIC, "net/blay09/mods/trashslot/TrashSlot", "canDropStack", "(ZII)Z", false);
                 mn.visitVarInsn(Opcodes.ISTORE, 10); // pop into flag1
-                final int insertOffset = 119;
-                method.instructions.insertBefore(method.instructions.get(insertOffset), mn.instructions);
+                AbstractInsnNode insertBefore = null;
+                for(int i = 0; i < method.instructions.size(); i++) {
+                    AbstractInsnNode node = method.instructions.get(i);
+                    if(node instanceof VarInsnNode) {
+                        if(node.getOpcode() == Opcodes.ISTORE && ((VarInsnNode) node).var == 10) {
+                            insertBefore = node;
+                            break;
+                        }
+                    }
+                }
+                if(insertBefore != null) {
+                    method.instructions.insert(insertBefore, mn.instructions);
+                } else {
+                    System.err.println("TrashSlot failed to patch mouseMovedOrUp!");
+                }
             }
         }
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
