@@ -34,16 +34,21 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
-        if(TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
-            if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
-                if (!wasDeleteDown) {
-                    if(mouseSlot != null && mouseSlot.getHasStack() && mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) {
-                        NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
+        if(entityPlayer != null) {
+            if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
+                patchContainer(entityPlayer, entityPlayer.inventoryContainer);
+            }
+            if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
+                    if (!wasDeleteDown) {
+                        if (mouseSlot != null && mouseSlot.getHasStack() && mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) {
+                            NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
+                        }
                     }
+                    wasDeleteDown = true;
+                } else {
+                    wasDeleteDown = false;
                 }
-                wasDeleteDown = true;
-            } else {
-                wasDeleteDown = false;
             }
         }
     }
@@ -58,11 +63,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent event) {
         if(event.gui instanceof GuiInventory) {
-            GuiInventory guiInventory = (GuiInventory) event.gui;
-            guiTrashSlot = new GuiTrashSlot(guiInventory, event.gui.width / 2 + 57, event.gui.height / 2 + 79);
-            if(findSlotTrash(guiInventory.inventorySlots) == null) {
-                patchContainer(Minecraft.getMinecraft().thePlayer, guiInventory.inventorySlots);
-            }
+            guiTrashSlot = new GuiTrashSlot((GuiInventory) event.gui, event.gui.width / 2 + 57, event.gui.height / 2 + 79);
         }
     }
 
