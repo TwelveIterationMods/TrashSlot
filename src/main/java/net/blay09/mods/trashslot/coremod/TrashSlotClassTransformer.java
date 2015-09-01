@@ -1,12 +1,16 @@
 package net.blay09.mods.trashslot.coremod;
 
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class TrashSlotClassTransformer implements IClassTransformer {
+
+    public static final Logger logger = LogManager.getLogger();
 
     public static final String OBF_CLASS = "bex";
     public static final String MCP_CLASS = "net.minecraft.client.gui.inventory.GuiContainer";
@@ -34,6 +38,7 @@ public class TrashSlotClassTransformer implements IClassTransformer {
         classReader.accept(classNode, 0);
         for(MethodNode method : classNode.methods) {
             if(method.name.equals(methodNameMovedOrUp) && method.desc.equals(METHOD_DESC)) {
+                logger.info("TrashSlot will now patch {} in {}...", methodNameMovedOrUp, className);
                 MethodNode mn = new MethodNode();
                 mn.visitVarInsn(Opcodes.ILOAD, 7); // push flag
                 mn.visitVarInsn(Opcodes.ILOAD, 1); // push mouseX
@@ -52,10 +57,12 @@ public class TrashSlotClassTransformer implements IClassTransformer {
                 }
                 if(insertBefore != null) {
                     method.instructions.insert(insertBefore, mn.instructions);
+                    logger.info("TrashSlot successfully patched {} in {}!", methodNameMovedOrUp, className);
                 } else {
-                    System.err.println("TrashSlot failed to patch mouseMovedOrUp!");
+                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, methodNameMovedOrUp, "ISTORE 7");
                 }
             } else if(method.name.equals(methodNameClicked) && method.desc.equals(METHOD_DESC)) {
+                logger.info("TrashSlot will now patch {} in {}...", methodNameClicked, className);
                 MethodNode mn = new MethodNode();
                 mn.visitVarInsn(Opcodes.ILOAD, 10); // push flag1
                 mn.visitVarInsn(Opcodes.ILOAD, 1); // push mouseX
@@ -74,8 +81,9 @@ public class TrashSlotClassTransformer implements IClassTransformer {
                 }
                 if(insertBefore != null) {
                     method.instructions.insert(insertBefore, mn.instructions);
+                    logger.info("TrashSlot successfully patched {} in {}!", methodNameClicked, className);
                 } else {
-                    System.err.println("TrashSlot failed to patch mouseMovedOrUp!");
+                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, methodNameClicked, "ISTORE 10");
                 }
             }
         }

@@ -15,6 +15,7 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import org.lwjgl.input.Keyboard;
 
 public class ClientProxy extends CommonProxy {
@@ -32,12 +33,18 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        if(event.entity == Minecraft.getMinecraft().thePlayer) {
+            if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
+                patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
         if(entityPlayer != null) {
-            if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
-                patchContainer(entityPlayer, entityPlayer.inventoryContainer);
-            }
             if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
                     if (!wasDeleteDown) {

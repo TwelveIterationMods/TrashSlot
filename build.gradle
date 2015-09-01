@@ -64,7 +64,15 @@ configurations {
 
 sourceSets.main.compileClasspath += [configurations.provided]
 
+repositories {
+    /*maven {
+        name "xcompwiz"
+        url "http://maven.xcompwiz.com"
+    }*/
+}
+
 dependencies {
+    //compile "com.xcompwiz.mystcraft:mystcraft:0.12.3.00:dev"
     deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 }
 
