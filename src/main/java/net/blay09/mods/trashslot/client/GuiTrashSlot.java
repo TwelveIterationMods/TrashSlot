@@ -25,7 +25,7 @@ public class GuiTrashSlot extends Gui {
     private static final int LEFTRIGHT_WIDTH = 25;
     private static final int LEFTRIGHT_HEIGHT = 31;
     private static final int LONELY_WIDTH = 28;
-    private static final int LONELY_HEIGHT = 29;
+    private static final int LONELY_HEIGHT = 28;
 
     private boolean lastHover;
     private boolean lastMouseDown;
@@ -90,17 +90,17 @@ public class GuiTrashSlot extends Gui {
             y = mouseY + dragStartY;
             x = Math.max(0, Math.min(parentGui.width - width, x));
             y = Math.max(0, Math.min(parentGui.height - height, y));
-            if(oldX + width > parentGui.guiLeft && oldX < parentGui.guiLeft + parentGui.xSize) {
+            if(oldX + LEFTRIGHT_WIDTH > parentGui.guiLeft && oldX < parentGui.guiLeft + parentGui.xSize) {
                 if(y > parentGui.height / 2) {
                     y = Math.max(y, parentGui.guiTop + parentGui.ySize);
                 } else {
-                    y = Math.min(y, parentGui.guiTop - height);
+                    y = Math.min(y, parentGui.guiTop - UPDOWN_HEIGHT);
                 }
-            } else if (oldY + height > parentGui.guiTop && oldY < parentGui.guiTop + parentGui.ySize) {
+            } else if (oldY + UPDOWN_HEIGHT > parentGui.guiTop && oldY < parentGui.guiTop + parentGui.ySize) {
                 if (x > parentGui.width / 2) {
                     x = Math.max(x, parentGui.guiLeft + parentGui.xSize);
                 } else {
-                    x = Math.min(x, parentGui.guiLeft - width);
+                    x = Math.min(x, parentGui.guiLeft - LEFTRIGHT_WIDTH);
                 }
             }
         }
@@ -111,19 +111,37 @@ public class GuiTrashSlot extends Gui {
         GL11.glColor4f(1f, 1f, 1f, 1f);
         zLevel = 1f;
         parentGui.mc.getTextureManager().bindTexture(texture);
-        if(y == parentGui.guiTop + parentGui.ySize && x >= parentGui.guiLeft && x + UPDOWN_WIDTH < parentGui.guiLeft + parentGui.xSize) {
+        boolean isLonely = true;
+        if(x >= parentGui.guiLeft && x + UPDOWN_WIDTH <= parentGui.guiLeft + parentGui.xSize) {
             width = UPDOWN_WIDTH;
             height = UPDOWN_HEIGHT;
-            trashSlot.xDisplayPosition = x + 7 - parentGui.guiLeft;
-            trashSlot.yDisplayPosition = y + 3 - parentGui.guiTop;
-            drawTexturedModalRect(x, y, 0, 0, width, height);
-        } else if(x == parentGui.guiLeft + parentGui.xSize && y >= parentGui.guiTop && y + LEFTRIGHT_HEIGHT < parentGui.guiTop + parentGui.ySize) {
+            if(y == parentGui.guiTop + parentGui.ySize) {
+                trashSlot.xDisplayPosition = x + 7 - parentGui.guiLeft;
+                trashSlot.yDisplayPosition = y + 3 - parentGui.guiTop;
+                drawTexturedModalRect(x, y, 0, 0, width, height);
+                isLonely = false;
+            } else if(y + height == parentGui.guiTop) {
+                trashSlot.xDisplayPosition = x + 7 - parentGui.guiLeft;
+                trashSlot.yDisplayPosition = y + 6 - parentGui.guiTop;
+                drawTexturedModalRect(x, y, 31, 0, width, height);
+                isLonely = false;
+            }
+        } else if(y >= parentGui.guiTop && y + LEFTRIGHT_HEIGHT <= parentGui.guiTop + parentGui.ySize) {
             width = LEFTRIGHT_WIDTH;
             height = LEFTRIGHT_HEIGHT;
-            trashSlot.xDisplayPosition = x + 3 - parentGui.guiLeft;
-            trashSlot.yDisplayPosition = y + 7 - parentGui.guiTop;
-            drawTexturedModalRect(x, y, 0, 25, width, height);
-        } else{
+            if(x == parentGui.guiLeft + parentGui.xSize) {
+                trashSlot.xDisplayPosition = x + 3 - parentGui.guiLeft;
+                trashSlot.yDisplayPosition = y + 7 - parentGui.guiTop;
+                drawTexturedModalRect(x, y, 0, 25, width, height);
+                isLonely = false;
+            } else if(x + width == parentGui.guiLeft) {
+                trashSlot.xDisplayPosition = x + 6 - parentGui.guiLeft;
+                trashSlot.yDisplayPosition = y + 7 - parentGui.guiTop;
+                drawTexturedModalRect(x, y, 25, 25, width, height);
+                isLonely = false;
+            }
+        }
+        if(isLonely) {
             width = LONELY_WIDTH;
             height = LONELY_HEIGHT;
             trashSlot.xDisplayPosition = x + 6 - parentGui.guiLeft;
