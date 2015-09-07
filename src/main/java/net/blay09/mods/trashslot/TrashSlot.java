@@ -32,15 +32,15 @@ public class TrashSlot {
         drawSlotBackground = config.getBoolean("drawSlotBackground", "general", true, "Set this to false if you don't want the trash can icon to be rendered inside the trash slot.");
         enableDeleteKey = config.getBoolean("enableDeleteKey", "general", true, "Set this to false if you don't want the delete key to delete the item below the mouse cursor.");
         trashSlotRelative = config.getBoolean("trashSlotRelative", "general", false, "Set this to true if you want the position of the trash slot to be relative to the game window.");
-        if(config.hasKey("general", "trashSlotX")) {
-            trashSlotX = config.getFloat("trashSlotX", "general", 0f, 0f, 1f, "The absolute or relative x position of the trash slot.");
+        if(trashSlotRelative) {
+            trashSlotX = config.getFloat("trashSlotXRelative", "general", 1f, 0f, 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)");
         } else {
-            trashSlotX = -1;
+            trashSlotX = config.getInt("trashSlotX", "general", -1, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute x position of the trash slot from the center of the screen");
         }
-        if(config.hasKey("general", "trashSlotY")) {
-            trashSlotY = config.getFloat("trashSlotY", "general", 0f, 0f, 1f, "The absolute or relative y position of the trash slot.");
+        if(trashSlotRelative) {
+            trashSlotY = config.getFloat("trashSlotYRelative", "general", 1f, 0f, 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)");
         } else {
-            trashSlotY = -1;
+            trashSlotY = config.getInt("trashSlotY", "general", -1, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute y position of the trash slot from the center of the screen");
         }
         config.save();
     }
@@ -57,8 +57,13 @@ public class TrashSlot {
     }
 
     public void saveConfig() {
-        config.get("general", "trashSlotX", -1f, "The absolute or relative x position of the trash slot.").set(TrashSlot.trashSlotX);
-        config.get("general", "trashSlotY", -1f, "The absolute or relative y position of the trash slot.").set(TrashSlot.trashSlotY);
+        if(trashSlotRelative) {
+            config.get("general", "trashSlotXRelative", 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotX);
+            config.get("general", "trashSlotYRelative", 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotY);
+        } else {
+            config.get("general", "trashSlotX", -1, "The absolute x position of the trash slot from the center of the screen").set(TrashSlot.trashSlotX);
+            config.get("general", "trashSlotY", -1, "The absolute y position of the trash slot from the center of the screen").set(TrashSlot.trashSlotY);
+        }
         config.save();
     }
 }

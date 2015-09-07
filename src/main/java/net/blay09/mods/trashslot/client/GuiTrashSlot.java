@@ -76,8 +76,8 @@ public class GuiTrashSlot extends Gui {
                     TrashSlot.trashSlotX = (float) x / (float) parentGui.width;
                     TrashSlot.trashSlotY = (float) y / (float) parentGui.height;
                 } else {
-                    TrashSlot.trashSlotX = x;
-                    TrashSlot.trashSlotY = y;
+                    TrashSlot.trashSlotX = x - parentGui.width / 2;
+                    TrashSlot.trashSlotY = y - parentGui.height / 2;
                 }
                 TrashSlot.instance.saveConfig();
                 dragging = false;

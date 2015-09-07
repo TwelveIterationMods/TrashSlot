@@ -83,15 +83,21 @@ public class ClientProxy extends CommonProxy {
         if(event.gui instanceof GuiInventory) {
             float x = TrashSlot.trashSlotX;
             float y = TrashSlot.trashSlotY;
-            if(x == -1f) {
-                x = event.gui.width / 2 + 57;
-            } else if(TrashSlot.trashSlotRelative) {
-                x *= event.gui.width;
+            if(x == -1) {
+                x = 57;
             }
-            if(y == -1f) {
-                y = event.gui.height / 2 + 79;
-            } else if(TrashSlot.trashSlotRelative) {
+            if(TrashSlot.trashSlotRelative) {
+                x *= event.gui.width;
+            } else {
+                x += event.gui.width / 2;
+            }
+            if(y == -1) {
+                y = 79;
+            }
+            if(TrashSlot.trashSlotRelative) {
                 y *= event.gui.height;
+            } else {
+                y += event.gui.height / 2;
             }
             guiTrashSlot = new GuiTrashSlot((GuiInventory) event.gui, findSlotTrash(((GuiInventory) event.gui).inventorySlots), (int) x, (int) y);
         } else if(event.gui instanceof GuiContainerCreative) {
