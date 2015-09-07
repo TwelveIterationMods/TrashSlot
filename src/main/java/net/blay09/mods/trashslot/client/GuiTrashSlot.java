@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot.client;
 
 import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.util.ResourceLocation;
@@ -58,10 +59,14 @@ public class GuiTrashSlot extends Gui {
         if(Mouse.isButtonDown(0)) {
             if(!lastMouseDown && lastHover && hover) {
                 if(!dragging) {
-                    dragStartX = x - mouseX;
-                    dragStartY = y - mouseY;
+                    if(Minecraft.getMinecraft().thePlayer.inventory.getItemStack() == null) {
+                        if(!trashSlot.getHasStack() || mouseX < parentGui.guiLeft + trashSlot.xDisplayPosition || mouseX >= parentGui.guiLeft + trashSlot.xDisplayPosition + 16 || mouseY < parentGui.guiTop + trashSlot.yDisplayPosition || mouseY >= parentGui.guiTop + trashSlot.yDisplayPosition + 16) {
+                            dragStartX = x - mouseX;
+                            dragStartY = y - mouseY;
+                            dragging = true;
+                        }
+                    }
                 }
-                dragging = true;
             }
             lastMouseDown = true;
         } else {
