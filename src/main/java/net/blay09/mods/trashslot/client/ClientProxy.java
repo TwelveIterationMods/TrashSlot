@@ -4,10 +4,13 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.blay09.mods.trashslot.CommonProxy;
+import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.net.MessageDelete;
 import net.blay09.mods.trashslot.net.NetworkHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -24,6 +27,7 @@ public class ClientProxy extends CommonProxy {
     private IIcon trashSlotIcon;
     private GuiTrashSlot guiTrashSlot;
     private boolean wasDeleteDown;
+    private boolean wasInCreative;
 
     @Override
     public void init(FMLInitializationEvent event) {
@@ -58,6 +62,13 @@ public class ClientProxy extends CommonProxy {
                 }
             }
         }
+        GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+        if(entityPlayer != null && wasInCreative && !(gui instanceof GuiContainerCreative)) {
+            if(findSlotTrash(entityPlayer.inventoryContainer) == null) {
+                patchContainer(entityPlayer, entityPlayer.inventoryContainer);
+            }
+            wasInCreative = false;
+        }
     }
 
     @SubscribeEvent
@@ -83,6 +94,9 @@ public class ClientProxy extends CommonProxy {
                 y *= event.gui.height;
             }
             guiTrashSlot = new GuiTrashSlot((GuiInventory) event.gui, findSlotTrash(((GuiInventory) event.gui).inventorySlots), (int) x, (int) y);
+        } else if(event.gui instanceof GuiContainerCreative) {
+            unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
+            wasInCreative = true;
         }
     }
 

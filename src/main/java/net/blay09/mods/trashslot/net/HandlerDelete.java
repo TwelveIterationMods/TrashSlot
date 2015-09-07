@@ -3,7 +3,6 @@ package net.blay09.mods.trashslot.net;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -34,7 +33,7 @@ public class HandlerDelete implements IMessageHandler<MessageDelete, IMessage> {
                 trashItem = deleteSlot.getStack();
                 deleteSlot.putStack(null);
             }
-            SlotTrash slotTrash = TrashSlot.proxy.findSlotTrash(entityPlayer.inventoryContainer);
+            Slot slotTrash = TrashSlot.proxy.findSlotTrash(entityPlayer.inventoryContainer);
             slotTrash.putStack(trashItem);
         }
         return null;

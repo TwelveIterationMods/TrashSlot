@@ -1,10 +1,10 @@
 package net.blay09.mods.trashslot.client;
 
-import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +14,7 @@ public class GuiTrashSlot extends Gui {
     private static final ResourceLocation texture = new ResourceLocation("trashslot", "textures/gui/slot.png");
 
     private final GuiInventory parentGui;
-    private final SlotTrash trashSlot;
+    private final Slot trashSlot;
     private int x;
     private int y;
     private int width;
@@ -33,7 +33,7 @@ public class GuiTrashSlot extends Gui {
     private int dragStartX;
     private int dragStartY;
 
-    public GuiTrashSlot(GuiInventory parentGui, SlotTrash trashSlot, int x, int y) {
+    public GuiTrashSlot(GuiInventory parentGui, Slot trashSlot, int x, int y) {
         this.parentGui = parentGui;
         this.trashSlot = trashSlot;
         this.x = Math.max(0, Math.min(parentGui.width - LONELY_WIDTH, x));
