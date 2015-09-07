@@ -79,30 +79,34 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onInitGui(GuiScreenEvent.InitGuiEvent event) {
-        if(event.gui instanceof GuiInventory) {
-            float x = TrashSlot.trashSlotX;
-            float y = TrashSlot.trashSlotY;
-            if(x == -1) {
-                x = 57;
-            }
-            if(TrashSlot.trashSlotRelative) {
-                x *= event.gui.width;
-            } else {
-                x += event.gui.width / 2;
-            }
-            if(y == -1) {
-                y = 79;
-            }
-            if(TrashSlot.trashSlotRelative) {
-                y *= event.gui.height;
-            } else {
-                y += event.gui.height / 2;
-            }
-            guiTrashSlot = new GuiTrashSlot((GuiInventory) event.gui, findSlotTrash(((GuiInventory) event.gui).inventorySlots), (int) x, (int) y);
-        } else if(event.gui instanceof GuiContainerCreative) {
+    public void onInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
+        if(event.gui instanceof GuiContainerCreative) {
             unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
             wasInCreative = true;
+        }
+    }
+
+    @SubscribeEvent
+    public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
+        if(event.gui instanceof GuiInventory) {
+            GuiInventory gui = (GuiInventory) event.gui;
+            float x = TrashSlot.trashSlotX;
+            float y = TrashSlot.trashSlotY;
+            if(TrashSlot.trashSlotRelative) {
+                x *= gui.width;
+            } else if(x == -1) {
+                x = gui.guiLeft + gui.xSize - GuiTrashSlot.UPDOWN_WIDTH;
+            } else {
+                x += gui.width / 2;
+            }
+            if(TrashSlot.trashSlotRelative) {
+                y *= gui.height;
+            } else if(y == -1) {
+                y = gui.guiTop + gui.ySize - 4;
+            } else {
+                y += gui.height / 2;
+            }
+            guiTrashSlot = new GuiTrashSlot(gui, findSlotTrash(gui.inventorySlots), (int) x, (int) y);
         }
     }
 
