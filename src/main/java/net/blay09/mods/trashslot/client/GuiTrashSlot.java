@@ -6,12 +6,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class GuiTrashSlot extends Gui {
 
     private static final ResourceLocation texture = new ResourceLocation("trashslot", "textures/gui/slot.png");
+    private static final int SNAP_SIZE = 6;
 
     private final GuiInventory parentGui;
     private final Slot trashSlot;
@@ -101,6 +103,19 @@ public class GuiTrashSlot extends Gui {
                     x = Math.max(x, parentGui.guiLeft + parentGui.xSize);
                 } else {
                     x = Math.min(x, parentGui.guiLeft - LEFTRIGHT_WIDTH);
+                }
+            }
+
+            if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+                if(Math.abs(x - parentGui.guiLeft) <= SNAP_SIZE) {
+                    x = parentGui.guiLeft + 1;
+                } else if(Math.abs((x + width) - (parentGui.guiLeft + parentGui.xSize)) <= SNAP_SIZE) {
+                    x = parentGui.guiLeft + parentGui.xSize - width;
+                }
+                if(Math.abs(y - parentGui.guiTop) <= SNAP_SIZE) {
+                    y = parentGui.guiTop + 1;
+                } else if(Math.abs((y + height) - (parentGui.guiTop + parentGui.ySize)) <= SNAP_SIZE) {
+                    y = parentGui.guiTop + parentGui.ySize - height;
                 }
             }
         }
