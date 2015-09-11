@@ -9,6 +9,7 @@ public class SlotTrash extends Slot {
 
     private final EntityPlayer entityPlayer;
     private ItemStack itemStack;
+    private boolean shouldDeleteMouseStack;
 
     public SlotTrash(EntityPlayer entityPlayer, int x, int y) {
         super(null, 0, x, y);
@@ -39,7 +40,7 @@ public class SlotTrash extends Slot {
 
     @Override
     public void onSlotChanged() {
-        if(itemStack != null) {
+        if(itemStack != null && shouldDeleteMouseStack) {
             entityPlayer.inventory.setItemStack(null);
         }
     }
@@ -61,11 +62,14 @@ public class SlotTrash extends Slot {
             if(itemStack.stackSize <= amount) {
                 returnStack = itemStack;
                 itemStack = null;
+                shouldDeleteMouseStack = true;
                 return returnStack;
             } else {
                 returnStack = itemStack.splitStack(amount);
+                shouldDeleteMouseStack = false;
                 if(itemStack.stackSize == 0) {
                     itemStack = null;
+                    shouldDeleteMouseStack = true;
                 }
                 return returnStack;
             }

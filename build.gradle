@@ -69,11 +69,15 @@ repositories {
         name "xcompwiz"
         url "http://maven.xcompwiz.com"
     }*/
+    ivy {
+        name "InventoryTweaks"
+        artifactPattern "http://build.technicpack.net/job/Inventory-Tweaks/[revision]/artifact/build/libs/[module]-[classifier]-1.58-[revision].[ext]"
+    }
 }
 
 dependencies {
     //compile "com.xcompwiz.mystcraft:mystcraft:0.12.3.00:dev"
-    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
+    //compile name: 'InventoryTweaks', version: '147', classifier: "deobf", ext: 'jar'
 }
 
 idea {
@@ -107,8 +111,6 @@ uploadArchives {
     dependsOn 'reobf'
     repositories {
         mavenDeployer {
-            configuration = configurations.deployerJars
-
             repository(url: MAVEN_REPO) {
                 authentication(userName: MAVEN_USERNAME, password: MAVEN_PASSWORD)
             }
