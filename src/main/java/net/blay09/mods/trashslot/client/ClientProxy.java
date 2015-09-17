@@ -97,14 +97,14 @@ public class ClientProxy extends CommonProxy {
             } else if(x == -1) {
                 x = gui.guiLeft + gui.xSize - GuiTrashSlot.UPDOWN_WIDTH;
             } else {
-                x += gui.width / 2;
+                x += gui.guiLeft + gui.xSize / 2;
             }
             if(TrashSlot.trashSlotRelative) {
                 y *= gui.height;
             } else if(y == -1) {
                 y = gui.guiTop + gui.ySize - 4;
             } else {
-                y += gui.height / 2;
+                y += gui.guiTop + gui.ySize / 2;
             }
             guiTrashSlot = new GuiTrashSlot(gui, findSlotTrash(gui.inventorySlots), (int) x, (int) y);
         }
