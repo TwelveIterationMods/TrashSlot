@@ -1,9 +1,13 @@
 package net.blay09.mods.trashslot;
 
+import net.blay09.mods.trashslot.client.ClientProxy;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SlotTrash extends Slot {
 
@@ -14,8 +18,6 @@ public class SlotTrash extends Slot {
     public SlotTrash(EntityPlayer entityPlayer, int x, int y) {
         super(null, 0, x, y);
         this.entityPlayer = entityPlayer;
-
-        setBackgroundIcon(TrashSlot.proxy.getSlotBackgroundIcon());
     }
 
     @Override
@@ -82,4 +84,9 @@ public class SlotTrash extends Slot {
         return false;
     }
 
+    @Override
+    @SideOnly(Side.CLIENT)
+    public TextureAtlasSprite getBackgroundSprite() {
+        return TrashSlot.drawSlotBackground ? ClientProxy.trashSlotIcon : null;
+    }
 }

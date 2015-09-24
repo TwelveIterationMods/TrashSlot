@@ -1,11 +1,11 @@
 package net.blay09.mods.trashslot.coremod;
 
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 
 import java.util.Map;
 
 @IFMLLoadingPlugin.Name("TrashSlot")
-@IFMLLoadingPlugin.MCVersion("1.7.10")
+@IFMLLoadingPlugin.MCVersion("1.8")
 @IFMLLoadingPlugin.TransformerExclusions("net.blay09.mods.trashslot.coremod")
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE)
 public class TrashSlotLoadingPlugin implements IFMLLoadingPlugin {

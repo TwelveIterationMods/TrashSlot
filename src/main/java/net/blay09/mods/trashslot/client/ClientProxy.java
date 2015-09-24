@@ -1,10 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import net.blay09.mods.trashslot.CommonProxy;
-import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.net.MessageDelete;
 import net.blay09.mods.trashslot.net.NetworkHandler;
@@ -12,19 +8,24 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
 public class ClientProxy extends CommonProxy {
 
+    public static TextureAtlasSprite trashSlotIcon;
+
     private Slot mouseSlot;
-    private IIcon trashSlotIcon;
     private GuiTrashSlot guiTrashSlot;
     private boolean wasDeleteDown;
     private boolean wasInCreative;
@@ -72,10 +73,8 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onTextureStitch(TextureStitchEvent event) {
-        if(event.map.getTextureType() == 1) {
-            trashSlotIcon = event.map.registerIcon("trashslot:trashcan");
-        }
+    public void onTextureStitch(TextureStitchEvent.Pre event) {
+        trashSlotIcon = event.map.registerSprite(new ResourceLocation("trashslot", "items/trashcan"));
     }
 
     @SubscribeEvent
@@ -127,8 +126,4 @@ public class ClientProxy extends CommonProxy {
         return result;
     }
 
-    @Override
-    public IIcon getSlotBackgroundIcon() {
-        return TrashSlot.drawSlotBackground ? trashSlotIcon : null;
-    }
 }

@@ -17,7 +17,7 @@ public class InventoryTweaksClassTransformer implements IClassTransformer {
 
     public static final Logger logger = LogManager.getLogger();
 
-    public static final String OBF_CLASS = "aap";
+    public static final String OBF_CLASS = "ajb";
     public static final String MCP_CLASS = "net.minecraft.inventory.ContainerPlayer";
 
     @Override
