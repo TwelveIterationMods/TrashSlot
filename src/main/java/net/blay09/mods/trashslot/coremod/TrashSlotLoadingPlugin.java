@@ -7,12 +7,13 @@ import java.util.Map;
 @IFMLLoadingPlugin.Name("TrashSlot")
 @IFMLLoadingPlugin.MCVersion("1.7.10")
 @IFMLLoadingPlugin.TransformerExclusions("net.blay09.mods.trashslot.coremod")
-@IFMLLoadingPlugin.SortingIndex(1001)
+@IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE)
 public class TrashSlotLoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
         return new String[] {
-            "net.blay09.mods.trashslot.coremod.TrashSlotClassTransformer"
+            "net.blay09.mods.trashslot.coremod.TrashSlotClassTransformer",
+            "net.blay09.mods.trashslot.coremod.InventoryTweaksClassTransformer"
         };
     }
 
