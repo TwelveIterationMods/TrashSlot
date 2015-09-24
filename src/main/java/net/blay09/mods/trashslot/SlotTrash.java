@@ -30,6 +30,7 @@ public class SlotTrash extends Slot {
 
     @Override
     public void putStack(ItemStack itemStack) {
+        shouldDeleteMouseStack = (this.itemStack != null);
         this.itemStack = itemStack;
     }
 
