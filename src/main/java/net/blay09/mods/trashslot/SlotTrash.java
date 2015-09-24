@@ -8,6 +8,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
 
 public class SlotTrash extends Slot {
 
@@ -32,6 +33,7 @@ public class SlotTrash extends Slot {
 
     @Override
     public void putStack(ItemStack itemStack) {
+        shouldDeleteMouseStack = (this.itemStack != null);
         this.itemStack = itemStack;
     }
 
