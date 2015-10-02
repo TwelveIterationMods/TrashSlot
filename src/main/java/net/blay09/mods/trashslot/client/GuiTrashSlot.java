@@ -66,6 +66,10 @@ public class GuiTrashSlot extends Gui {
     }
 
     public void update(int mouseX, int mouseY) {
+        this.guiLeft = parentGui.guiLeft + 4;
+        this.guiTop = parentGui.guiTop + 4;
+        this.guiRight = parentGui.guiLeft + parentGui.xSize - 4;
+        this.guiBottom = parentGui.guiTop + parentGui.ySize - 4;
         boolean hover = isInside(mouseX, mouseY);
         if(Mouse.isButtonDown(0)) {
             if(!lastMouseDown && lastHover && hover) {
