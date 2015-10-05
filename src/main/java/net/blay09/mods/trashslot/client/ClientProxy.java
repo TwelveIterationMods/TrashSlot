@@ -1,6 +1,7 @@
 package net.blay09.mods.trashslot.client;
 
 import net.blay09.mods.trashslot.CommonProxy;
+import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.net.MessageDelete;
 import net.blay09.mods.trashslot.net.NetworkHandler;
@@ -53,7 +54,7 @@ public class ClientProxy extends CommonProxy {
             if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
                     if (!wasDeleteDown) {
-                        if (mouseSlot != null && mouseSlot.getHasStack() && mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) {
+                        if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) || mouseSlot instanceof SlotTrash)) {
                             NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
                         }
                     }
@@ -82,8 +83,7 @@ public class ClientProxy extends CommonProxy {
         if(event.gui instanceof GuiContainerCreative) {
             unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
             wasInCreative = true;
-        }
-    }
+        }    }
 
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {

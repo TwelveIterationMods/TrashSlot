@@ -1,5 +1,6 @@
 package net.blay09.mods.trashslot.net;
 
+import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -16,6 +17,10 @@ public class HandlerDelete implements IMessageHandler<MessageDelete, IMessage> {
         if(entityPlayer.openContainer == entityPlayer.inventoryContainer) {
             ItemStack trashItem = null;
             Slot deleteSlot = (Slot) entityPlayer.openContainer.inventorySlots.get(message.getSlotNumber());
+            if(deleteSlot instanceof SlotTrash) {
+                deleteSlot.putStack(null);
+                return null;
+            }
             if(message.isShiftDown()) {
                 ItemStack deleteStack = deleteSlot.getStack();
                 if(deleteStack != null) {
