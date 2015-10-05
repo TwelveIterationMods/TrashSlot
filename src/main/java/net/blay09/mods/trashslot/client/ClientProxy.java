@@ -89,23 +89,7 @@ public class ClientProxy extends CommonProxy {
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if(event.gui instanceof GuiInventory) {
             GuiInventory gui = (GuiInventory) event.gui;
-            float x = TrashSlot.trashSlotX;
-            float y = TrashSlot.trashSlotY;
-            if(TrashSlot.trashSlotRelative) {
-                x *= gui.width;
-            } else if(x == -1) {
-                x = gui.guiLeft + gui.xSize - GuiTrashSlot.UPDOWN_WIDTH;
-            } else {
-                x += gui.guiLeft + gui.xSize / 2;
-            }
-            if(TrashSlot.trashSlotRelative) {
-                y *= gui.height;
-            } else if(y == -1) {
-                y = gui.guiTop + gui.ySize - 4;
-            } else {
-                y += gui.guiTop + gui.ySize / 2;
-            }
-            guiTrashSlot = new GuiTrashSlot(gui, findSlotTrash(gui.inventorySlots), (int) x, (int) y);
+            guiTrashSlot = new GuiTrashSlot(gui, findSlotTrash(gui.inventorySlots));
         }
     }
 
