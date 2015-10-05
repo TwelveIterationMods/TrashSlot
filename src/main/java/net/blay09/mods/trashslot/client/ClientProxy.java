@@ -52,7 +52,7 @@ public class ClientProxy extends CommonProxy {
             if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
                 if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
                     if (!wasDeleteDown) {
-                        if (mouseSlot != null && mouseSlot.getHasStack() && mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) {
+                        if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory() - 4) || mouseSlot instanceof SlotTrash)) {
                             NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
                         }
                     }
