@@ -62,7 +62,7 @@ public class TrashSlot {
             config.get("general", "trashSlotYRelative", 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotY);
         } else {
             config.get("general", "trashSlotX", 56, "The absolute x position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotX);
-            config.get("general", "trashSlotY", 79, "The absolute y position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotY);
+            config.get("general", "trashSlotY", 69, "The absolute y position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotY);
         }
         config.save();
     }
