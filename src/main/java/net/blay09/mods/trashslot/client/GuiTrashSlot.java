@@ -53,18 +53,18 @@ public class GuiTrashSlot extends Gui {
         int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
         renderX = Math.max(0, Math.min(parentGui.width - LONELY_WIDTH, renderX));
         renderY = Math.max(0, Math.min(parentGui.height - LONELY_HEIGHT, renderY));
-        if(renderX + width > snapGridLeft && renderX < snapGridRight) {
+        if(renderX + LONELY_WIDTH > snapGridLeft && renderX < snapGridRight) {
             if(renderY > parentGui.height / 2) {
                 renderY = Math.max(renderY, snapGridBottom);
             } else {
-                renderY = Math.min(renderY, snapGridTop - height);
+                renderY = Math.min(renderY, snapGridTop - LONELY_HEIGHT);
             }
         }
-        if (renderY + height > snapGridTop && renderY < snapGridBottom) {
+        if (renderY + LONELY_HEIGHT > snapGridTop && renderY < snapGridBottom) {
             if (renderX > parentGui.width / 2) {
                 renderX = Math.max(renderX, snapGridRight);
             } else {
-                renderX = Math.min(renderX, snapGridLeft - width);
+                renderX = Math.min(renderX, snapGridLeft - LONELY_WIDTH);
             }
         }
         offsetX = TrashSlot.trashSlotRelative ? renderX : (renderX - (parentGui.guiLeft + parentGui.xSize / 2));

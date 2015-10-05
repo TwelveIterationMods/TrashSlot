@@ -35,12 +35,12 @@ public class TrashSlot {
         if(trashSlotRelative) {
             trashSlotX = config.getFloat("trashSlotXRelative", "general", 1f, 0f, 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)");
         } else {
-            trashSlotX = config.getInt("trashSlotX", "general", -1, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute x position of the trash slot from the center of the screen");
+            trashSlotX = config.getInt("trashSlotX", "general", 56, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute x position of the trash slot from the center of the window");
         }
         if(trashSlotRelative) {
             trashSlotY = config.getFloat("trashSlotYRelative", "general", 1f, 0f, 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)");
         } else {
-            trashSlotY = config.getInt("trashSlotY", "general", -1, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute y position of the trash slot from the center of the screen");
+            trashSlotY = config.getInt("trashSlotY", "general", 69, Integer.MIN_VALUE, Integer.MAX_VALUE, "The absolute y position of the trash slot from the center of the window");
         }
         config.save();
     }
@@ -61,8 +61,8 @@ public class TrashSlot {
             config.get("general", "trashSlotXRelative", 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotX);
             config.get("general", "trashSlotYRelative", 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotY);
         } else {
-            config.get("general", "trashSlotX", -1, "The absolute x position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotX);
-            config.get("general", "trashSlotY", -1, "The absolute y position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotY);
+            config.get("general", "trashSlotX", 56, "The absolute x position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotX);
+            config.get("general", "trashSlotY", 79, "The absolute y position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotY);
         }
         config.save();
     }
