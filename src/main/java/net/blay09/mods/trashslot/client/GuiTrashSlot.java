@@ -24,7 +24,7 @@ public class GuiTrashSlot extends Gui {
     private int snapGridTop;
     private int snapGridBottom;
     private int snapGridLeft;
-    private int guiRight;
+    private int snapGridRight;
 
     public static final int UPDOWN_WIDTH = 32;
     public static final int UPDOWN_HEIGHT = 25;
@@ -43,7 +43,7 @@ public class GuiTrashSlot extends Gui {
         this.parentGui = parentGui;
         this.snapGridLeft = parentGui.guiLeft + 4;
         this.snapGridTop = parentGui.guiTop + 4;
-        this.guiRight = parentGui.guiLeft + parentGui.xSize - 4;
+        this.snapGridRight = parentGui.guiLeft + parentGui.xSize - 4;
         this.snapGridBottom = parentGui.guiTop + parentGui.ySize - 4;
         this.trashSlot = trashSlot;
 
@@ -53,7 +53,7 @@ public class GuiTrashSlot extends Gui {
         int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
         renderX = Math.max(0, Math.min(parentGui.width - LONELY_WIDTH, renderX));
         renderY = Math.max(0, Math.min(parentGui.height - LONELY_HEIGHT, renderY));
-        if(renderX + width > snapGridLeft && renderX < guiRight) {
+        if(renderX + width > snapGridLeft && renderX < snapGridRight) {
             if(renderY > parentGui.height / 2) {
                 renderY = Math.max(renderY, snapGridBottom);
             } else {
@@ -62,7 +62,7 @@ public class GuiTrashSlot extends Gui {
         }
         if (renderY + height > snapGridTop && renderY < snapGridBottom) {
             if (renderX > parentGui.width / 2) {
-                renderX = Math.max(renderX, guiRight);
+                renderX = Math.max(renderX, snapGridRight);
             } else {
                 renderX = Math.min(renderX, snapGridLeft - width);
             }
@@ -74,7 +74,7 @@ public class GuiTrashSlot extends Gui {
     public void update(int mouseX, int mouseY) {
         this.snapGridLeft = parentGui.guiLeft + 4;
         this.snapGridTop = parentGui.guiTop + 4;
-        this.guiRight = parentGui.guiLeft + parentGui.xSize - 4;
+        this.snapGridRight = parentGui.guiLeft + parentGui.xSize - 4;
         this.snapGridBottom = parentGui.guiTop + parentGui.ySize - 4;
         int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
         int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
@@ -113,7 +113,7 @@ public class GuiTrashSlot extends Gui {
             renderY = mouseY + dragStartY;
             renderX = Math.max(0, Math.min(parentGui.width - width, renderX));
             renderY = Math.max(0, Math.min(parentGui.height - height, renderY));
-            if(oldX + LEFTRIGHT_WIDTH > snapGridLeft && oldX < guiRight) {
+            if(oldX + LEFTRIGHT_WIDTH > snapGridLeft && oldX < snapGridRight) {
                 if(renderY > parentGui.height / 2) {
                     renderY = Math.max(renderY, snapGridBottom);
                 } else {
@@ -121,7 +121,7 @@ public class GuiTrashSlot extends Gui {
                 }
             } else if (oldY + UPDOWN_HEIGHT > snapGridTop && oldY < snapGridBottom) {
                 if (renderX > parentGui.width / 2) {
-                    renderX = Math.max(renderX, guiRight);
+                    renderX = Math.max(renderX, snapGridRight);
                 } else {
                     renderX = Math.min(renderX, snapGridLeft - LEFTRIGHT_WIDTH);
                 }
@@ -181,7 +181,7 @@ public class GuiTrashSlot extends Gui {
         } else if(renderY >= parentGui.guiTop && renderY + LEFTRIGHT_HEIGHT <= parentGui.guiTop + parentGui.ySize) {
             width = LEFTRIGHT_WIDTH;
             height = LEFTRIGHT_HEIGHT;
-            if(renderX == guiRight) {
+            if(renderX == snapGridRight) {
                 trashSlot.xDisplayPosition = renderX + 3 - parentGui.guiLeft;
                 trashSlot.yDisplayPosition = renderY + 7 - parentGui.guiTop;
                 drawTexturedModalRect(renderX, renderY, 0, 25, width, height);
