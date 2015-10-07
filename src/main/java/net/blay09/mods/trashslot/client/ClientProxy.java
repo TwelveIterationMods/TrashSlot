@@ -17,7 +17,9 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
@@ -30,12 +32,14 @@ public class ClientProxy extends CommonProxy {
     private GuiTrashSlot guiTrashSlot;
     private boolean wasDeleteDown;
     private boolean wasInCreative;
+    private boolean neiLoaded;
 
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
 
         MinecraftForge.EVENT_BUS.register(this);
+        neiLoaded = Loader.isModLoaded("NotEnoughItems");
     }
 
     @SubscribeEvent
@@ -93,10 +97,14 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if(event.gui instanceof GuiInventory) {
             mouseSlot = ((GuiInventory) event.gui).getSlotAtPosition(event.mouseX, event.mouseY);
+            if(neiLoaded) {
+                ((GuiInventory) event.gui).guiLeft = event.gui.width / 2 - ((GuiInventory) event.gui).xSize / 2;
+                ((GuiInventory) event.gui).guiTop = event.gui.height / 2 - ((GuiInventory) event.gui).ySize / 2;
+            }
             guiTrashSlot.update(event.mouseX, event.mouseY);
             guiTrashSlot.drawBackground(event.mouseX, event.mouseY);
         }

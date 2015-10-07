@@ -4,6 +4,7 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -148,7 +149,7 @@ public class GuiTrashSlot extends Gui {
     public void drawBackground(int mouseX, int mouseY) {
         int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
         int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
-        GL11.glColor4f(1f, 1f, 1f, 1f);
+        GlStateManager.color(1f, 1f, 1f, 1f);
         zLevel = 1f;
         parentGui.mc.getTextureManager().bindTexture(texture);
         boolean isLonely = true;
