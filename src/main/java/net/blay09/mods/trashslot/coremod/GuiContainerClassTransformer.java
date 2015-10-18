@@ -8,7 +8,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-public class TrashSlotClassTransformer implements IClassTransformer {
+public class GuiContainerClassTransformer implements IClassTransformer {
 
     public static final Logger logger = LogManager.getLogger();
 
