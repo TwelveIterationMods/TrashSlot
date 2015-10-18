@@ -8,14 +8,16 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-public class TrashSlotClassTransformer implements IClassTransformer {
+public class GuiContainerClassTransformer implements IClassTransformer {
 
     public static final Logger logger = LogManager.getLogger();
 
     public static final String OBF_CLASS = "bex";
     public static final String MCP_CLASS = "net.minecraft.client.gui.inventory.GuiContainer";
+
     public static final String OBF_METHOD_MOVEDORUP = "func_146286_b";
     public static final String MCP_METHOD_MOVEDORUP = "mouseMovedOrUp";
+
     public static final String OBF_METHOD_CLICKED = "func_73864_a";
     public static final String MCP_METHOD_CLICKED = "mouseClicked";
     private static final String METHOD_DESC = "(III)V";

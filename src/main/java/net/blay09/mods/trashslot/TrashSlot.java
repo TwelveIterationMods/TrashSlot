@@ -57,6 +57,11 @@ public class TrashSlot {
     }
 
     public void saveConfig() {
+        int j = 8;
+        j -= 2;
+
+        System.out.println(j);
+
         if(trashSlotRelative) {
             config.get("general", "trashSlotXRelative", 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotX);
             config.get("general", "trashSlotYRelative", 1f, "The relative y position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotY);
