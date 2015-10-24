@@ -7,7 +7,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.blay09.mods.trashslot.net.NetworkHandler;
 import net.minecraftforge.common.config.Configuration;
 
-@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot")
+@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*")
 public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";
