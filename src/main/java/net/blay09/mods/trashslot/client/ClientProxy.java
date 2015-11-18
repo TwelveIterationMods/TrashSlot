@@ -88,6 +88,12 @@ public class ClientProxy extends CommonProxy {
             if(wasInCreative && !(gui instanceof GuiContainerCreative)) {
                 if(findSlotTrash(entityPlayer.inventoryContainer) == null) {
                     patchContainer(entityPlayer, entityPlayer.inventoryContainer);
+                    if(gui instanceof GuiInventory) {
+                        Slot trashSlot = findSlotTrash(((GuiInventory) gui).inventorySlots);
+                        if(trashSlot != null) {
+                            guiTrashSlot = new GuiTrashSlot((GuiInventory) gui, trashSlot);
+                        }
+                    }
                 }
                 wasInCreative = false;
             }
@@ -113,7 +119,10 @@ public class ClientProxy extends CommonProxy {
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if(isEnabled && event.gui instanceof GuiInventory) {
             GuiInventory gui = (GuiInventory) event.gui;
-            guiTrashSlot = new GuiTrashSlot(gui, findSlotTrash(gui.inventorySlots));
+            Slot trashSlot = findSlotTrash(gui.inventorySlots);
+            if(trashSlot != null) {
+                guiTrashSlot = new GuiTrashSlot(gui, trashSlot);
+            }
         }
     }
 
@@ -121,14 +130,16 @@ public class ClientProxy extends CommonProxy {
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if(isEnabled && event.gui instanceof GuiInventory) {
             mouseSlot = ((GuiInventory) event.gui).getSlotAtPosition(event.mouseX, event.mouseY);
-            guiTrashSlot.update(event.mouseX, event.mouseY);
-            guiTrashSlot.drawBackground(event.mouseX, event.mouseY);
+            if(guiTrashSlot != null) {
+                guiTrashSlot.update(event.mouseX, event.mouseY);
+                guiTrashSlot.drawBackground(event.mouseX, event.mouseY);
+            }
         }
     }
 
     @Override
     public boolean canDropStack(int mouseX, int mouseY, boolean result) {
-        if(isEnabled && Minecraft.getMinecraft().currentScreen instanceof GuiInventory) {
+        if(isEnabled && Minecraft.getMinecraft().currentScreen instanceof GuiInventory && guiTrashSlot != null) {
             return result && !guiTrashSlot.isInside(mouseX, mouseY);
         }
         return result;
