@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot")
+@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*")
 public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";
