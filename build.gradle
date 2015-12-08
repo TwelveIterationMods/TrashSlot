@@ -30,7 +30,7 @@ apply plugin: 'maven'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-version = "1.0." + BUILD_NUMBER
+version = "3.0." + BUILD_NUMBER
 group= "net.blay09.mods"
 archivesBaseName = "trashslot"
 
