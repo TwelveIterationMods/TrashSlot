@@ -82,7 +82,7 @@ public class SlotTrash extends Slot {
     }
 
     @Override
-    public boolean isSlotInInventory(IInventory p_75217_1_, int p_75217_2_) {
+    public boolean isHere(IInventory inv, int slotIn) {
         return false;
     }
 
