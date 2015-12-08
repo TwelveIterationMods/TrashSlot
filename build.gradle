@@ -1,43 +1,49 @@
-plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.1"
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+/*
+// for people who want stable - not yet functional for MC 1.8.8 - we require the forgegradle 2.1 snapshot
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.2"
+}
+*/
 
 def BUILD_NUMBER = System.getenv("BUILD_NUMBER") ?: "0"
 def MAVEN_REPO = System.getenv("MAVEN_REPO") ?: ""
 def MAVEN_USERNAME = System.getenv("MAVEN_USERNAME") ?: ""
 def MAVEN_PASSWORD = System.getenv("MAVEN_PASSWORD") ?: ""
 
-version = "2.0." + BUILD_NUMBER
+apply plugin: 'maven'
+
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-group = "net.blay09.mods"
+
+version = "1.0." + BUILD_NUMBER
+group= "net.blay09.mods"
 archivesBaseName = "trashslot"
 
 minecraft {
-    version = "1.8-11.14.3.1512"
-    runDir = "run"
-    
-    mappings = "snapshot_20141130"
-}
-
-processResources
-{
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+    version = "1.8.8-11.15.0.1609-1.8.8"
+    runDir = "eclipse"
+	
+	mappings = "stable_18"
 }
 
 jar {
     appendix "mc" + minecraft.version
+
     manifest {
         attributes("FMLAT": "trashslot_at.cfg",
                 "FMLCorePlugin": "net.blay09.mods.trashslot.coremod.TrashSlotLoadingPlugin",
@@ -49,12 +55,84 @@ sourceJar {
     appendix "mc" + minecraft.version
 }
 
-task devJar(type: Jar) {
+task jarDev(type: Jar) {
     from sourceSets.main.output
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     classifier "dev"
     appendix "mc" + minecraft.version
 }
 
 artifacts {
-    archives devJar
+    archives jarDev
+}
+
+repositories {
+    /*maven {
+        name "xcompwiz"
+        url "http://maven.xcompwiz.com"
+    }*/
+    ivy {
+        name "InventoryTweaks"
+        artifactPattern "http://build.technicpack.net/job/Inventory-Tweaks/[revision]/artifact/build/libs/[module]-[classifier]-1.58-[revision].[ext]"
+    }
+}
+
+dependencies {
+    //compile name: 'InventoryTweaks', version: '147', classifier: "deobf", ext: 'jar'
+}
+
+idea {
+    module {
+        inheritOutputDirs = true;
+        scopes.PROVIDED.plus += [configurations.provided]
+    }
+}
+
+processResources
+{
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    // copy everything else, thats not the mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+uploadArchives {
+    dependsOn 'reobf'
+    repositories {
+        mavenDeployer {
+            repository(url: MAVEN_REPO) {
+                authentication(userName: MAVEN_USERNAME, password: MAVEN_PASSWORD)
+            }
+
+            pom {
+                groupId = project.group
+                version = project.version
+                artifactId = project.archivesBaseName
+            }
+
+            pom.withXml {
+                asNode().dependencies.dependency.findAll {
+                    it.scope.text() == "compile"
+                }.each {
+                    if(it.optional)
+                        it.optional.value = 'true'
+                    else
+                        it.appendNode('optional', 'true');
+                }
+            }
+        }
+    }
 }
