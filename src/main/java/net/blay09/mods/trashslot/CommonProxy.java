@@ -31,7 +31,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (modInstalled.contains(event.player.getName())) {
+        if (modInstalled.contains(event.player.getCommandSenderName())) {
             patchContainer(event.player, event.player.inventoryContainer);
         }
     }
@@ -40,7 +40,7 @@ public class CommonProxy {
     public void onOpenContainer(PlayerOpenContainerEvent event) {
         if (event.entityPlayer.openContainer instanceof GuiContainerCreative.ContainerCreative) {
             unpatchContainer(event.entityPlayer.inventoryContainer);
-        } else if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getName())) {
+        } else if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getCommandSenderName())) {
             if (findSlotTrash(event.entityPlayer.inventoryContainer) == null) {
                 patchContainer(event.entityPlayer, event.entityPlayer.inventoryContainer);
             }
@@ -80,7 +80,7 @@ public class CommonProxy {
     }
 
     public void receivedHello(EntityPlayer entityPlayer) {
-        modInstalled.add(entityPlayer.getName());
+        modInstalled.add(entityPlayer.getCommandSenderName());
         if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
             patchContainer(entityPlayer, entityPlayer.inventoryContainer);
         }
