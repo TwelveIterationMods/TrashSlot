@@ -9,11 +9,10 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 public class GuiTrashSlot extends Gui {
 
-    private static final ResourceLocation texture = new ResourceLocation("trashslot", "textures/gui/slot.png");
+    private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 6;
 
     private final GuiInventory parentGui;

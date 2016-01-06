@@ -12,33 +12,24 @@ public class GuiContainerClassTransformer implements IClassTransformer {
 
     public static final Logger logger = LogManager.getLogger();
 
-    public static final String OBF_CLASS = "byl";
     public static final String MCP_CLASS = "net.minecraft.client.gui.inventory.GuiContainer";
-    public static final String OBF_METHOD_MOVEDORUP = "func_146286_b";
+    public static final String SRG_METHOD_MOVEDORUP = "func_146286_b";
     public static final String MCP_METHOD_MOVEDORUP = "mouseReleased";
-    public static final String OBF_METHOD_CLICKED = "func_73864_a";
+    public static final String SRG_METHOD_CLICKED = "func_73864_a";
     public static final String MCP_METHOD_CLICKED = "mouseClicked";
     private static final String METHOD_DESC = "(III)V";
 
     @Override
     public byte[] transform(String className, String transformedClassName, byte[] bytes) {
-        String methodNameMovedOrUp;
-        String methodNameClicked;
-        if(className.equals(OBF_CLASS)) {
-            methodNameMovedOrUp = OBF_METHOD_MOVEDORUP;
-            methodNameClicked = OBF_METHOD_CLICKED;
-        } else if(className.equals(MCP_CLASS)) {
-            methodNameMovedOrUp = MCP_METHOD_MOVEDORUP;
-            methodNameClicked = MCP_METHOD_CLICKED;
-        } else {
+        if(!transformedClassName.equals(MCP_CLASS)) {
             return bytes;
         }
         ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(bytes);
         classReader.accept(classNode, 0);
         for(MethodNode method : classNode.methods) {
-            if(method.name.equals(methodNameMovedOrUp) && method.desc.equals(METHOD_DESC)) {
-                logger.info("TrashSlot will now patch {} in {}...", methodNameMovedOrUp, className);
+            if((method.name.equals(MCP_METHOD_MOVEDORUP) || method.name .equals(SRG_METHOD_MOVEDORUP)) && method.desc.equals(METHOD_DESC)) {
+                logger.info("TrashSlot will now patch {} in {}...", MCP_METHOD_MOVEDORUP, className);
                 MethodNode mn = new MethodNode();
                 mn.visitVarInsn(Opcodes.ILOAD, 7); // push flag
                 mn.visitVarInsn(Opcodes.ILOAD, 1); // push mouseX
@@ -57,12 +48,12 @@ public class GuiContainerClassTransformer implements IClassTransformer {
                 }
                 if(insertBefore != null) {
                     method.instructions.insert(insertBefore, mn.instructions);
-                    logger.info("TrashSlot successfully patched {} in {}!", methodNameMovedOrUp, className);
+                    logger.info("TrashSlot successfully patched {} in {}!", MCP_METHOD_MOVEDORUP, className);
                 } else {
-                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, methodNameMovedOrUp, "ISTORE 7");
+                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, MCP_METHOD_MOVEDORUP, "ISTORE 7");
                 }
-            } else if(method.name.equals(methodNameClicked) && method.desc.equals(METHOD_DESC)) {
-                logger.info("TrashSlot will now patch {} in {}...", methodNameClicked, className);
+            } else if((method.name.equals(MCP_METHOD_CLICKED) || method.name.equals(SRG_METHOD_CLICKED)) && method.desc.equals(METHOD_DESC)) {
+                logger.info("TrashSlot will now patch {} in {}...", MCP_METHOD_CLICKED, className);
                 MethodNode mn = new MethodNode();
                 mn.visitVarInsn(Opcodes.ILOAD, 10); // push flag1
                 mn.visitVarInsn(Opcodes.ILOAD, 1); // push mouseX
@@ -81,9 +72,9 @@ public class GuiContainerClassTransformer implements IClassTransformer {
                 }
                 if(insertBefore != null) {
                     method.instructions.insert(insertBefore, mn.instructions);
-                    logger.info("TrashSlot successfully patched {} in {}!", methodNameClicked, className);
+                    logger.info("TrashSlot successfully patched {} in {}!", MCP_METHOD_CLICKED, className);
                 } else {
-                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, methodNameClicked, "ISTORE 10");
+                    logger.warn("TrashSlot failed to patch {0}::{1} ({2} not found) - items will drop when being taken out of the trash slot!", className, MCP_METHOD_CLICKED, "ISTORE 10");
                 }
             }
         }

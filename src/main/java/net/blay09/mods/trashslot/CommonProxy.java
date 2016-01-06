@@ -7,8 +7,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -21,7 +22,11 @@ public class CommonProxy {
     private final HashSet<String> modInstalled = new HashSet<>();
 
     public void init(FMLInitializationEvent event) {
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public void addScheduledTask(Runnable runnable) {
+        MinecraftServer.getServer().addScheduledTask(runnable);
     }
 
     @SubscribeEvent
@@ -31,7 +36,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (modInstalled.contains(event.player.getCommandSenderName())) {
+        if (modInstalled.contains(event.player.getName())) {
             patchContainer(event.player, event.player.inventoryContainer);
         }
     }
@@ -40,14 +45,13 @@ public class CommonProxy {
     public void onOpenContainer(PlayerOpenContainerEvent event) {
         if (event.entityPlayer.openContainer instanceof GuiContainerCreative.ContainerCreative) {
             unpatchContainer(event.entityPlayer.inventoryContainer);
-        } else if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getCommandSenderName())) {
+        } else if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getName())) {
             if (findSlotTrash(event.entityPlayer.inventoryContainer) == null) {
                 patchContainer(event.entityPlayer, event.entityPlayer.inventoryContainer);
             }
         }
     }
 
-    @SuppressWarnings("unchecked")
     protected SlotTrash patchContainer(EntityPlayer entityPlayer, Container container) {
         SlotTrash slot = new SlotTrash(entityPlayer, 152, 165);
         slot.slotNumber = container.inventorySlots.size();
@@ -80,7 +84,7 @@ public class CommonProxy {
     }
 
     public void receivedHello(EntityPlayer entityPlayer) {
-        modInstalled.add(entityPlayer.getCommandSenderName());
+        modInstalled.add(entityPlayer.getName());
         if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
             patchContainer(entityPlayer, entityPlayer.inventoryContainer);
         }

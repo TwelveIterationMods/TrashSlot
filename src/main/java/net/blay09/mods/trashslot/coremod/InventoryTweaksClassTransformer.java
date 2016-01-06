@@ -13,17 +13,16 @@ import org.objectweb.asm.tree.MethodNode;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class InventoryTweaksClassTransformer implements IClassTransformer {
 
     public static final Logger logger = LogManager.getLogger();
 
-    public static final String OBF_CLASS = "ajb";
     public static final String MCP_CLASS = "net.minecraft.inventory.ContainerPlayer";
 
     @Override
     public byte[] transform(String className, String transformedClassName, byte[] bytes) {
-
-        if(!className.equals(OBF_CLASS) && !className.equals(MCP_CLASS)) {
+        if(!transformedClassName.equals(MCP_CLASS)) {
             return bytes;
         }
         ClassNode classNode = new ClassNode();

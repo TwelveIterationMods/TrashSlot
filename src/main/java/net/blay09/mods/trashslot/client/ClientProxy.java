@@ -47,6 +47,11 @@ public class ClientProxy extends CommonProxy {
         neiLoaded = Loader.isModLoaded("NotEnoughItems");
     }
 
+    @Override
+    public void addScheduledTask(Runnable runnable) {
+        Minecraft.getMinecraft().addScheduledTask(runnable);
+    }
+
     @SubscribeEvent
     public void connectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         helloTimeout = HELLO_TIMEOUT;

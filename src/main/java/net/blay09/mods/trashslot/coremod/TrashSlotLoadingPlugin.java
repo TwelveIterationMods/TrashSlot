@@ -5,7 +5,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import java.util.Map;
 
 @IFMLLoadingPlugin.Name("TrashSlot")
-@IFMLLoadingPlugin.MCVersion("1.8")
+@IFMLLoadingPlugin.MCVersion("1.8.9")
 @IFMLLoadingPlugin.TransformerExclusions("net.blay09.mods.trashslot.coremod")
 @IFMLLoadingPlugin.SortingIndex(Integer.MAX_VALUE)
 public class TrashSlotLoadingPlugin implements IFMLLoadingPlugin {

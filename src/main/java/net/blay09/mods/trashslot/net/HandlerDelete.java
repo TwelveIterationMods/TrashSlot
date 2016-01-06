@@ -12,35 +12,40 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class HandlerDelete implements IMessageHandler<MessageDelete, IMessage> {
 
     @Override
-    public IMessage onMessage(MessageDelete message, MessageContext ctx) {
-        EntityPlayer entityPlayer = ctx.getServerHandler().playerEntity;
-        if(entityPlayer.openContainer == entityPlayer.inventoryContainer) {
-            ItemStack trashItem = null;
-            Slot deleteSlot = (Slot) entityPlayer.openContainer.inventorySlots.get(message.getSlotNumber());
-            if(deleteSlot instanceof SlotTrash) {
-                deleteSlot.putStack(null);
-                return null;
-            }
-            if(message.isShiftDown()) {
-                ItemStack deleteStack = deleteSlot.getStack();
-                if(deleteStack != null) {
-                    for(int i = 0; i < entityPlayer.inventory.getSizeInventory() - 4; i++) {
-                        ItemStack slotStack = entityPlayer.inventory.getStackInSlot(i);
-                        if(slotStack != null && ((deleteStack.getHasSubtypes() && deleteStack.isItemEqual(slotStack)) || deleteStack.getItem() == slotStack.getItem())) {
-                            if(ItemStack.areItemStackTagsEqual(deleteStack, slotStack)) {
-                                trashItem = slotStack;
-                                entityPlayer.inventory.setInventorySlotContents(i, null);
+    public IMessage onMessage(final MessageDelete message, final MessageContext ctx) {
+        TrashSlot.proxy.addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                EntityPlayer entityPlayer = ctx.getServerHandler().playerEntity;
+                if(entityPlayer.openContainer == entityPlayer.inventoryContainer) {
+                    ItemStack trashItem = null;
+                    Slot deleteSlot = entityPlayer.openContainer.inventorySlots.get(message.getSlotNumber());
+                    if(deleteSlot instanceof SlotTrash) {
+                        deleteSlot.putStack(null);
+                        return;
+                    }
+                    if(message.isShiftDown()) {
+                        ItemStack deleteStack = deleteSlot.getStack();
+                        if(deleteStack != null) {
+                            for(int i = 0; i < entityPlayer.inventory.getSizeInventory() - 4; i++) {
+                                ItemStack slotStack = entityPlayer.inventory.getStackInSlot(i);
+                                if(slotStack != null && ((deleteStack.getHasSubtypes() && deleteStack.isItemEqual(slotStack)) || deleteStack.getItem() == slotStack.getItem())) {
+                                    if(ItemStack.areItemStackTagsEqual(deleteStack, slotStack)) {
+                                        trashItem = slotStack;
+                                        entityPlayer.inventory.setInventorySlotContents(i, null);
+                                    }
+                                }
                             }
                         }
+                    } else {
+                        trashItem = deleteSlot.getStack();
+                        deleteSlot.putStack(null);
                     }
+                    Slot slotTrash = TrashSlot.proxy.findSlotTrash(entityPlayer.inventoryContainer);
+                    slotTrash.putStack(trashItem);
                 }
-            } else {
-                trashItem = deleteSlot.getStack();
-                deleteSlot.putStack(null);
             }
-            Slot slotTrash = TrashSlot.proxy.findSlotTrash(entityPlayer.inventoryContainer);
-            slotTrash.putStack(trashItem);
-        }
+        });
         return null;
     }
 
