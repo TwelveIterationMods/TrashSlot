@@ -18,6 +18,7 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -64,6 +65,13 @@ public class ClientProxy extends CommonProxy {
             if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
                 patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onOpenContainer(PlayerOpenContainerEvent event) {
+        if (event.entityPlayer.openContainer instanceof GuiContainerCreative.ContainerCreative) {
+            unpatchContainer(event.entityPlayer.inventoryContainer);
         }
     }
 

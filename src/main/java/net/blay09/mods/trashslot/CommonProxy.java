@@ -2,7 +2,6 @@ package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.net.MessageHello;
 import net.blay09.mods.trashslot.net.NetworkHandler;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -43,9 +42,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onOpenContainer(PlayerOpenContainerEvent event) {
-        if (event.entityPlayer.openContainer instanceof GuiContainerCreative.ContainerCreative) {
-            unpatchContainer(event.entityPlayer.inventoryContainer);
-        } else if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getName())) {
+        if (event.entityPlayer.openContainer == event.entityPlayer.inventoryContainer && modInstalled.contains(event.entityPlayer.getName())) {
             if (findSlotTrash(event.entityPlayer.inventoryContainer) == null) {
                 patchContainer(event.entityPlayer, event.entityPlayer.inventoryContainer);
             }
