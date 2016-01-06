@@ -1,6 +1,16 @@
-plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.1"
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 def BUILD_NUMBER = System.getenv("BUILD_NUMBER") ?: "0"
 def MAVEN_REPO = System.getenv("MAVEN_REPO") ?: ""
@@ -14,10 +24,10 @@ group = "net.blay09.mods"
 archivesBaseName = "trashslot"
 
 minecraft {
-    version = "1.8-11.14.3.1512"
+    version = "1.8.9-11.15.0.1684"
     runDir = "run"
     
-    mappings = "snapshot_20141130"
+    mappings = "stable_20"
 }
 
 processResources
@@ -53,6 +63,12 @@ task devJar(type: Jar) {
     from sourceSets.main.output
     classifier "dev"
     appendix "mc" + minecraft.version
+    
+    manifest {
+        attributes("FMLAT": "trashslot_at.cfg",
+                "FMLCorePlugin": "net.blay09.mods.trashslot.coremod.TrashSlotLoadingPlugin",
+                "FMLCorePluginContainsFMLMod": "true")
+    }
 }
 
 artifacts {
