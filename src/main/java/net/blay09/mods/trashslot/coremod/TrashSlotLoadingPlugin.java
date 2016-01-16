@@ -13,8 +13,7 @@ public class TrashSlotLoadingPlugin implements IFMLLoadingPlugin {
     public String[] getASMTransformerClass() {
         return new String[] {
             "net.blay09.mods.trashslot.coremod.GuiContainerClassTransformer",
-            "net.blay09.mods.trashslot.coremod.MinecraftClassTransformer",
-            "net.blay09.mods.trashslot.coremod.InventoryTweaksClassTransformer"
+            "net.blay09.mods.trashslot.coremod.MinecraftClassTransformer"
         };
     }
 
