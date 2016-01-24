@@ -158,14 +158,6 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public boolean canDropStack(int mouseX, int mouseY, boolean result) {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiInventory && guiTrashSlot != null) {
-            return result && !guiTrashSlot.isInside(mouseX, mouseY);
-        }
-        return result;
-    }
-
-    @Override
     public void receivedHello(EntityPlayer entityPlayer) {
         super.receivedHello(entityPlayer);
         helloTimeout = 0;

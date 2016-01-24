@@ -52,10 +52,6 @@ public class TrashSlot {
         proxy.init(event);
     }
 
-    public static boolean canDropStack(boolean result, int mouseX, int mouseY) {
-        return proxy.canDropStack(mouseX, mouseY, result);
-    }
-
     public void saveConfig() {
         if(trashSlotRelative) {
             config.get("general", "trashSlotXRelative", 1f, "The relative x position of the trash slot (if trashSlotRelative is set to true)").set(TrashSlot.trashSlotX);

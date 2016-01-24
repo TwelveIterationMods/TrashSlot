@@ -76,10 +76,6 @@ public class CommonProxy {
         return null;
     }
 
-    public boolean canDropStack(int mouseX, int mouseY, boolean result) {
-        return result;
-    }
-
     public void receivedHello(EntityPlayer entityPlayer) {
         modInstalled.add(entityPlayer.getName());
         if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
