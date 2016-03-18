@@ -9,6 +9,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -25,7 +26,7 @@ public class CommonProxy {
     }
 
     public void addScheduledTask(Runnable runnable) {
-        MinecraftServer.getServer().addScheduledTask(runnable);
+        FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
     }
 
     @SubscribeEvent

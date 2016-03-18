@@ -12,8 +12,8 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -84,7 +84,7 @@ public class ClientProxy extends CommonProxy {
                 if (helloTimeout <= 0) {
                     isEnabled = false;
                     unpatchContainer(entityPlayer.inventoryContainer);
-                    entityPlayer.addChatMessage(new ChatComponentText("This server does not have TrashSlot installed. It will be disabled."));
+                    entityPlayer.addChatMessage(new TextComponentString("This server does not have TrashSlot installed. It will be disabled."));
                 }
             }
             if (!isEnabled) {
@@ -145,7 +145,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (event.gui instanceof GuiInventory) {
-            mouseSlot = ((GuiInventory) event.gui).getSlotAtPosition(event.mouseX, event.mouseY);
+            mouseSlot = ((GuiInventory) event.gui).getSlotUnderMouse();
             if (neiLoaded) {
                 ((GuiInventory) event.gui).guiLeft = event.gui.width / 2 - ((GuiInventory) event.gui).xSize / 2;
                 ((GuiInventory) event.gui).guiTop = event.gui.height / 2 - ((GuiInventory) event.gui).ySize / 2;
