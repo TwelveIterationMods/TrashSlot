@@ -61,7 +61,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (isEnabled && event.entity == Minecraft.getMinecraft().thePlayer) {
+        if (isEnabled && event.getEntity() == Minecraft.getMinecraft().thePlayer) {
             if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
                 patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
             }
@@ -70,8 +70,8 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onOpenContainer(PlayerOpenContainerEvent event) {
-        if (event.entityPlayer.openContainer instanceof GuiContainerCreative.ContainerCreative) {
-            unpatchContainer(event.entityPlayer.inventoryContainer);
+        if (event.getEntityPlayer().openContainer instanceof GuiContainerCreative.ContainerCreative) {
+            unpatchContainer(event.getEntityPlayer().inventoryContainer);
         }
     }
 
@@ -120,12 +120,12 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onTextureStitch(TextureStitchEvent.Pre event) {
-        trashSlotIcon = event.map.registerSprite(new ResourceLocation("trashslot", "items/trashcan"));
+        trashSlotIcon = event.getMap().registerSprite(new ResourceLocation("trashslot", "items/trashcan"));
     }
 
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-        if (isEnabled && event.gui instanceof GuiContainerCreative) {
+        if (isEnabled && event.getGui() instanceof GuiContainerCreative) {
             unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
             wasInCreative = true;
         }
@@ -133,8 +133,8 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (isEnabled && event.gui instanceof GuiInventory) {
-            GuiInventory gui = (GuiInventory) event.gui;
+        if (isEnabled && event.getGui() instanceof GuiInventory) {
+            GuiInventory gui = (GuiInventory) event.getGui();
             Slot trashSlot = findSlotTrash(gui.inventorySlots);
             if (trashSlot != null) {
                 guiTrashSlot = new GuiTrashSlot(gui, trashSlot);
@@ -144,15 +144,15 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        if (event.gui instanceof GuiInventory) {
-            mouseSlot = ((GuiInventory) event.gui).getSlotUnderMouse();
+        if (event.getGui() instanceof GuiInventory) {
+            mouseSlot = ((GuiInventory) event.getGui()).getSlotUnderMouse();
             if (neiLoaded) {
-                ((GuiInventory) event.gui).guiLeft = event.gui.width / 2 - ((GuiInventory) event.gui).xSize / 2;
-                ((GuiInventory) event.gui).guiTop = event.gui.height / 2 - ((GuiInventory) event.gui).ySize / 2;
+                ((GuiInventory) event.getGui()).guiLeft = event.getGui().width / 2 - ((GuiInventory) event.getGui()).xSize / 2;
+                ((GuiInventory) event.getGui()).guiTop = event.getGui().height / 2 - ((GuiInventory) event.getGui()).ySize / 2;
             }
             if (guiTrashSlot != null) {
-                guiTrashSlot.update(event.mouseX, event.mouseY);
-                guiTrashSlot.drawBackground(event.mouseX, event.mouseY);
+                guiTrashSlot.update(event.getMouseX(), event.getMouseY());
+                guiTrashSlot.drawBackground(event.getMouseX(), event.getMouseY());
             }
         }
     }
