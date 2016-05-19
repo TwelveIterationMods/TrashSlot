@@ -7,7 +7,9 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*")
+@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*",
+        guiFactory = "net.blay09.mods.craftingtweaks.client.GuiFactory",
+        updateJSON = "http://balyware.com/new/forge_update.php?modid=" + TrashSlot.MOD_ID)
 public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";
@@ -24,7 +26,7 @@ public class TrashSlot {
     @SidedProxy(serverSide = "net.blay09.mods.trashslot.CommonProxy", clientSide = "net.blay09.mods.trashslot.client.ClientProxy")
     public static CommonProxy proxy;
 
-    private Configuration config;
+    public static Configuration config;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
