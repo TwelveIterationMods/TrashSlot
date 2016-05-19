@@ -42,7 +42,9 @@ public class HandlerDelete implements IMessageHandler<MessageDelete, IMessage> {
                         deleteSlot.putStack(null);
                     }
                     Slot slotTrash = TrashSlot.proxy.findSlotTrash(entityPlayer.inventoryContainer);
-                    slotTrash.putStack(trashItem);
+                    if(slotTrash != null) {
+                        slotTrash.putStack(trashItem);
+                    }
                 }
             }
         });
