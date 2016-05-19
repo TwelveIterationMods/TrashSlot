@@ -10,12 +10,15 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
@@ -32,11 +35,12 @@ public class ClientProxy extends CommonProxy {
     public static TextureAtlasSprite trashSlotIcon;
     private static final int HELLO_TIMEOUT = 20 * 10;
 
+    private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
+
     private int helloTimeout;
     private boolean isEnabled;
     private Slot mouseSlot;
     private GuiTrashSlot guiTrashSlot;
-    private boolean wasDeleteDown;
     private boolean wasInCreative;
     private boolean neiLoaded;
 
@@ -91,15 +95,10 @@ public class ClientProxy extends CommonProxy {
                 return;
             }
             if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
-                if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) {
-                    if (!wasDeleteDown) {
-                        if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
-                            NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
-                        }
+                if (keyBindDelete.isPressed()) {
+                    if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
+                        NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
                     }
-                    wasDeleteDown = true;
-                } else {
-                    wasDeleteDown = false;
                 }
             }
             GuiScreen gui = Minecraft.getMinecraft().currentScreen;
