@@ -7,6 +7,7 @@ import net.blay09.mods.trashslot.net.MessageDelete;
 import net.blay09.mods.trashslot.net.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,6 +23,7 @@ import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -30,6 +32,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import org.lwjgl.input.Keyboard;
 
+@SuppressWarnings("unused")
 public class ClientProxy extends CommonProxy {
 
     public static TextureAtlasSprite trashSlotIcon;
@@ -39,7 +42,6 @@ public class ClientProxy extends CommonProxy {
 
     private int helloTimeout;
     private boolean isEnabled;
-    private Slot mouseSlot;
     private GuiTrashSlot guiTrashSlot;
     private boolean wasInCreative;
     private boolean neiLoaded;
@@ -47,6 +49,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
+
+        ClientRegistry.registerKeyBinding(keyBindDelete);
 
         MinecraftForge.EVENT_BUS.register(this);
         neiLoaded = Loader.isModLoaded("NotEnoughItems");
@@ -94,13 +98,6 @@ public class ClientProxy extends CommonProxy {
             if (!isEnabled) {
                 return;
             }
-            if (TrashSlot.enableDeleteKey && Minecraft.getMinecraft().currentScreen != null && entityPlayer.openContainer == entityPlayer.inventoryContainer) {
-                if (keyBindDelete.isPressed()) {
-                    if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
-                        NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
-                    }
-                }
-            }
             GuiScreen gui = Minecraft.getMinecraft().currentScreen;
             if (wasInCreative && !(gui instanceof GuiContainerCreative)) {
                 if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
@@ -141,10 +138,24 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
+    @SubscribeEvent
+    public void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Post event) {
+        if(isEnabled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && keyBindDelete.isActiveAndMatches(Keyboard.getEventKey())) {
+            EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
+            if (entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer && event.getGui() instanceof GuiContainer) {
+                Slot mouseSlot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
+                // IntelliJ is being dumb and thinks getSlotUnderMouse can't return null. Even a @Nullable on mouseSlot doesn't fix this warning. What the hell.
+                //noinspection ConstantConditions
+                if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
+                    NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
+                }
+            }
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
         if (event.getGui() instanceof GuiInventory) {
-            mouseSlot = ((GuiInventory) event.getGui()).getSlotUnderMouse();
             if (neiLoaded) {
                 ((GuiInventory) event.getGui()).guiLeft = event.getGui().width / 2 - ((GuiInventory) event.getGui()).xSize / 2;
                 ((GuiInventory) event.getGui()).guiTop = event.getGui().height / 2 - ((GuiInventory) event.getGui()).ySize / 2;
