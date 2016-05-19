@@ -49,26 +49,6 @@ public class GuiTrashSlot extends Gui {
 
         offsetX = (int) (TrashSlot.trashSlotRelative ? TrashSlot.trashSlotX * parentGui.width : TrashSlot.trashSlotX);
         offsetY = (int) (TrashSlot.trashSlotRelative ? TrashSlot.trashSlotY * parentGui.height : TrashSlot.trashSlotY);
-        int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
-        int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
-        renderX = Math.max(0, Math.min(parentGui.width - LONELY_WIDTH, renderX));
-        renderY = Math.max(0, Math.min(parentGui.height - LONELY_HEIGHT, renderY));
-        if(renderX + LONELY_WIDTH > snapGridLeft && renderX < snapGridRight) {
-            if(renderY > parentGui.height / 2) {
-                renderY = Math.max(renderY, snapGridBottom);
-            } else {
-                renderY = Math.min(renderY, snapGridTop - LONELY_HEIGHT);
-            }
-        }
-        if (renderY + LONELY_HEIGHT > snapGridTop && renderY < snapGridBottom) {
-            if (renderX > parentGui.width / 2) {
-                renderX = Math.max(renderX, snapGridRight);
-            } else {
-                renderX = Math.min(renderX, snapGridLeft - LONELY_WIDTH);
-            }
-        }
-        offsetX = TrashSlot.trashSlotRelative ? renderX : (renderX - (parentGui.guiLeft + parentGui.xSize / 2));
-        offsetY = TrashSlot.trashSlotRelative ? renderY : (renderY - (parentGui.guiTop + parentGui.ySize / 2));
     }
 
     public void update(int mouseX, int mouseY) {
@@ -76,8 +56,8 @@ public class GuiTrashSlot extends Gui {
         this.snapGridTop = parentGui.guiTop + 4;
         this.snapGridRight = parentGui.guiLeft + parentGui.xSize - 4;
         this.snapGridBottom = parentGui.guiTop + parentGui.ySize - 4;
-        int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
-        int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
+        int renderX = getRenderX();
+        int renderY = getRenderY();
         boolean hover = isInside(mouseX, mouseY);
         if(Mouse.isButtonDown(0)) {
             if(!lastMouseDown && lastHover && hover) {
@@ -146,8 +126,8 @@ public class GuiTrashSlot extends Gui {
     }
 
     public void drawBackground(int mouseX, int mouseY) {
-        int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
-        int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
+        int renderX = getRenderX();
+        int renderY = getRenderY();
         GlStateManager.color(1f, 1f, 1f, 1f);
         zLevel = 1f;
         parentGui.mc.getTextureManager().bindTexture(texture);
@@ -216,9 +196,16 @@ public class GuiTrashSlot extends Gui {
     }
 
     public boolean isInside(int mouseX, int mouseY) {
-        int renderX = TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX);
-        int renderY = TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY);
+        int renderX = getRenderX();
+        int renderY = getRenderY();
         return mouseX >= renderX && mouseY >= renderY && mouseX < renderX + width && mouseY < renderY + height;
     }
 
+    private int getRenderX() {
+        return Math.max(0, Math.min(TrashSlot.trashSlotRelative ? offsetX : (parentGui.guiLeft + parentGui.xSize / 2 + offsetX), parentGui.width - LONELY_WIDTH));
+    }
+
+    private int getRenderY() {
+        return Math.max(0, Math.min(TrashSlot.trashSlotRelative ? offsetY : (parentGui.guiTop + parentGui.ySize / 2 + offsetY), parentGui.height - LONELY_HEIGHT));
+    }
 }
