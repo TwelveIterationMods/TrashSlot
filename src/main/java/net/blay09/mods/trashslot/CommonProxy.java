@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -41,7 +41,7 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
-    public void onOpenContainer(PlayerOpenContainerEvent event) {
+    public void onOpenContainer(PlayerContainerEvent.Open event) {
         if (event.getEntityPlayer().openContainer == event.getEntityPlayer().inventoryContainer && modInstalled.contains(event.getEntityPlayer().getName())) {
             if (findSlotTrash(event.getEntityPlayer().inventoryContainer) == null) {
                 patchContainer(event.getEntityPlayer(), event.getEntityPlayer().inventoryContainer);

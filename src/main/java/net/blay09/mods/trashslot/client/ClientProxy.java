@@ -22,7 +22,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -77,7 +77,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void onOpenContainer(PlayerOpenContainerEvent event) {
+    public void onOpenContainer(PlayerContainerEvent.Open event) {
         if (event.getEntityPlayer().openContainer instanceof GuiContainerCreative.ContainerCreative) {
             unpatchContainer(event.getEntityPlayer().inventoryContainer);
         }
@@ -144,8 +144,6 @@ public class ClientProxy extends CommonProxy {
             EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
             if (entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer && event.getGui() instanceof GuiContainer) {
                 Slot mouseSlot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
-                // IntelliJ is being dumb and thinks getSlotUnderMouse can't return null. Even a @Nullable on mouseSlot doesn't fix this warning. What the hell.
-                //noinspection ConstantConditions
                 if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
                     NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
                 }
