@@ -70,8 +70,6 @@ public class CommonProxy {
         return null;
     }
 
-    public void checkNetwork(Map<String, String> map, Side side) {}
-
     public void receivedHello(EntityPlayer playerEntity) {
         modInstalled.add(playerEntity.getName());
         if (findSlotTrash(playerEntity.inventoryContainer) == null) {

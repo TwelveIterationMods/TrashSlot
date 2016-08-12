@@ -18,6 +18,8 @@ public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";
 
+    public static boolean isServerSideInstalled;
+
     public static boolean drawSlotBackground;
     public static boolean enableDeleteKey;
     public static boolean trashSlotRelative;
@@ -72,7 +74,9 @@ public class TrashSlot {
 
     @NetworkCheckHandler
     public boolean checkNetwork(Map<String, String> map, Side side) {
-        proxy.checkNetwork(map, side);
+        if(side == Side.SERVER) {
+            isServerSideInstalled = map.containsKey(TrashSlot.MOD_ID);
+        }
         return true;
     }
 }

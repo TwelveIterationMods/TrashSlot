@@ -30,10 +30,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
-
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ClientProxy extends CommonProxy {
@@ -42,7 +39,6 @@ public class ClientProxy extends CommonProxy {
 
     private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
 
-    private boolean isEnabled = true;
     private boolean sentMissingMessage;
     private GuiTrashSlot guiTrashSlot;
     private boolean wasInCreative;
@@ -65,7 +61,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (isEnabled && event.getEntity() == Minecraft.getMinecraft().thePlayer) {
+        if (TrashSlot.isServerSideInstalled && event.getEntity() == Minecraft.getMinecraft().thePlayer) {
             NetworkHandler.instance.sendToServer(new MessageHello());
             if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
                 patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
@@ -84,7 +80,7 @@ public class ClientProxy extends CommonProxy {
     public void onTick(TickEvent.ClientTickEvent event) {
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
         if (entityPlayer != null) {
-            if (!isEnabled) {
+            if (!TrashSlot.isServerSideInstalled) {
                 if(!sentMissingMessage) {
                     unpatchContainer(entityPlayer.inventoryContainer);
                     entityPlayer.addChatMessage(new TextComponentTranslation("trashslot.serverNotInstalled"));
@@ -115,7 +111,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-        if (isEnabled && event.getGui() instanceof GuiContainerCreative) {
+        if (TrashSlot.isServerSideInstalled && event.getGui() instanceof GuiContainerCreative) {
             unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
             wasInCreative = true;
         }
@@ -123,7 +119,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (isEnabled && event.getGui() instanceof GuiInventory) {
+        if (TrashSlot.isServerSideInstalled && event.getGui() instanceof GuiInventory) {
             GuiInventory gui = (GuiInventory) event.getGui();
             Slot trashSlot = findSlotTrash(gui.inventorySlots);
             if (trashSlot != null) {
@@ -134,7 +130,7 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Post event) {
-        if(isEnabled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && keyBindDelete.isActiveAndMatches(Keyboard.getEventKey())) {
+        if(TrashSlot.isServerSideInstalled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && keyBindDelete.isActiveAndMatches(Keyboard.getEventKey())) {
             EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
             if (entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer && event.getGui() instanceof GuiContainer) {
                 Slot mouseSlot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
@@ -159,8 +155,4 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @Override
-    public void checkNetwork(Map<String, String> map, Side side) {
-        isEnabled = map.containsKey(TrashSlot.MOD_ID);
-    }
 }
