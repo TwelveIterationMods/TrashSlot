@@ -16,6 +16,7 @@ public class NetworkHandler {
     public static void init() {
         instance.registerMessage(HandlerDelete.class, MessageDelete.class, 1, Side.SERVER);
         instance.registerMessage(HandlerHello.class, MessageHello.class, 2, Side.SERVER);
+        instance.registerMessage(HandlerHello.class, MessageHello.class, 3, Side.CLIENT);
     }
 
     public static EntityPlayer getPlayerEntity(MessageContext ctx) {

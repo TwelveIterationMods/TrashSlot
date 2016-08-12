@@ -13,7 +13,9 @@ public class HandlerHello implements IMessageHandler<MessageHello, IMessage> {
         TrashSlot.proxy.addScheduledTask(new Runnable() {
             @Override
             public void run() {
-            TrashSlot.proxy.receivedHello(NetworkHandler.getPlayerEntity(ctx));
+                if(ctx.side == Side.SERVER) {
+                    TrashSlot.proxy.receivedHello(NetworkHandler.getPlayerEntity(ctx));
+                }
             }
         });
         return null;
