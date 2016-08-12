@@ -1,2 +1,4 @@
+trashslot.serverNotInstalled=This server does not have TrashSlot installed. It will be disabled.
+
 key.trashslot.delete=Delete Item
 key.categories.trashslot=TrashSlot

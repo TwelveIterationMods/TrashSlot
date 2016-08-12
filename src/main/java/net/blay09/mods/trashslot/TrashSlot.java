@@ -6,6 +6,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkCheckHandler;
+import net.minecraftforge.fml.relauncher.Side;
+
+import java.util.Map;
 
 @Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*",
         guiFactory = "net.blay09.mods.trashslot.client.GuiFactory",
@@ -64,5 +68,11 @@ public class TrashSlot {
             config.get("general", "trashSlotY", 69, "The absolute y position of the trash slot from the center of the screen").set((int) TrashSlot.trashSlotY);
         }
         config.save();
+    }
+
+    @NetworkCheckHandler
+    public boolean checkNetwork(Map<String, String> map, Side side) {
+        proxy.checkNetwork(map, side);
+        return true;
     }
 }

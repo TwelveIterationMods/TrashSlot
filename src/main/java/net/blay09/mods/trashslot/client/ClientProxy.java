@@ -4,6 +4,7 @@ import net.blay09.mods.trashslot.CommonProxy;
 import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.net.MessageDelete;
+import net.blay09.mods.trashslot.net.MessageHello;
 import net.blay09.mods.trashslot.net.NetworkHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -15,7 +16,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -29,19 +30,20 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
+
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ClientProxy extends CommonProxy {
 
     public static TextureAtlasSprite trashSlotIcon;
-    private static final int HELLO_TIMEOUT = 20 * 10;
 
     private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
 
-    private int helloTimeout;
-    private boolean isEnabled;
+    private boolean isEnabled = true;
+    private boolean sentMissingMessage;
     private GuiTrashSlot guiTrashSlot;
     private boolean wasInCreative;
     private boolean neiLoaded;
@@ -62,14 +64,9 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SubscribeEvent
-    public void connectedToServer(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        helloTimeout = HELLO_TIMEOUT;
-        isEnabled = false;
-    }
-
-    @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (isEnabled && event.getEntity() == Minecraft.getMinecraft().thePlayer) {
+            NetworkHandler.instance.sendToServer(new MessageHello());
             if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
                 patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
             }
@@ -87,15 +84,12 @@ public class ClientProxy extends CommonProxy {
     public void onTick(TickEvent.ClientTickEvent event) {
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
         if (entityPlayer != null) {
-            if (helloTimeout > 0) {
-                helloTimeout--;
-                if (helloTimeout <= 0) {
-                    isEnabled = false;
-                    unpatchContainer(entityPlayer.inventoryContainer);
-                    entityPlayer.addChatMessage(new TextComponentString("This server does not have TrashSlot installed. It will be disabled."));
-                }
-            }
             if (!isEnabled) {
+                if(!sentMissingMessage) {
+                    unpatchContainer(entityPlayer.inventoryContainer);
+                    entityPlayer.addChatMessage(new TextComponentTranslation("trashslot.serverNotInstalled"));
+                    sentMissingMessage = true;
+                }
                 return;
             }
             GuiScreen gui = Minecraft.getMinecraft().currentScreen;
@@ -166,10 +160,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void receivedHello(EntityPlayer entityPlayer) {
-        super.receivedHello(entityPlayer);
-        helloTimeout = 0;
-        isEnabled = true;
+    public void checkNetwork(Map<String, String> map, Side side) {
+        isEnabled = map.containsKey(TrashSlot.MOD_ID);
     }
-
 }

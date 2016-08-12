@@ -1,9 +1,6 @@
 package net.blay09.mods.trashslot;
 
-import net.blay09.mods.trashslot.net.MessageHello;
-import net.blay09.mods.trashslot.net.NetworkHandler;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,9 +9,11 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class CommonProxy {
 
@@ -26,11 +25,6 @@ public class CommonProxy {
 
     public void addScheduledTask(Runnable runnable) {
         FMLCommonHandler.instance().getMinecraftServerInstance().addScheduledTask(runnable);
-    }
-
-    @SubscribeEvent
-    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        NetworkHandler.instance.sendTo(new MessageHello(NetworkHandler.PROTOCOL_VERSION), (EntityPlayerMP) event.player);
     }
 
     @SubscribeEvent
@@ -76,11 +70,12 @@ public class CommonProxy {
         return null;
     }
 
-    public void receivedHello(EntityPlayer entityPlayer) {
-        modInstalled.add(entityPlayer.getName());
-        if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
-            patchContainer(entityPlayer, entityPlayer.inventoryContainer);
+    public void checkNetwork(Map<String, String> map, Side side) {}
+
+    public void receivedHello(EntityPlayer playerEntity) {
+        modInstalled.add(playerEntity.getName());
+        if (findSlotTrash(playerEntity.inventoryContainer) == null) {
+            patchContainer(playerEntity, playerEntity.inventoryContainer);
         }
     }
-
 }
