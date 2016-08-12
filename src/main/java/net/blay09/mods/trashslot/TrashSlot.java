@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 @Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*",
-        guiFactory = "net.blay09.mods.craftingtweaks.client.GuiFactory",
+        guiFactory = "net.blay09.mods.trashslot.client.GuiFactory",
         updateJSON = "http://balyware.com/new/forge_update.php?modid=" + TrashSlot.MOD_ID)
 public class TrashSlot {
 
