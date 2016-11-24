@@ -1,158 +1,226 @@
 package net.blay09.mods.trashslot.client;
 
+import com.google.common.collect.Lists;
 import net.blay09.mods.trashslot.CommonProxy;
-import net.blay09.mods.trashslot.SlotTrash;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.net.MessageDelete;
-import net.blay09.mods.trashslot.net.MessageHello;
-import net.blay09.mods.trashslot.net.NetworkHandler;
+import net.blay09.mods.trashslot.api.IGuiContainerLayout;
+import net.blay09.mods.trashslot.api.TrashSlotAPI;
+import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
+import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
+import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
+import net.blay09.mods.trashslot.client.gui.GuiHelper;
+import net.blay09.mods.trashslot.client.gui.GuiTrashSlot;
+import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("unused")
 public class ClientProxy extends CommonProxy {
 
-    public static TextureAtlasSprite trashSlotIcon;
+	public static TextureAtlasSprite trashSlotIcon;
 
-    private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
+	private final KeyBinding keyBindToggleSlot = new KeyBinding("key.trashslot.toggle", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_T, "key.categories.trashslot");
+	private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.trash", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
+	private final KeyBinding keyBindDeleteAll = new KeyBinding("key.trashslot.deleteAll", KeyConflictContext.GUI, KeyModifier.SHIFT, Keyboard.KEY_DELETE, "key.categories.trashslot");
 
-    private boolean sentMissingMessage;
-    private GuiTrashSlot guiTrashSlot;
-    private boolean wasInCreative;
-    private boolean neiLoaded;
+	private final SlotTrash trashSlot = new SlotTrash();
+	private boolean sentMissingMessage;
+	private long missingMessageTime;
 
-    @Override
-    public void init(FMLInitializationEvent event) {
-        super.init(event);
+	private GuiTrashSlot guiTrashSlot;
+	private TrashContainerSettings currentSettings = TrashContainerSettings.NONE;
+	private DeletionProvider deletionProvider;
+	private boolean ignoreMouseUp;
 
-        ClientRegistry.registerKeyBinding(keyBindDelete);
+	@Override
+	public void init(FMLInitializationEvent event) {
+		super.init(event);
 
-        MinecraftForge.EVENT_BUS.register(this);
-        neiLoaded = Loader.isModLoaded("NotEnoughItems");
-    }
+		ClientRegistry.registerKeyBinding(keyBindDelete);
+		TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+		TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
 
-    @Override
-    public void addScheduledTask(Runnable runnable) {
-        Minecraft.getMinecraft().addScheduledTask(runnable);
-    }
+		MinecraftForge.EVENT_BUS.register(this);
+	}
 
-    @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
-        if (TrashSlot.isServerSideInstalled && event.getEntity() == Minecraft.getMinecraft().thePlayer) {
-            NetworkHandler.instance.sendToServer(new MessageHello());
-            if (findSlotTrash(Minecraft.getMinecraft().thePlayer.inventoryContainer) == null) {
-                patchContainer(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().thePlayer.inventoryContainer);
-            }
-        }
-    }
+	@SubscribeEvent
+	public void onTextureStitch(TextureStitchEvent.Pre event) {
+		trashSlotIcon = event.getMap().registerSprite(new ResourceLocation("trashslot", "items/trashcan"));
+	}
 
-    @SubscribeEvent
-    public void onOpenContainer(PlayerContainerEvent.Open event) {
-        if (event.getEntityPlayer().openContainer instanceof GuiContainerCreative.ContainerCreative) {
-            unpatchContainer(event.getEntityPlayer().inventoryContainer);
-        }
-    }
+	@SubscribeEvent
+	public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
+		if(event.getGui() instanceof GuiContainerCreative) {
+			currentSettings = TrashContainerSettings.NONE;
+			return;
+		}
+		if (event.getGui() instanceof GuiContainer) {
+			GuiContainer gui = (GuiContainer) event.getGui();
+			if (deletionProvider == null) {
+				if (TrashSlot.isServerSideInstalled) {
+					deletionProvider = new DefaultDeletionProvider();
+				} else {
+					if (!sentMissingMessage) {
+						Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("trashslot.serverNotInstalled"));
+						missingMessageTime = System.currentTimeMillis();
+						sentMissingMessage = true;
+					}
+					return;
+				}
+			}
+			if(gui instanceof GuiInventory && Minecraft.getMinecraft().player.capabilities.isCreativeMode) { // For some reason this event gets fired with GuiInventory right after opening the creative menu, AFTER it got fired for GuiContainerCreative
+				return;
+			}
+			IGuiContainerLayout layout = TrashClient.getLayout(gui);
+			currentSettings = TrashClient.getSettings(gui, layout);
+			guiTrashSlot = new GuiTrashSlot(gui, layout, currentSettings, trashSlot);
+		} else {
+			currentSettings = TrashContainerSettings.NONE;
+		}
+	}
 
-    @SubscribeEvent
-    public void onTick(TickEvent.ClientTickEvent event) {
-        EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
-        if (entityPlayer != null) {
-            if (!TrashSlot.isServerSideInstalled) {
-                if(!sentMissingMessage) {
-                    unpatchContainer(entityPlayer.inventoryContainer);
-                    entityPlayer.addChatMessage(new TextComponentTranslation("trashslot.serverNotInstalled"));
-                    sentMissingMessage = true;
-                }
-                return;
-            }
-            GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-            if (wasInCreative && !(gui instanceof GuiContainerCreative)) {
-                if (findSlotTrash(entityPlayer.inventoryContainer) == null) {
-                    patchContainer(entityPlayer, entityPlayer.inventoryContainer);
-                    if (gui instanceof GuiInventory) {
-                        Slot trashSlot = findSlotTrash(((GuiInventory) gui).inventorySlots);
-                        if (trashSlot != null) {
-                            guiTrashSlot = new GuiTrashSlot((GuiInventory) gui, trashSlot);
-                        }
-                    }
-                }
-                wasInCreative = false;
-            }
-        }
-    }
+	@SubscribeEvent
+	public void onGuiMouse(GuiScreenEvent.MouseInputEvent.Pre event) {
+		if(!currentSettings.isEnabled()) {
+			return;
+		}
+		if (ignoreMouseUp && !Mouse.getEventButtonState()) {
+			event.setCanceled(true);
+			ignoreMouseUp = false;
+			return;
+		}
+		if (event.getGui() instanceof GuiContainer && Mouse.getEventButtonState()) {
+			GuiContainer gui = (GuiContainer) event.getGui();
+			// I love how BackgroundDrawnEvent has a mouse position but MOUSE EVENT does not.
+			final ScaledResolution resolution = new ScaledResolution(gui.mc);
+			final int scaledWidth = resolution.getScaledWidth();
+			final int scaledHeight = resolution.getScaledHeight();
+			int mouseX = Mouse.getX() * scaledWidth / gui.mc.displayWidth;
+			int mouseY = scaledHeight - Mouse.getY() * scaledHeight / gui.mc.displayHeight - 1;
+			if (gui.isMouseOverSlot(trashSlot, mouseX, mouseY)) {
+				EntityPlayer player = Minecraft.getMinecraft().player;
+				if (player != null) {
+					ItemStack mouseItem = player.inventory.getItemStack();
+					if (mouseItem.isEmpty()) {
+						deletionProvider.undeleteLast(player, trashSlot);
+					} else {
+						deletionProvider.deleteMouseItem(player, mouseItem, trashSlot);
+					}
+					event.setCanceled(true);
+					ignoreMouseUp = true;
+				}
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public void onTextureStitch(TextureStitchEvent.Pre event) {
-        trashSlotIcon = event.getMap().registerSprite(new ResourceLocation("trashslot", "items/trashcan"));
-    }
+	@SubscribeEvent
+	public void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Post event) {
+		if (Keyboard.getEventKeyState()) {
+			int keyCode = Keyboard.getEventKey();
+			if(currentSettings.isEnabled() && deletionProvider != null) {
+				boolean isDelete = keyBindDelete.isActiveAndMatches(keyCode);
+				boolean isDeleteAll = keyBindDeleteAll.isActiveAndMatches(keyCode);
+				if (isDelete || isDeleteAll) {
+					EntityPlayer entityPlayer = Minecraft.getMinecraft().player;
+					if (entityPlayer != null && event.getGui() instanceof GuiContainer) {
+						GuiContainer gui = ((GuiContainer) event.getGui());
+						Slot mouseSlot = gui.getSlotUnderMouse(); // needs @Nullable
+						if (mouseSlot != null && mouseSlot.getHasStack()) {
+							deletionProvider.deleteContainerItem(gui.inventorySlots, mouseSlot.slotNumber, isDeleteAll);
+						}
+					}
+				}
+			}
+			if(event.getGui() instanceof GuiContainer) {
+				if(keyBindToggleSlot.isActiveAndMatches(keyCode)) {
+					currentSettings.setEnabled(!currentSettings.isEnabled());
+				}
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public void onInitGui(GuiScreenEvent.InitGuiEvent.Pre event) {
-        if (TrashSlot.isServerSideInstalled && event.getGui() instanceof GuiContainerCreative) {
-            unpatchContainer(Minecraft.getMinecraft().thePlayer.inventoryContainer);
-            wasInCreative = true;
-        }
-    }
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
+		if (!currentSettings.isEnabled()) {
+			return;
+		}
+		if (event.getGui() instanceof GuiContainer) {
+			GuiContainer gui = (GuiContainer) event.getGui();
+			if (guiTrashSlot != null) {
+				guiTrashSlot.update(event.getMouseX(), event.getMouseY());
+				guiTrashSlot.drawBackground(event.getMouseX(), event.getMouseY());
+				if (gui.isMouseOverSlot(trashSlot, event.getMouseX(), event.getMouseY())) {
+					GlStateManager.disableLighting();
+					GlStateManager.disableDepth();
+					int j1 = gui.guiLeft + trashSlot.xPos;
+					int k1 = gui.guiTop + trashSlot.yPos;
+					GlStateManager.colorMask(true, true, true, false);
+					GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
+					GlStateManager.colorMask(true, true, true, true);
+					GlStateManager.enableDepth();
+				}
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (TrashSlot.isServerSideInstalled && event.getGui() instanceof GuiInventory) {
-            GuiInventory gui = (GuiInventory) event.getGui();
-            Slot trashSlot = findSlotTrash(gui.inventorySlots);
-            if (trashSlot != null) {
-                guiTrashSlot = new GuiTrashSlot(gui, trashSlot);
-            }
-        }
-    }
+	@SubscribeEvent
+	public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (event.getGui() instanceof GuiContainer) {
+			GuiContainer gui = (GuiContainer) event.getGui();
+			if(missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
+				String noHabloEspanol = TextFormatting.RED + I18n.format("trashslot.serverNotInstalled");
+				GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.guiLeft + gui.xSize / 2 - gui.mc.fontRendererObj.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.mc.fontRendererObj);
+			}
+			if (!currentSettings.isEnabled()) {
+				return;
+			}
+			GlStateManager.pushMatrix();
+			GlStateManager.translate(gui.guiLeft, gui.guiTop, 0);
+			RenderHelper.enableGUIStandardItemLighting();
+			gui.drawSlot(trashSlot);
+			RenderHelper.disableStandardItemLighting();
+			GlStateManager.popMatrix();
+			boolean isMouseSlot = gui.isMouseOverSlot(trashSlot, event.getMouseX(), event.getMouseY());
+			InventoryPlayer inventoryPlayer = Minecraft.getMinecraft().player.inventory;
+			if (isMouseSlot && inventoryPlayer.getItemStack().isEmpty() && trashSlot.getHasStack()) {
+				gui.renderToolTip(trashSlot.getStack(), event.getMouseX(), event.getMouseY());
+			}
+		}
+	}
 
-    @SubscribeEvent
-    public void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Post event) {
-        if(TrashSlot.isServerSideInstalled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && keyBindDelete.isActiveAndMatches(Keyboard.getEventKey())) {
-            EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
-            if (entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer && event.getGui() instanceof GuiContainer) {
-                Slot mouseSlot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
-                if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
-                    NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
-                }
-            }
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        if (event.getGui() instanceof GuiInventory) {
-            if (neiLoaded) {
-                ((GuiInventory) event.getGui()).guiLeft = event.getGui().width / 2 - ((GuiInventory) event.getGui()).xSize / 2;
-                ((GuiInventory) event.getGui()).guiTop = event.getGui().height / 2 - ((GuiInventory) event.getGui()).ySize / 2;
-            }
-            if (guiTrashSlot != null) {
-                guiTrashSlot.update(event.getMouseX(), event.getMouseY());
-                guiTrashSlot.drawBackground(event.getMouseX(), event.getMouseY());
-            }
-        }
-    }
+	@Nullable
+	public DeletionProvider getDeletionProvider() {
+		return deletionProvider;
+	}
 
 }

@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.client;
+package net.blay09.mods.trashslot.client.gui;
 
 import com.google.common.collect.Lists;
 import net.blay09.mods.trashslot.TrashSlot;
@@ -15,7 +15,6 @@ import java.util.Set;
 public class GuiFactory implements IModGuiFactory {
 	@Override
 	public void initialize(Minecraft minecraftInstance) {
-
 	}
 
 	@Override

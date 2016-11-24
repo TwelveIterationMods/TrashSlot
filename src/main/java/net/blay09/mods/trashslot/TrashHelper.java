@@ -1,0 +1,24 @@
+package net.blay09.mods.trashslot;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+
+public class TrashHelper {
+
+	private static final String KEY = "TrashSlot";
+
+	public static void setTrashItem(EntityPlayer player, ItemStack itemStack) {
+		NBTTagCompound entityData = player.getEntityData();
+		NBTTagCompound trashSlot = entityData.getCompoundTag(KEY);
+		itemStack.writeToNBT(trashSlot);
+		entityData.setTag(KEY, trashSlot);
+	}
+
+	public static ItemStack getTrashItem(EntityPlayer player) {
+		NBTTagCompound entityData = player.getEntityData();
+		NBTTagCompound trashSlot = entityData.getCompoundTag(KEY);
+		return new ItemStack(trashSlot);
+	}
+
+}
