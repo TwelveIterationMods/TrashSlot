@@ -14,6 +14,7 @@ public class HandlerTrashSlotClick implements IMessageHandler<MessageTrashSlotCl
 	@Override
 	@Nullable
 	public IMessage onMessage(final MessageTrashSlotClick message, final MessageContext ctx) {
+		// TODO right-click
 		NetworkHandler.getThreadListener(ctx).addScheduledTask(new Runnable() {
 			@Override
 			public void run() {

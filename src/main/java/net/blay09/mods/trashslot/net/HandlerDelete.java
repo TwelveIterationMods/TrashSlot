@@ -14,6 +14,7 @@ public class HandlerDelete implements IMessageHandler<MessageDelete, IMessage> {
     @Override
     @Nullable
     public IMessage onMessage(final MessageDelete message, final MessageContext ctx) {
+        // TODO rewrite me
         NetworkHandler.getThreadListener(ctx).addScheduledTask(new Runnable() {
             @Override
             public void run() {

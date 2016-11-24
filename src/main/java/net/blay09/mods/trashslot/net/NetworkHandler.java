@@ -18,6 +18,7 @@ public class NetworkHandler {
     public static void init() {
         instance.registerMessage(HandlerDelete.class, MessageDelete.class, 1, Side.SERVER);
         instance.registerMessage(HandlerTrashSlotClick.class, MessageTrashSlotClick.class, 2, Side.SERVER);
+        instance.registerMessage(HandlerTrashSlotContent.class, MessageTrashSlotContent.class, 3, Side.CLIENT);
     }
 
     public static IThreadListener getThreadListener(MessageContext ctx) {

@@ -50,7 +50,7 @@ public class ClientProxy extends CommonProxy {
 	public static TextureAtlasSprite trashSlotIcon;
 
 	private final KeyBinding keyBindToggleSlot = new KeyBinding("key.trashslot.toggle", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_T, "key.categories.trashslot");
-	private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.trash", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
+	private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
 	private final KeyBinding keyBindDeleteAll = new KeyBinding("key.trashslot.deleteAll", KeyConflictContext.GUI, KeyModifier.SHIFT, Keyboard.KEY_DELETE, "key.categories.trashslot");
 
 	private final SlotTrash trashSlot = new SlotTrash();
@@ -65,7 +65,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
-
 		ClientRegistry.registerKeyBinding(keyBindDelete);
 		TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
@@ -218,9 +217,14 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 
+	@Override
 	@Nullable
 	public DeletionProvider getDeletionProvider() {
 		return deletionProvider;
 	}
 
+	@Override
+	public SlotTrash getTrashSlot() {
+		return trashSlot;
+	}
 }
