@@ -16,7 +16,7 @@ public class NetworkHandler {
     public static SimpleNetworkWrapper instance = NetworkRegistry.INSTANCE.newSimpleChannel(TrashSlot.MOD_ID);
 
     public static void init() {
-        instance.registerMessage(HandlerDelete.class, MessageDelete.class, 1, Side.SERVER);
+        instance.registerMessage(HandlerDeleteFromSlot.class, MessageDeleteFromSlot.class, 1, Side.SERVER);
         instance.registerMessage(HandlerTrashSlotClick.class, MessageTrashSlotClick.class, 2, Side.SERVER);
         instance.registerMessage(HandlerTrashSlotContent.class, MessageTrashSlotContent.class, 3, Side.CLIENT);
     }

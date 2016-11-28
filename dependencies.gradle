@@ -1,0 +1,3 @@
+dependencies {
+    deobfCompile "mezz.jei:jei_1.11:4.0.4.198"
+}

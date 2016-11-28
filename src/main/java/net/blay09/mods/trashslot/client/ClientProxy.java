@@ -16,6 +16,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -39,12 +40,14 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nullable;
 
-@SuppressWarnings("unused")
+@SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 
 	public static TextureAtlasSprite trashSlotIcon;
@@ -67,6 +70,7 @@ public class ClientProxy extends CommonProxy {
 		super.init(event);
 		ClientRegistry.registerKeyBinding(keyBindDelete);
 		TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+		TrashSlotAPI.registerLayout(GuiCrafting.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
 
 		MinecraftForge.EVENT_BUS.register(this);
@@ -81,6 +85,7 @@ public class ClientProxy extends CommonProxy {
 	public void onInitGui(GuiScreenEvent.InitGuiEvent.Post event) {
 		if(event.getGui() instanceof GuiContainerCreative) {
 			currentSettings = TrashContainerSettings.NONE;
+			guiTrashSlot = null;
 			return;
 		}
 		if (event.getGui() instanceof GuiContainer) {
@@ -90,7 +95,6 @@ public class ClientProxy extends CommonProxy {
 					deletionProvider = new DefaultDeletionProvider();
 				} else {
 					if (!sentMissingMessage) {
-						Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("trashslot.serverNotInstalled"));
 						missingMessageTime = System.currentTimeMillis();
 						sentMissingMessage = true;
 					}
@@ -105,6 +109,7 @@ public class ClientProxy extends CommonProxy {
 			guiTrashSlot = new GuiTrashSlot(gui, layout, currentSettings, trashSlot);
 		} else {
 			currentSettings = TrashContainerSettings.NONE;
+			guiTrashSlot = null;
 		}
 	}
 
@@ -113,12 +118,14 @@ public class ClientProxy extends CommonProxy {
 		if(!currentSettings.isEnabled()) {
 			return;
 		}
-		if (ignoreMouseUp && !Mouse.getEventButtonState()) {
+		int mouseButton = Mouse.getEventButton();
+		boolean buttonState = Mouse.getEventButtonState();
+		if (ignoreMouseUp && !buttonState && mouseButton != -1) {
 			event.setCanceled(true);
 			ignoreMouseUp = false;
 			return;
 		}
-		if (event.getGui() instanceof GuiContainer && Mouse.getEventButtonState()) {
+		if (event.getGui() instanceof GuiContainer && buttonState) {
 			GuiContainer gui = (GuiContainer) event.getGui();
 			// I love how BackgroundDrawnEvent has a mouse position but MOUSE EVENT does not.
 			final ScaledResolution resolution = new ScaledResolution(gui.mc);
@@ -130,14 +137,18 @@ public class ClientProxy extends CommonProxy {
 				EntityPlayer player = Minecraft.getMinecraft().player;
 				if (player != null) {
 					ItemStack mouseItem = player.inventory.getItemStack();
+					boolean isRightClick = mouseButton == 1;
 					if (mouseItem.isEmpty()) {
-						deletionProvider.undeleteLast(player, trashSlot);
+						deletionProvider.undeleteLast(player, trashSlot, isRightClick);
 					} else {
-						deletionProvider.deleteMouseItem(player, mouseItem, trashSlot);
+						deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
 					}
 					event.setCanceled(true);
 					ignoreMouseUp = true;
 				}
+			} else if(guiTrashSlot.isInside(mouseX, mouseY)) {
+				event.setCanceled(true);
+				ignoreMouseUp = true;
 			}
 		}
 	}
@@ -156,6 +167,15 @@ public class ClientProxy extends CommonProxy {
 						Slot mouseSlot = gui.getSlotUnderMouse(); // needs @Nullable
 						if (mouseSlot != null && mouseSlot.getHasStack()) {
 							deletionProvider.deleteContainerItem(gui.inventorySlots, mouseSlot.slotNumber, isDeleteAll);
+						} else {
+							final ScaledResolution resolution = new ScaledResolution(gui.mc);
+							final int scaledWidth = resolution.getScaledWidth();
+							final int scaledHeight = resolution.getScaledHeight();
+							int mouseX = Mouse.getX() * scaledWidth / gui.mc.displayWidth;
+							int mouseY = scaledHeight - Mouse.getY() * scaledHeight / gui.mc.displayHeight - 1;
+							if(gui.isMouseOverSlot(trashSlot, mouseX, mouseY)) {
+								deletionProvider.emptyTrashSlot(trashSlot);
+							}
 						}
 					}
 				}
@@ -193,7 +213,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
+	public void onBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
 		if (event.getGui() instanceof GuiContainer) {
 			GuiContainer gui = (GuiContainer) event.getGui();
 			if(missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
@@ -209,6 +229,16 @@ public class ClientProxy extends CommonProxy {
 			gui.drawSlot(trashSlot);
 			RenderHelper.disableStandardItemLighting();
 			GlStateManager.popMatrix();
+		}
+	}
+
+	@SubscribeEvent
+	public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Post event) {
+		if (event.getGui() instanceof GuiContainer) {
+			GuiContainer gui = (GuiContainer) event.getGui();
+			if (!currentSettings.isEnabled()) {
+				return;
+			}
 			boolean isMouseSlot = gui.isMouseOverSlot(trashSlot, event.getMouseX(), event.getMouseY());
 			InventoryPlayer inventoryPlayer = Minecraft.getMinecraft().player.inventory;
 			if (isMouseSlot && inventoryPlayer.getItemStack().isEmpty() && trashSlot.getHasStack()) {
@@ -226,5 +256,10 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public SlotTrash getTrashSlot() {
 		return trashSlot;
+	}
+
+	@Nullable
+	public GuiTrashSlot getGuiTrashSlot() {
+		return guiTrashSlot;
 	}
 }

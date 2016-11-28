@@ -3,29 +3,29 @@ package net.blay09.mods.trashslot.net;
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class MessageDelete implements IMessage {
+public class MessageDeleteFromSlot implements IMessage {
 
     private int slotNumber;
-    private boolean shiftDown;
+    private boolean isShiftDown;
 
-    public MessageDelete() {
+    public MessageDeleteFromSlot() {
     }
 
-    public MessageDelete(int slotNumber, boolean shiftDown) {
+    public MessageDeleteFromSlot(int slotNumber, boolean isShiftDown) {
         this.slotNumber = slotNumber;
-        this.shiftDown = shiftDown;
+        this.isShiftDown = isShiftDown;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         slotNumber = buf.readByte();
-        shiftDown = buf.readBoolean();
+        isShiftDown = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(slotNumber);
-        buf.writeBoolean(shiftDown);
+        buf.writeBoolean(isShiftDown);
     }
 
     public int getSlotNumber() {
@@ -33,6 +33,6 @@ public class MessageDelete implements IMessage {
     }
 
     public boolean isShiftDown() {
-        return shiftDown;
+        return isShiftDown;
     }
 }

@@ -4,7 +4,6 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
-import net.blay09.mods.trashslot.client.ClientProxy;
 import net.blay09.mods.trashslot.client.SlotTrash;
 import net.blay09.mods.trashslot.client.TrashContainerSettings;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
@@ -41,6 +40,14 @@ public class GuiTrashSlot extends Gui {
         this.trashSlot = trashSlot;
     }
 
+    public boolean isInside(int mouseX, int mouseY) {
+        int anchoredX = getAnchoredX();
+        int anchoredY = getAnchoredY();
+        int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
+        int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
+        return mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
+    }
+
     public void update(int mouseX, int mouseY) {
         int anchoredX = getAnchoredX();
         int anchoredY = getAnchoredY();
@@ -49,7 +56,7 @@ public class GuiTrashSlot extends Gui {
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if(Mouse.isButtonDown(0)) {
             if(!isDragging && isMouseOver) {
-                if(gui.mc.player.inventory.getItemStack().isEmpty() && !trashSlot.getHasStack()) {
+                if(gui.mc.player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isMouseOverSlot(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
@@ -130,7 +137,7 @@ public class GuiTrashSlot extends Gui {
         gui.mc.getTextureManager().bindTexture(texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        DeletionProvider deletionProvider = ((ClientProxy) TrashSlot.proxy).getDeletionProvider();
+        DeletionProvider deletionProvider = TrashSlot.proxy.getDeletionProvider();
         int texOffsetX = 0;
         if(deletionProvider == null || !deletionProvider.canUndeleteLast()) {
             texOffsetX = 64;
@@ -210,5 +217,17 @@ public class GuiTrashSlot extends Gui {
     private int getUnanchoredY(int y) {
         return y - gui.guiTop - (int) (gui.ySize * settings.anchorY);
     }
+
+    public boolean isVisible() {
+        return settings.isEnabled();
+    }
+
+	public Rectangle getRectangle() {
+        int anchoredX = getAnchoredX();
+        int anchoredY = getAnchoredY();
+        int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
+        int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
+        return new Rectangle(renderX, renderY, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+	}
 
 }

@@ -13,8 +13,9 @@ public class MessageTrashSlotClick implements IMessage {
 	public MessageTrashSlotClick() {
 	}
 
-	public MessageTrashSlotClick(ItemStack itemStack) {
+	public MessageTrashSlotClick(ItemStack itemStack, boolean isRightClick) {
 		this.itemStack = itemStack;
+		this.isRightClick = isRightClick;
 	}
 
 	@Override
@@ -32,4 +33,9 @@ public class MessageTrashSlotClick implements IMessage {
 	public ItemStack getItemStack() {
 		return itemStack;
 	}
+
+	public boolean isRightClick() {
+		return isRightClick;
+	}
+
 }

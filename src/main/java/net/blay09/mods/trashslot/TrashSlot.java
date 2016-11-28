@@ -12,7 +12,11 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.Map;
 
-@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot", acceptableRemoteVersions = "*", guiFactory = "net.blay09.mods.trashslot.client.gui.GuiFactory")
+@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot",
+        acceptableRemoteVersions = "*",
+        acceptedMinecraftVersions = "1.11",
+        guiFactory = "net.blay09.mods.trashslot.client.gui.GuiFactory",
+        dependencies = "required-after:forge@[13.19.0.2162,)")
 public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";

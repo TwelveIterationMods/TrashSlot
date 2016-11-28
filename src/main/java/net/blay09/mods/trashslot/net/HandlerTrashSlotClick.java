@@ -14,22 +14,20 @@ public class HandlerTrashSlotClick implements IMessageHandler<MessageTrashSlotCl
 	@Override
 	@Nullable
 	public IMessage onMessage(final MessageTrashSlotClick message, final MessageContext ctx) {
-		// TODO right-click
-		NetworkHandler.getThreadListener(ctx).addScheduledTask(new Runnable() {
-			@Override
-			public void run() {
-				EntityPlayer player = ctx.getServerHandler().playerEntity;
-				ItemStack actualMouseItem = player.inventory.getItemStack();
-				if(ItemStack.areItemStacksEqual(actualMouseItem, message.getItemStack())) {
-					if(actualMouseItem.isEmpty()) {
-						player.inventory.setItemStack(TrashHelper.getTrashItem(player));
-						TrashHelper.setTrashItem(player, ItemStack.EMPTY);
-					} else {
-						TrashHelper.setTrashItem(player, actualMouseItem);
-						player.inventory.setItemStack(ItemStack.EMPTY);
-					}
+		NetworkHandler.getThreadListener(ctx).addScheduledTask(() -> {
+			EntityPlayer player = ctx.getServerHandler().playerEntity;
+			ItemStack actualMouseItem = player.inventory.getItemStack();
+			if (ItemStack.areItemStacksEqual(actualMouseItem, message.getItemStack())) {
+				if (actualMouseItem.isEmpty()) {
+					ItemStack trashStack = TrashHelper.getTrashItem(player);
+					ItemStack mouseStack = message.isRightClick() ? trashStack.splitStack(1) : trashStack;
+					player.inventory.setItemStack(mouseStack);
+					TrashHelper.setTrashItem(player, message.isRightClick() ? trashStack : ItemStack.EMPTY);
+				} else {
+					ItemStack trashStack = message.isRightClick() ? actualMouseItem.splitStack(1) : actualMouseItem;
+					TrashHelper.setTrashItem(player, trashStack);
+					player.inventory.setItemStack(message.isRightClick() ? actualMouseItem : ItemStack.EMPTY);
 				}
-
 			}
 		});
 		return null;

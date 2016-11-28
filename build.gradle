@@ -3,6 +3,8 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply from: 'gradle/scripts/common.gradle'
 apply from: 'gradle/scripts/with-at.gradle'
 
+apply from: 'dependencies.gradle'
+
 buildscript {
     repositories {
         jcenter()
@@ -18,8 +20,8 @@ buildscript {
 
 def BUILD_NUMBER = System.getenv("BUILD_NUMBER") ?: "0"
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 version = major_version + "." + minor_version + "." + BUILD_NUMBER
 group = "net.blay09.mods"
