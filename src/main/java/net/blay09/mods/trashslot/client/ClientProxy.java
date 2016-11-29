@@ -38,6 +38,7 @@ public class ClientProxy extends CommonProxy {
     public static TextureAtlasSprite trashSlotIcon;
 
     private final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, Keyboard.KEY_DELETE, "key.categories.trashslot");
+    private final KeyBinding keyBindDeleteAll = new KeyBinding("key.trashslot.delete_all", KeyConflictContext.GUI, KeyModifier.SHIFT, Keyboard.KEY_DELETE, "key.categories.trashslot");
 
     private boolean sentMissingMessage;
     private GuiTrashSlot guiTrashSlot;
@@ -130,12 +131,15 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent
     public void onGuiKeyboard(GuiScreenEvent.KeyboardInputEvent.Post event) {
-        if(TrashSlot.isServerSideInstalled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && keyBindDelete.isActiveAndMatches(Keyboard.getEventKey())) {
+        int keyCode = Keyboard.getEventKey();
+        boolean isDelete = keyBindDelete.isActiveAndMatches(keyCode);
+        boolean isDeleteAll = keyBindDeleteAll.isActiveAndMatches(keyCode);
+        if(TrashSlot.isServerSideInstalled && TrashSlot.enableDeleteKey && Keyboard.getEventKeyState() && (isDelete || isDeleteAll)) {
             EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
             if (entityPlayer != null && entityPlayer.openContainer == entityPlayer.inventoryContainer && event.getGui() instanceof GuiContainer) {
                 Slot mouseSlot = ((GuiContainer) event.getGui()).getSlotUnderMouse();
                 if (mouseSlot != null && mouseSlot.getHasStack() && ((mouseSlot.inventory == entityPlayer.inventory && mouseSlot.getSlotIndex() < entityPlayer.inventory.getSizeInventory()) || mouseSlot instanceof SlotTrash)) {
-                    NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))));
+                    NetworkHandler.instance.sendToServer(new MessageDelete(mouseSlot.slotNumber, isDeleteAll));
                 }
             }
         }
