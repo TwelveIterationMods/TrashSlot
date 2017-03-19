@@ -17,7 +17,7 @@ public class TrashClient {
 	private static final Map<Class<? extends GuiContainer>, IGuiContainerLayout> layoutMap = Maps.newHashMap();
 
 	public static TrashContainerSettings getSettings(GuiContainer gui, IGuiContainerLayout layout) {
-		String category = getConfigCategory(gui.inventorySlots);
+		String category = getConfigCategory(gui);
 		TrashContainerSettings settings = settingsMap.get(category);
 		if(settings == null) {
 			settings = new TrashContainerSettings(TrashSlot.config, category, layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), layout.isEnabledByDefault());
@@ -38,8 +38,9 @@ public class TrashClient {
 		layoutMap.put(clazz, layout);
 	}
 
-	public static String getConfigCategory(Container container) {
-		return "gui." + container.getClass().getName().replace('.', '/');
+	public static String getConfigCategory(GuiContainer gui) {
+		IGuiContainerLayout guiContainerLayout = getLayout(gui);
+		return "gui." + guiContainerLayout.getContainerId(gui);
 	}
 
 }
