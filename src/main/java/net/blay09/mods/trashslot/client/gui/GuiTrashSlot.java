@@ -130,8 +130,8 @@ public class GuiTrashSlot extends Gui {
         int renderX = getAnchoredX();
         int renderY = getAnchoredY();
         renderStyle = layout.getSlotRenderStyle(gui, renderX, renderY);
-        trashSlot.xPos = renderX - gui.guiLeft + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
-        trashSlot.yPos = renderY - gui.guiTop + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
+        trashSlot.xPos = renderX - gui.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
+        trashSlot.yPos = renderY - gui.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         zLevel = 1f;
         GlStateManager.color(1f, 1f, 1f, 1f);
         gui.mc.getTextureManager().bindTexture(texture);
@@ -203,19 +203,19 @@ public class GuiTrashSlot extends Gui {
     }
 
     private int getAnchoredX() {
-        return MathHelper.clamp(settings.slotX + gui.guiLeft + (int) (gui.xSize * settings.anchorX), 0, gui.width - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.slotX + gui.getGuiLeft() + (int) (gui.getXSize() * settings.anchorX), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredX(int x) {
-        return x - gui.guiLeft - (int) (gui.xSize * settings.anchorX);
+        return x - gui.getGuiLeft() - (int) (gui.getXSize() * settings.anchorX);
     }
 
     private int getAnchoredY() {
-        return MathHelper.clamp(settings.slotY + gui.guiTop + (int) (gui.ySize * settings.anchorY), 0, gui.width - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.slotY + gui.getGuiTop() + (int) (gui.getYSize() * settings.anchorY), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredY(int y) {
-        return y - gui.guiTop - (int) (gui.ySize * settings.anchorY);
+        return y - gui.getGuiTop() - (int) (gui.getYSize() * settings.anchorY);
     }
 
     public boolean isVisible() {

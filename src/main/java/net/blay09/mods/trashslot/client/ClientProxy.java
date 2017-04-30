@@ -203,8 +203,8 @@ public class ClientProxy extends CommonProxy {
 				if (gui.isMouseOverSlot(trashSlot, event.getMouseX(), event.getMouseY())) {
 					GlStateManager.disableLighting();
 					GlStateManager.disableDepth();
-					int j1 = gui.guiLeft + trashSlot.xPos;
-					int k1 = gui.guiTop + trashSlot.yPos;
+					int j1 = gui.getGuiLeft() + trashSlot.xPos;
+					int k1 = gui.getGuiTop() + trashSlot.yPos;
 					GlStateManager.colorMask(true, true, true, false);
 					GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
 					GlStateManager.colorMask(true, true, true, true);
@@ -220,13 +220,13 @@ public class ClientProxy extends CommonProxy {
 			GuiContainer gui = (GuiContainer) event.getGui();
 			if(missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
 				String noHabloEspanol = TextFormatting.RED + I18n.format("trashslot.serverNotInstalled");
-				GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.guiLeft + gui.xSize / 2 - gui.mc.fontRendererObj.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.mc.fontRendererObj);
+				GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.mc.fontRendererObj.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.mc.fontRendererObj);
 			}
 			if (!currentSettings.isEnabled()) {
 				return;
 			}
 			GlStateManager.pushMatrix();
-			GlStateManager.translate(gui.guiLeft, gui.guiTop, 0);
+			GlStateManager.translate(gui.getGuiLeft(), gui.getGuiTop(), 0);
 			RenderHelper.enableGUIStandardItemLighting();
 			gui.drawSlot(trashSlot);
 			RenderHelper.disableStandardItemLighting();

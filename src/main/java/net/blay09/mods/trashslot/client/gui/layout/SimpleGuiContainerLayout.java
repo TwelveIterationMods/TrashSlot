@@ -69,7 +69,7 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 			return collisionAreas;
 		}
 		List<Rectangle> list = Lists.newArrayList(collisionAreas);
-		list.add(new Rectangle(gui.guiLeft, gui.guiTop, gui.xSize, gui.ySize));
+		list.add(new Rectangle(gui.getGuiLeft(), gui.getGuiTop(), gui.getXSize(), gui.getYSize()));
 		return list;
 	}
 
@@ -79,52 +79,52 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 			return snaps;
 		}
 		List<Snap> list = Lists.newArrayList(snaps);
-		list.add(new Snap(Snap.Type.HORIZONTAL, 0, gui.guiTop));
-		list.add(new Snap(Snap.Type.HORIZONTAL, 0, gui.guiTop + gui.ySize - renderStyle.getHeight()));
-		list.add(new Snap(Snap.Type.VERTICAL, gui.guiLeft, 0));
-		list.add(new Snap(Snap.Type.VERTICAL, gui.guiLeft + gui.xSize - renderStyle.getWidth(), 0));
+		list.add(new Snap(Snap.Type.HORIZONTAL, 0, gui.getGuiTop()));
+		list.add(new Snap(Snap.Type.HORIZONTAL, 0, gui.getGuiTop() + gui.getYSize() - renderStyle.getHeight()));
+		list.add(new Snap(Snap.Type.VERTICAL, gui.getGuiLeft(), 0));
+		list.add(new Snap(Snap.Type.VERTICAL, gui.getGuiLeft() + gui.getXSize() - renderStyle.getWidth(), 0));
 		return list;
 	}
 
 	@Override
 	public SlotRenderStyle getSlotRenderStyle(GuiContainer gui, int slotX, int slotY) {
-		if(slotY == gui.guiTop + gui.ySize) {
+		if(slotY == gui.getGuiTop() + gui.getYSize()) {
 			int slotRight = slotX + SlotRenderStyle.LONE.getWidth();
-			if(slotX == gui.guiLeft) {
+			if(slotX == gui.getGuiLeft()) {
 				return SlotRenderStyle.ATTACH_BOTTOM_LEFT;
-			} else if(slotRight == gui.guiLeft + gui.xSize) {
+			} else if(slotRight == gui.getGuiLeft() + gui.getXSize()) {
 				return SlotRenderStyle.ATTACH_BOTTOM_RIGHT;
-			} else if(slotX >= gui.guiLeft && slotRight < gui.guiLeft + gui.xSize) {
+			} else if(slotX >= gui.getGuiLeft() && slotRight < gui.getGuiLeft() + gui.getXSize()) {
 				return SlotRenderStyle.ATTACH_BOTTOM_CENTER;
 			}
 		}
-		if(slotY + SlotRenderStyle.LONE.getHeight() == gui.guiTop) {
+		if(slotY + SlotRenderStyle.LONE.getHeight() == gui.getGuiTop()) {
 			int slotRight = slotX + SlotRenderStyle.LONE.getWidth();
-			if(slotX == gui.guiLeft) {
+			if(slotX == gui.getGuiLeft()) {
 				return SlotRenderStyle.ATTACH_TOP_LEFT;
-			} else if(slotRight == gui.guiLeft + gui.xSize) {
+			} else if(slotRight == gui.getGuiLeft() + gui.getXSize()) {
 				return SlotRenderStyle.ATTACH_TOP_RIGHT;
-			} else if(slotX >= gui.guiLeft && slotRight < gui.guiLeft + gui.xSize) {
+			} else if(slotX >= gui.getGuiLeft() && slotRight < gui.getGuiLeft() + gui.getXSize()) {
 				return SlotRenderStyle.ATTACH_TOP_CENTER;
 			}
 		}
-		if(slotX + SlotRenderStyle.LONE.getWidth() == gui.guiLeft) {
+		if(slotX + SlotRenderStyle.LONE.getWidth() == gui.getGuiLeft()) {
 			int slotBottom = slotY + SlotRenderStyle.LONE.getHeight();
-			if(slotY == gui.guiTop) {
+			if(slotY == gui.getGuiTop()) {
 				return SlotRenderStyle.ATTACH_LEFT_TOP;
-			} else if(slotBottom == gui.guiTop + gui.ySize) {
+			} else if(slotBottom == gui.getGuiTop() + gui.getYSize()) {
 				return SlotRenderStyle.ATTACH_LEFT_BOTTOM;
-			} else if(slotY >= gui.guiTop && slotBottom < gui.guiTop + gui.ySize) {
+			} else if(slotY >= gui.getGuiTop() && slotBottom < gui.getGuiTop() + gui.getYSize()) {
 				return SlotRenderStyle.ATTACH_LEFT_CENTER;
 			}
 		}
-		if(slotX == gui.guiLeft + gui.xSize) {
+		if(slotX == gui.getGuiLeft() + gui.getXSize()) {
 			int slotBottom = slotY + SlotRenderStyle.LONE.getHeight();
-			if(slotY == gui.guiTop) {
+			if(slotY == gui.getGuiTop()) {
 				return SlotRenderStyle.ATTACH_RIGHT_TOP;
-			} else if(slotBottom == gui.guiTop + gui.ySize) {
+			} else if(slotBottom == gui.getGuiTop() + gui.getYSize()) {
 				return SlotRenderStyle.ATTACH_RIGHT_BOTTOM;
-			} else if(slotY >= gui.guiTop && slotBottom < gui.guiTop + gui.ySize) {
+			} else if(slotY >= gui.getGuiTop() && slotBottom < gui.getGuiTop() + gui.getYSize()) {
 				return SlotRenderStyle.ATTACH_RIGHT_CENTER;
 			}
 		}
@@ -133,12 +133,12 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 
 	@Override
 	public int getDefaultSlotX(GuiContainer gui) {
-		return gui.xSize / 2 - SlotRenderStyle.LONE.getWidth();
+		return gui.getXSize() / 2 - SlotRenderStyle.LONE.getWidth();
 	}
 
 	@Override
 	public int getDefaultSlotY(GuiContainer gui) {
-		return gui.ySize / 2;
+		return gui.getYSize() / 2;
 	}
 
 	@Override
