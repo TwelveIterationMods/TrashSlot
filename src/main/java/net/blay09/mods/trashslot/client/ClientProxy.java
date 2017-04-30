@@ -68,7 +68,9 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
+		ClientRegistry.registerKeyBinding(keyBindToggleSlot);
 		ClientRegistry.registerKeyBinding(keyBindDelete);
+		ClientRegistry.registerKeyBinding(keyBindDeleteAll);
 		TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiCrafting.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
