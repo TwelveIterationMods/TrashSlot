@@ -108,7 +108,11 @@ public class ClientProxy extends CommonProxy {
 			}
 			IGuiContainerLayout layout = TrashClient.getLayout(gui);
 			currentSettings = TrashClient.getSettings(gui, layout);
-			guiTrashSlot = new GuiTrashSlot(gui, layout, currentSettings, trashSlot);
+			if(currentSettings != TrashContainerSettings.NONE) {
+				guiTrashSlot = new GuiTrashSlot(gui, layout, currentSettings, trashSlot);
+			} else {
+				guiTrashSlot = null;
+			}
 		} else {
 			currentSettings = TrashContainerSettings.NONE;
 			guiTrashSlot = null;
@@ -182,7 +186,7 @@ public class ClientProxy extends CommonProxy {
 					}
 				}
 			}
-			if(event.getGui() instanceof GuiContainer) {
+			if(event.getGui() instanceof GuiContainer && currentSettings != TrashContainerSettings.NONE) {
 				if(keyBindToggleSlot.isActiveAndMatches(keyCode)) {
 					currentSettings.setEnabled(!currentSettings.isEnabled());
 				}
