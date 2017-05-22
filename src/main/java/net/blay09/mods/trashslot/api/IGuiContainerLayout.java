@@ -18,6 +18,6 @@ public interface IGuiContainerLayout {
 	int getSlotOffsetX(GuiContainer gui, SlotRenderStyle renderStyle);
 	int getSlotOffsetY(GuiContainer gui, SlotRenderStyle renderStyle);
 	default String getContainerId(GuiContainer gui) {
-		return getClass().getName().replace('.', '/');
+		return gui.getClass().getName().replace('.', '/');
 	}
 }
