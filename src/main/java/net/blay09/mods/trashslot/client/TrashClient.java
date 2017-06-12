@@ -6,9 +6,6 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.ContainerPlayer;
 
 import java.util.Map;
 import java.util.Set;

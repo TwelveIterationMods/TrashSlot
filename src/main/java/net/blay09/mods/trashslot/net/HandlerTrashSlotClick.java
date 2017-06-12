@@ -15,7 +15,7 @@ public class HandlerTrashSlotClick implements IMessageHandler<MessageTrashSlotCl
 	@Nullable
 	public IMessage onMessage(final MessageTrashSlotClick message, final MessageContext ctx) {
 		NetworkHandler.getThreadListener(ctx).addScheduledTask(() -> {
-			EntityPlayer player = ctx.getServerHandler().playerEntity;
+			EntityPlayer player = ctx.getServerHandler().player;
 			ItemStack actualMouseItem = player.inventory.getItemStack();
 			if (ItemStack.areItemStacksEqual(actualMouseItem, message.getItemStack())) {
 				if (actualMouseItem.isEmpty()) {

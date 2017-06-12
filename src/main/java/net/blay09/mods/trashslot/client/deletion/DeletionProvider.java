@@ -2,7 +2,6 @@ package net.blay09.mods.trashslot.client.deletion;
 
 import net.blay09.mods.trashslot.client.SlotTrash;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 

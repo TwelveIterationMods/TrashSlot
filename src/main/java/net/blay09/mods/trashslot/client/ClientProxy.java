@@ -28,7 +28,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
@@ -224,7 +223,7 @@ public class ClientProxy extends CommonProxy {
 			GuiContainer gui = (GuiContainer) event.getGui();
 			if(missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
 				String noHabloEspanol = TextFormatting.RED + I18n.format("trashslot.serverNotInstalled");
-				GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.mc.fontRendererObj.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.mc.fontRendererObj);
+				GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.mc.fontRenderer.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.mc.fontRenderer);
 			}
 			if (!currentSettings.isEnabled()) {
 				return;

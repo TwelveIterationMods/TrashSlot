@@ -1,7 +1,6 @@
 package net.blay09.mods.trashslot.client.gui.layout;
 
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
-import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
 

@@ -1,9 +1,9 @@
 package net.blay09.mods.trashslot.compat;
 
-import mezz.jei.api.BlankModPlugin;
+import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
-import mezz.jei.api.gui.BlankAdvancedGuiHandler;
+import mezz.jei.api.gui.IAdvancedGuiHandler;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.client.ClientProxy;
 import net.blay09.mods.trashslot.client.gui.GuiTrashSlot;
@@ -15,11 +15,11 @@ import java.util.Collections;
 import java.util.List;
 
 @JEIPlugin
-public class JEIAddon extends BlankModPlugin {
+public class JEIAddon implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		registry.addAdvancedGuiHandlers(new BlankAdvancedGuiHandler() {
+		registry.addAdvancedGuiHandlers(new IAdvancedGuiHandler() {
 			@Override
 			public Class<GuiContainer> getGuiContainerClass() {
 				return GuiContainer.class;

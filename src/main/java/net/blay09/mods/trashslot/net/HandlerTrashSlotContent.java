@@ -12,12 +12,7 @@ public class HandlerTrashSlotContent implements IMessageHandler<MessageTrashSlot
 	@Override
 	@Nullable
 	public IMessage onMessage(final MessageTrashSlotContent message, MessageContext ctx) {
-		NetworkHandler.getThreadListener(ctx).addScheduledTask(new Runnable() {
-			@Override
-			public void run() {
-				TrashSlot.proxy.getTrashSlot().putStack(message.getItemStack());
-			}
-		});
+		NetworkHandler.getThreadListener(ctx).addScheduledTask(() -> TrashSlot.proxy.getTrashSlot().putStack(message.getItemStack()));
 		return null;
 	}
 

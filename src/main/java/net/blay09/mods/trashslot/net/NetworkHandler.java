@@ -22,11 +22,11 @@ public class NetworkHandler {
     }
 
     public static IThreadListener getThreadListener(MessageContext ctx) {
-        return ctx.side == Side.SERVER ? (WorldServer) ctx.getServerHandler().playerEntity.world : getClientThreadListener();
+        return ctx.side == Side.SERVER ? (WorldServer) ctx.getServerHandler().player.world : getClientThreadListener();
     }
 
     public static EntityPlayer getPlayerEntity(MessageContext ctx) {
-        return ctx.side == Side.SERVER ? ctx.getServerHandler().playerEntity : getClientPlayerEntity();
+        return ctx.side == Side.SERVER ? ctx.getServerHandler().player : getClientPlayerEntity();
     }
 
     @SideOnly(Side.CLIENT)

@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot",
         acceptableRemoteVersions = "*",
-        acceptedMinecraftVersions = "1.11",
+        acceptedMinecraftVersions = "1.12",
         guiFactory = "net.blay09.mods.trashslot.client.gui.GuiFactory",
         dependencies = "required-after:forge@[13.19.0.2162,)")
 public class TrashSlot {
