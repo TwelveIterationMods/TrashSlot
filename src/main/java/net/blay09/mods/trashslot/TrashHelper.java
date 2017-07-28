@@ -10,7 +10,7 @@ public class TrashHelper {
 
 	public static void setTrashItem(EntityPlayer player, ItemStack itemStack) {
 		NBTTagCompound entityData = player.getEntityData();
-		NBTTagCompound trashSlot = entityData.getCompoundTag(KEY);
+		NBTTagCompound trashSlot = new NBTTagCompound();
 		itemStack.writeToNBT(trashSlot);
 		entityData.setTag(KEY, trashSlot);
 	}
