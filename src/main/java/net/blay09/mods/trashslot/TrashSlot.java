@@ -32,9 +32,13 @@ public class TrashSlot {
 
     public static Configuration config;
 
+    public static boolean instantDeletion;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
+
+        instantDeletion = config.getBoolean("Instant Deletion", "general", false, "This causes the deletion slot to delete items instantly, similar to Creative Mode.");
 
         config.save();
 

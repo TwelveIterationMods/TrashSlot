@@ -5,6 +5,7 @@ import net.blay09.mods.trashslot.CommonProxy;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
+import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
@@ -93,7 +94,7 @@ public class ClientProxy extends CommonProxy {
 			GuiContainer gui = (GuiContainer) event.getGui();
 			if (deletionProvider == null) {
 				if (TrashSlot.isServerSideInstalled) {
-					deletionProvider = new DefaultDeletionProvider();
+					deletionProvider = TrashSlot.instantDeletion ? new CreativeDeletionProvider() : new DefaultDeletionProvider();
 				} else {
 					if (!sentMissingMessage) {
 						missingMessageTime = System.currentTimeMillis();
