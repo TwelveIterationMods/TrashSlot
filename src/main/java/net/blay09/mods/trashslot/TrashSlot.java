@@ -2,12 +2,15 @@ package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
 import net.blay09.mods.trashslot.net.NetworkHandler;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -37,12 +40,10 @@ public class TrashSlot {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         config = new Configuration(event.getSuggestedConfigurationFile());
-
-        instantDeletion = config.getBoolean("Instant Deletion", "general", false, "This causes the deletion slot to delete items instantly, similar to Creative Mode.");
-
-        config.save();
+        reloadConfig();
 
         TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.EventHandler
@@ -64,4 +65,19 @@ public class TrashSlot {
         return true;
     }
 
+    @SubscribeEvent
+    public void onConfigChanged(ConfigChangedEvent event) {
+        if(MOD_ID.equals(event.getModID())) {
+            reloadConfig();
+        }
+    }
+
+    private void reloadConfig() {
+        instantDeletion = config.getBoolean("Instant Deletion", "general", false, "This causes the deletion slot to delete items instantly, similar to Creative Mode.");
+
+        if(config.hasChanged()) {
+            config.save();
+            proxy.reloadDeletionProvider();
+        }
+    }
 }

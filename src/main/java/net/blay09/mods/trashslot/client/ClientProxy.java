@@ -65,6 +65,10 @@ public class ClientProxy extends CommonProxy {
 	private DeletionProvider deletionProvider;
 	private boolean ignoreMouseUp;
 
+	public ClientProxy() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
@@ -74,8 +78,6 @@ public class ClientProxy extends CommonProxy {
 		TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiCrafting.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
 		TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
-
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	@SubscribeEvent
@@ -267,5 +269,10 @@ public class ClientProxy extends CommonProxy {
 	@Nullable
 	public GuiTrashSlot getGuiTrashSlot() {
 		return guiTrashSlot;
+	}
+
+	@Override
+	public void reloadDeletionProvider() {
+		deletionProvider = null;
 	}
 }

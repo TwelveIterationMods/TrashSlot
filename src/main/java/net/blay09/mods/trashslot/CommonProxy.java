@@ -37,4 +37,8 @@ public class CommonProxy {
     public DeletionProvider getDeletionProvider() {
         return null;
     }
+
+    public void reloadDeletionProvider() {
+
+    }
 }
