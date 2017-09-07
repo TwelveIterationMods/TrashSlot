@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
 import net.blay09.mods.trashslot.net.NetworkHandler;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -18,7 +20,7 @@ import java.util.Map;
 
 @Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot",
         acceptableRemoteVersions = "*",
-        acceptedMinecraftVersions = "1.12",
+        acceptedMinecraftVersions = "[1.12]",
         guiFactory = "net.blay09.mods.trashslot.client.gui.GuiFactory",
         dependencies = "required-after:forge@[13.19.0.2162,)")
 public class TrashSlot {
@@ -63,6 +65,11 @@ public class TrashSlot {
             isServerSideInstalled = map.containsKey(TrashSlot.MOD_ID);
         }
         return true;
+    }
+
+    @SubscribeEvent
+    public void onConnected(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        TrashSlot.proxy.getTrashSlot().putStack(ItemStack.EMPTY);
     }
 
     @SubscribeEvent
