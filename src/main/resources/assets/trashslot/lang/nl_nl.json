@@ -1,0 +1,8 @@
+{
+    "trashslot.serverNotInstalled": "Op deze server is TrashSlot niet geïnstalleerd. Dit word uitgeschakeld.",
+
+    "key.trashslot.toggle": "Togglen van slot",
+    "key.trashslot.delete": "Item verwijderen",
+    "key.trashslot.deleteAll": "Verwijder alle items van het type",
+    "key.categories.trashslot": "TrashSlot"
+}

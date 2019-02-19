@@ -1,19 +1,20 @@
 package net.blay09.mods.trashslot.client.gui;
 
 import net.blay09.mods.trashslot.TrashSlot;
+import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
 import net.blay09.mods.trashslot.client.SlotTrash;
-import net.blay09.mods.trashslot.client.TrashContainerSettings;
+import net.blay09.mods.trashslot.client.ContainerSettings;
+import net.blay09.mods.trashslot.client.TrashSlotGui;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
@@ -22,9 +23,10 @@ public class GuiTrashSlot extends Gui {
     private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
 
+    private final TrashSlotGui trashSlotGui;
     private final GuiContainer gui;
     private final IGuiContainerLayout layout;
-    private final TrashContainerSettings settings;
+    private final ContainerSettings settings;
     private final SlotTrash trashSlot;
 
     private SlotRenderStyle renderStyle = SlotRenderStyle.LONE;
@@ -33,7 +35,8 @@ public class GuiTrashSlot extends Gui {
     private int dragStartX;
     private int dragStartY;
 
-    public GuiTrashSlot(GuiContainer gui, IGuiContainerLayout layout, TrashContainerSettings settings, SlotTrash trashSlot) {
+    public GuiTrashSlot(TrashSlotGui trashSlotGui, GuiContainer gui, IGuiContainerLayout layout, ContainerSettings settings, SlotTrash trashSlot) {
+        this.trashSlotGui = trashSlotGui;
         this.gui = gui;
         this.layout = layout;
         this.settings = settings;
@@ -54,41 +57,42 @@ public class GuiTrashSlot extends Gui {
         int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
-        if(Mouse.isButtonDown(0)) {
-            if(!isDragging && isMouseOver) {
-                if(gui.mc.player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isMouseOverSlot(trashSlot, mouseX, mouseY))) {
+        if (trashSlotGui.isLeftMouseDown()) {
+            if (!isDragging && isMouseOver) {
+                if (gui.mc.player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isSlotSelected(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
                 }
             }
         } else {
-            if(isDragging) {
-                settings.save(TrashSlot.config);
+            if (isDragging) {
+                settings.save(TrashSlotConfig.config);
                 isDragging = false;
             }
         }
-        if(isDragging) {
+        if (isDragging) {
             int targetX = mouseX + dragStartX;
             int targetY = mouseY + dragStartY;
-            for(Rectangle collisionArea : layout.getCollisionAreas(gui)) {
+            for (Rectangle collisionArea : layout.getCollisionAreas(gui)) {
                 int targetRight = targetX + renderStyle.getWidth();
                 int targetBottom = targetY + renderStyle.getHeight();
                 int rectRight = collisionArea.x + collisionArea.width;
                 int rectBottom = collisionArea.y + collisionArea.height;
-                if(targetRight >= collisionArea.x && targetX < rectRight && targetBottom >= collisionArea.y && targetY < rectBottom) {
+                if (targetRight >= collisionArea.x && targetX < rectRight && targetBottom >= collisionArea.y && targetY < rectBottom) {
                     int distLeft = targetRight - collisionArea.x;
                     int distRight = rectRight - targetX;
                     int distTop = targetBottom - collisionArea.y;
                     int distBottom = rectBottom - targetY;
-                    if(anchoredX >= collisionArea.x && anchoredX < collisionArea.x + collisionArea.width) {
+                    if (anchoredX >= collisionArea.x && anchoredX < collisionArea.x + collisionArea.width) {
                         targetY = distTop < distBottom ? collisionArea.y - renderStyle.getHeight() : collisionArea.y + collisionArea.height;
                     } else {
                         targetX = distLeft < distRight ? collisionArea.x - renderStyle.getWidth() : collisionArea.x + collisionArea.width;
                     }
                 }
             }
-            if(!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && !Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+
+            if (!GuiScreen.isShiftKeyDown()) {
                 int bestSnapDist = Integer.MAX_VALUE;
                 Snap bestSnap = null;
                 for (Snap snap : layout.getSnaps(gui, renderStyle)) {
@@ -108,6 +112,7 @@ public class GuiTrashSlot extends Gui {
                     }
                     if (dist < SNAP_SIZE && dist < bestSnapDist) {
                         bestSnap = snap;
+                        bestSnapDist = dist;
                     }
                 }
                 if (bestSnap != null) {
@@ -121,28 +126,28 @@ public class GuiTrashSlot extends Gui {
             }
             targetX = MathHelper.clamp(targetX, 0, gui.width - renderStyle.getRenderWidth());
             targetY = MathHelper.clamp(targetY, 0, gui.height - renderStyle.getRenderHeight());
-            settings.slotX = getUnanchoredX(targetX);
-            settings.slotY = getUnanchoredY(targetY);
+            settings.setSlotX(getUnanchoredX(targetX));
+            settings.setSlotY(getUnanchoredY(targetY));
         }
     }
 
-    public void drawBackground(int mouseX, int mouseY) {
+    public void drawBackground() {
         int renderX = getAnchoredX();
         int renderY = getAnchoredY();
         renderStyle = layout.getSlotRenderStyle(gui, renderX, renderY);
         trashSlot.xPos = renderX - gui.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         trashSlot.yPos = renderY - gui.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         zLevel = 1f;
-        GlStateManager.color(1f, 1f, 1f, 1f);
+        GlStateManager.color4f(1f, 1f, 1f, 1f);
         gui.mc.getTextureManager().bindTexture(texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        DeletionProvider deletionProvider = TrashSlot.proxy.getDeletionProvider();
+        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         int texOffsetX = 0;
-        if(deletionProvider == null || !deletionProvider.canUndeleteLast()) {
+        if (deletionProvider == null || !deletionProvider.canUndeleteLast()) {
             texOffsetX = 64;
         }
-        switch(renderStyle) {
+        switch (renderStyle) {
             case LONE:
                 drawTexturedModalRect(renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
                 break;
@@ -203,31 +208,31 @@ public class GuiTrashSlot extends Gui {
     }
 
     private int getAnchoredX() {
-        return MathHelper.clamp(settings.slotX + gui.getGuiLeft() + (int) (gui.getXSize() * settings.anchorX), 0, gui.width - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.getSlotX() + gui.getGuiLeft() + (int) (gui.getXSize() * settings.getAnchorX()), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredX(int x) {
-        return x - gui.getGuiLeft() - (int) (gui.getXSize() * settings.anchorX);
+        return x - gui.getGuiLeft() - (int) (gui.getXSize() * settings.getAnchorX());
     }
 
     private int getAnchoredY() {
-        return MathHelper.clamp(settings.slotY + gui.getGuiTop() + (int) (gui.getYSize() * settings.anchorY), 0, gui.width - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.getSlotY() + gui.getGuiTop() + (int) (gui.getYSize() * settings.getAnchorY()), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredY(int y) {
-        return y - gui.getGuiTop() - (int) (gui.getYSize() * settings.anchorY);
+        return y - gui.getGuiTop() - (int) (gui.getYSize() * settings.getAnchorY());
     }
 
     public boolean isVisible() {
         return settings.isEnabled();
     }
 
-	public Rectangle getRectangle() {
+    public Rectangle getRectangle() {
         int anchoredX = getAnchoredX();
         int anchoredY = getAnchoredY();
         int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         return new Rectangle(renderX, renderY, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-	}
+    }
 
 }

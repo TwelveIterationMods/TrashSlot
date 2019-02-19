@@ -1,33 +1,32 @@
 package net.blay09.mods.trashslot.net;
 
-import io.netty.buffer.ByteBuf;
+import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageTrashSlotContent implements IMessage {
+import java.util.function.Supplier;
 
-	private ItemStack itemStack;
+public class MessageTrashSlotContent {
 
-	public MessageTrashSlotContent() {
-	}
+    private final ItemStack itemStack;
 
-	public MessageTrashSlotContent(ItemStack itemStack) {
-		this.itemStack = itemStack;
-	}
+    public MessageTrashSlotContent(ItemStack itemStack) {
+        this.itemStack = itemStack;
+    }
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		itemStack = ByteBufUtils.readItemStack(buf);
-	}
+    public static void encode(MessageTrashSlotContent message, PacketBuffer buf) {
+        buf.writeItemStack(message.itemStack);
+    }
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeItemStack(buf, itemStack);
-	}
+    public static MessageTrashSlotContent decode(PacketBuffer buf) {
+        ItemStack itemStack = buf.readItemStack();
+        return new MessageTrashSlotContent(itemStack);
+    }
 
-	public ItemStack getItemStack() {
-		return itemStack;
-	}
+    public static void handle(MessageTrashSlotContent message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
+        context.enqueueWork(() -> TrashSlot.trashSlotGui.ifPresent(it -> it.getTrashSlot().putStack(message.itemStack)));
+    }
 
 }

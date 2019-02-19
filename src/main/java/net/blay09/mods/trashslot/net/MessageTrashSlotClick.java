@@ -1,41 +1,56 @@
 package net.blay09.mods.trashslot.net;
 
-import io.netty.buffer.ByteBuf;
+import net.blay09.mods.trashslot.TrashHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-public class MessageTrashSlotClick implements IMessage {
+import java.util.function.Supplier;
 
-	private ItemStack itemStack;
-	private boolean isRightClick;
+public class MessageTrashSlotClick {
 
-	public MessageTrashSlotClick() {
-	}
+    private final ItemStack itemStack;
+    private final boolean isRightClick;
 
-	public MessageTrashSlotClick(ItemStack itemStack, boolean isRightClick) {
-		this.itemStack = itemStack;
-		this.isRightClick = isRightClick;
-	}
+    public MessageTrashSlotClick(ItemStack itemStack, boolean isRightClick) {
+        this.itemStack = itemStack;
+        this.isRightClick = isRightClick;
+    }
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		itemStack = ByteBufUtils.readItemStack(buf);
-		isRightClick = buf.readBoolean();
-	}
+    public static void encode(MessageTrashSlotClick message, PacketBuffer buf) {
+        buf.writeItemStack(message.itemStack);
+        buf.writeBoolean(message.isRightClick);
+    }
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeItemStack(buf, itemStack);
-		buf.writeBoolean(isRightClick);
-	}
+    public static MessageTrashSlotClick decode(PacketBuffer buf) {
+        ItemStack itemStack = buf.readItemStack();
+        boolean isRightClick = buf.readBoolean();
+        return new MessageTrashSlotClick(itemStack, isRightClick);
+    }
 
-	public ItemStack getItemStack() {
-		return itemStack;
-	}
+    public static void handle(MessageTrashSlotClick message, Supplier<NetworkEvent.Context> contextSupplier) {
+        NetworkEvent.Context context = contextSupplier.get();
+        context.enqueueWork(() -> {
+            EntityPlayer player = context.getSender();
+            if (player == null) {
+                return;
+            }
 
-	public boolean isRightClick() {
-		return isRightClick;
-	}
+            ItemStack actualMouseItem = player.inventory.getItemStack();
+            if (ItemStack.areItemStacksEqual(actualMouseItem, message.itemStack)) {
+                if (actualMouseItem.isEmpty()) {
+                    ItemStack trashStack = TrashHelper.getTrashItem(player);
+                    ItemStack mouseStack = message.isRightClick ? trashStack.split(1) : trashStack;
+                    player.inventory.setItemStack(mouseStack);
+                    TrashHelper.setTrashItem(player, message.isRightClick ? trashStack : ItemStack.EMPTY);
+                } else {
+                    ItemStack trashStack = message.isRightClick ? actualMouseItem.split(1) : actualMouseItem;
+                    TrashHelper.setTrashItem(player, trashStack);
+                    player.inventory.setItemStack(message.isRightClick ? actualMouseItem : ItemStack.EMPTY);
+                }
+            }
+        });
+    }
 
 }

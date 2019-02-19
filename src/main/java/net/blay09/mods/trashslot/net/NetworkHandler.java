@@ -1,42 +1,23 @@
 package net.blay09.mods.trashslot.net;
 
 import net.blay09.mods.trashslot.TrashSlot;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 
 public class NetworkHandler {
 
-    public static SimpleNetworkWrapper instance = NetworkRegistry.INSTANCE.newSimpleChannel(TrashSlot.MOD_ID);
+    public static SimpleChannel instance;
 
     public static void init() {
-        instance.registerMessage(HandlerDeleteFromSlot.class, MessageDeleteFromSlot.class, 1, Side.SERVER);
-        instance.registerMessage(HandlerTrashSlotClick.class, MessageTrashSlotClick.class, 2, Side.SERVER);
-        instance.registerMessage(HandlerTrashSlotContent.class, MessageTrashSlotContent.class, 3, Side.CLIENT);
-    }
+        instance = NetworkRegistry.newSimpleChannel(new ResourceLocation(TrashSlot.MOD_ID, "network"), () -> "1.0", it -> {
+            TrashSlot.isServerSideInstalled = it.equals("1.0");
+            return true;
+        }, it -> true);
 
-    public static IThreadListener getThreadListener(MessageContext ctx) {
-        return ctx.side == Side.SERVER ? (WorldServer) ctx.getServerHandler().player.world : getClientThreadListener();
-    }
-
-    public static EntityPlayer getPlayerEntity(MessageContext ctx) {
-        return ctx.side == Side.SERVER ? ctx.getServerHandler().player : getClientPlayerEntity();
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static IThreadListener getClientThreadListener() {
-        return Minecraft.getMinecraft();
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static EntityPlayer getClientPlayerEntity() {
-        return Minecraft.getMinecraft().player;
+        instance.registerMessage(0, MessageDeleteFromSlot.class, MessageDeleteFromSlot::encode, MessageDeleteFromSlot::decode, MessageDeleteFromSlot::handle);
+        instance.registerMessage(1, MessageTrashSlotClick.class, MessageTrashSlotClick::encode, MessageTrashSlotClick::decode, MessageTrashSlotClick::handle);
+        instance.registerMessage(2, MessageTrashSlotContent.class, MessageTrashSlotContent::encode, MessageTrashSlotContent::decode, MessageTrashSlotContent::handle);
     }
 
 }

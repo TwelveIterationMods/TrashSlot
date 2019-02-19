@@ -12,7 +12,7 @@ public class DefaultDeletionProvider implements DeletionProvider {
 	@Override
 	public void undeleteLast(EntityPlayer player, SlotTrash trashSlot, boolean isRightClick) {
 		ItemStack trashStack = trashSlot.getStack();
-		ItemStack mouseStack = isRightClick ? trashStack.splitStack(1) : trashStack;
+		ItemStack mouseStack = isRightClick ? trashStack.split(1) : trashStack;
 		player.inventory.setItemStack(mouseStack);
 		trashSlot.putStack(isRightClick ? trashStack : ItemStack.EMPTY);
 		NetworkHandler.instance.sendToServer(new MessageTrashSlotClick(ItemStack.EMPTY, isRightClick));
@@ -26,7 +26,7 @@ public class DefaultDeletionProvider implements DeletionProvider {
 	@Override
 	public void deleteMouseItem(EntityPlayer player, ItemStack mouseItem, SlotTrash trashSlot, boolean isRightClick) {
 		ItemStack mouseStack = mouseItem.copy();
-		ItemStack trashStack = isRightClick ? mouseStack.splitStack(1) : mouseStack;
+		ItemStack trashStack = isRightClick ? mouseStack.split(1) : mouseStack;
 		player.inventory.setItemStack(isRightClick ? mouseStack : ItemStack.EMPTY);
 		trashSlot.putStack(trashStack);
 		NetworkHandler.instance.sendToServer(new MessageTrashSlotClick(mouseItem, isRightClick));

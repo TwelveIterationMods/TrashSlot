@@ -1,90 +1,86 @@
 package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
+import net.blay09.mods.trashslot.client.KeyBindings;
+import net.blay09.mods.trashslot.client.TrashSlotGui;
+import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
+import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
+import net.blay09.mods.trashslot.net.MessageTrashSlotContent;
 import net.blay09.mods.trashslot.net.NetworkHandler;
+import net.minecraft.client.gui.inventory.GuiChest;
+import net.minecraft.client.gui.inventory.GuiCrafting;
+import net.minecraft.client.gui.inventory.GuiInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DeferredWorkQueue;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.common.network.NetworkCheckHandler;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.PacketDistributor;
 
-import java.util.Map;
+import java.util.Optional;
 
-@Mod(modid = TrashSlot.MOD_ID, name = "TrashSlot",
-        acceptableRemoteVersions = "*",
-        acceptedMinecraftVersions = "[1.12]",
-        guiFactory = "net.blay09.mods.trashslot.client.gui.GuiFactory",
-        dependencies = "required-after:forge@[13.19.0.2162,)")
+@Mod(TrashSlot.MOD_ID)
 public class TrashSlot {
 
     public static final String MOD_ID = "trashslot";
-
     public static boolean isServerSideInstalled;
 
-    @Mod.Instance
-    public static TrashSlot instance;
+    public static Optional<TrashSlotGui> trashSlotGui = Optional.empty();
 
-    @SidedProxy(serverSide = "net.blay09.mods.trashslot.CommonProxy", clientSide = "net.blay09.mods.trashslot.client.ClientProxy")
-    public static CommonProxy proxy;
-
-    public static Configuration config;
-
-    public static boolean instantDeletion;
-
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        config = new Configuration(event.getSuggestedConfigurationFile());
-        reloadConfig();
-
-        TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
+    public TrashSlot() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
         MinecraftForge.EVENT_BUS.register(this);
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, TrashSlotConfig.clientSpec);
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
-        NetworkHandler.init();
+    private void setupCommon(final FMLCommonSetupEvent event) {
+        TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
 
-        proxy.init(event);
+        DeferredWorkQueue.runLater(NetworkHandler::init);
     }
 
-    @Mod.EventHandler
-    public void postInit(FMLPostInitializationEvent event) {
-    }
+    private void setupClient(final FMLClientSetupEvent event) {
+        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
+            TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+            TrashSlotAPI.registerLayout(GuiCrafting.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+            TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
 
-    @NetworkCheckHandler
-    public boolean checkNetwork(Map<String, String> map, Side side) {
-        if(side == Side.SERVER) {
-            isServerSideInstalled = map.containsKey(TrashSlot.MOD_ID);
-        }
-        return true;
+            trashSlotGui = Optional.of(new TrashSlotGui());
+
+            DeferredWorkQueue.runLater(() -> {
+                trashSlotGui.ifPresent(MinecraftForge.EVENT_BUS::register);
+                KeyBindings.init();
+            });
+        });
     }
 
     @SubscribeEvent
-    public void onConnected(FMLNetworkEvent.ClientConnectedToServerEvent event) {
-        TrashSlot.proxy.getTrashSlot().putStack(ItemStack.EMPTY);
+    public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        MessageTrashSlotContent message = new MessageTrashSlotContent(ItemStack.EMPTY);
+        NetworkHandler.instance.send(PacketDistributor.PLAYER.with(() -> (EntityPlayerMP) event.getPlayer()), message);
     }
 
     @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent event) {
-        if(MOD_ID.equals(event.getModID())) {
-            reloadConfig();
-        }
-    }
-
-    private void reloadConfig() {
-        instantDeletion = config.getBoolean("Instant Deletion", "general", false, "This causes the deletion slot to delete items instantly, similar to Creative Mode.");
-
-        if(config.hasChanged()) {
-            config.save();
-            proxy.reloadDeletionProvider();
+    public void onPlayerOpenContainer(PlayerContainerEvent.Open event) {
+        EntityPlayer player = event.getEntityPlayer();
+        if (player instanceof EntityPlayerMP) {
+            ItemStack trashItem = TrashHelper.getTrashItem(player);
+            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(trashItem), ((EntityPlayerMP) player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 }
