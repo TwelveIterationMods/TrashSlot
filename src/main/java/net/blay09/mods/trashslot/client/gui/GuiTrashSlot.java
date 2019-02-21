@@ -67,7 +67,7 @@ public class GuiTrashSlot extends Gui {
             }
         } else {
             if (isDragging) {
-                settings.save(TrashSlotConfig.config);
+                settings.save(TrashSlotConfig.clientConfig);
                 isDragging = false;
             }
         }

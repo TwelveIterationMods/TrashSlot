@@ -46,17 +46,17 @@ public class TrashSlotConfig {
         }
     }
 
-    public static ModConfig config;
+    public static ModConfig clientConfig;
     private static final Map<String, ContainerSettings> settingsMap = Maps.newHashMap();
     private static final Set<String> hardcodedGuiBlackList = Sets.newHashSet();
     private static DeletionProvider deletionProvider;
 
     static {
-        hardcodedGuiBlackList.add("gui.slimeknights/tconstruct/tools/common/client/module/GuiTinkerTabs");
-        hardcodedGuiBlackList.add("gui.slimeknights/tconstruct/tools/common/client/GuiCraftingStation");
-        hardcodedGuiBlackList.add("gui.slimeknights/tconstruct/tools/common/client/GuiPatternChest");
-        hardcodedGuiBlackList.add("gui.slimeknights/tconstruct/tools/common/client/module/GuiButtonsStencilTable");
-        hardcodedGuiBlackList.add("gui.slimeknights/tconstruct/tools/common/client/GuiPartBuilder");
+        hardcodedGuiBlackList.add("client.gui.slimeknights/tconstruct/tools/common/client/module/GuiTinkerTabs");
+        hardcodedGuiBlackList.add("client.gui.slimeknights/tconstruct/tools/common/client/GuiCraftingStation");
+        hardcodedGuiBlackList.add("client.gui.slimeknights/tconstruct/tools/common/client/GuiPatternChest");
+        hardcodedGuiBlackList.add("client.gui.slimeknights/tconstruct/tools/common/client/module/GuiButtonsStencilTable");
+        hardcodedGuiBlackList.add("client.gui.slimeknights/tconstruct/tools/common/client/GuiPartBuilder");
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -66,18 +66,20 @@ public class TrashSlotConfig {
             return ContainerSettings.NONE;
         }
 
-        return settingsMap.computeIfAbsent(category, c -> new ContainerSettings(config, c, layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), layout.isEnabledByDefault()));
+        return settingsMap.computeIfAbsent(category, c -> new ContainerSettings(clientConfig, c, layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), layout.isEnabledByDefault()));
     }
 
     @OnlyIn(Dist.CLIENT)
     private static String getConfigCategory(GuiContainer gui, IGuiContainerLayout layout) {
-        return "gui." + layout.getContainerId(gui);
+        return "client.gui." + layout.getContainerId(gui);
     }
 
     @SubscribeEvent
     public static void onConfig(ModConfig.ModConfigEvent event) {
-        config = event.getConfig();
-        deletionProvider = null;
+        if (event.getConfig().getType() == ModConfig.Type.CLIENT) {
+            clientConfig = event.getConfig();
+            deletionProvider = null;
+        }
     }
 
     @Nullable
