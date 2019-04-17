@@ -14,8 +14,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
@@ -73,6 +73,13 @@ public class TrashSlot {
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         MessageTrashSlotContent message = new MessageTrashSlotContent(ItemStack.EMPTY);
         NetworkHandler.instance.send(PacketDistributor.PLAYER.with(() -> (EntityPlayerMP) event.getPlayer()), message);
+    }
+
+    @SubscribeEvent
+    public void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof EntityPlayerMP) {
+            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(ItemStack.EMPTY), ((EntityPlayerMP) event.getEntity()).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+        }
     }
 
     @SubscribeEvent

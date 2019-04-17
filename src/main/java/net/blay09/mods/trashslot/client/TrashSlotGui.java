@@ -120,7 +120,7 @@ public class TrashSlotGui {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent // TODO not currently fired due to https://github.com/MinecraftForge/MinecraftForge/pull/5367 not being pulled
     public void onGuiKeyboard(GuiScreenEvent.KeyboardKeyPressedEvent.Post event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
