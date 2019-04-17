@@ -1,3 +1,3 @@
 dependencies {
-    provided "mezz.jei:jei_1.12:4.6.0.61"
+    deobfCompile "jei:jei_1.12.2:4.8.5.157"
 }

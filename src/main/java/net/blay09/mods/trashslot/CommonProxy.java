@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -26,6 +27,13 @@ public class CommonProxy {
         if(player instanceof EntityPlayerMP) {
             ItemStack trashItem = TrashHelper.getTrashItem(player);
             NetworkHandler.instance.sendTo(new MessageTrashSlotContent(trashItem), (EntityPlayerMP) player);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerDeath(LivingDeathEvent event) {
+        if(event.getEntity() instanceof EntityPlayerMP) {
+            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(ItemStack.EMPTY), (EntityPlayerMP) event.getEntity());
         }
     }
 
