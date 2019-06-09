@@ -1,9 +1,9 @@
 package net.blay09.mods.trashslot.api;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 public interface InternalMethods {
-    ISimpleGuiContainerLayout registerSimpleLayout(Class<? extends GuiContainer> clazz);
+    ISimpleGuiContainerLayout registerSimpleLayout(Class<? extends ContainerScreen<?>> clazz);
 
-    void registerLayout(Class<? extends GuiContainer> clazz, IGuiContainerLayout layout);
+    void registerLayout(Class<? extends ContainerScreen<?>> clazz, IGuiContainerLayout layout);
 }

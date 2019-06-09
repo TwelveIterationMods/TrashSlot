@@ -7,7 +7,7 @@ import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -60,7 +60,7 @@ public class TrashSlotConfig {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static ContainerSettings getSettings(GuiContainer gui, IGuiContainerLayout layout) {
+    public static ContainerSettings getSettings(ContainerScreen<?> gui, IGuiContainerLayout layout) {
         String category = getConfigCategory(gui, layout);
         if (hardcodedGuiBlackList.contains(category)) {
             return ContainerSettings.NONE;
@@ -70,7 +70,7 @@ public class TrashSlotConfig {
     }
 
     @OnlyIn(Dist.CLIENT)
-    private static String getConfigCategory(GuiContainer gui, IGuiContainerLayout layout) {
+    private static String getConfigCategory(ContainerScreen<?> gui, IGuiContainerLayout layout) {
         return "client.gui." + layout.getContainerId(gui);
     }
 

@@ -1,28 +1,28 @@
 package net.blay09.mods.trashslot.api;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 import java.awt.*;
 import java.util.List;
 
 public interface IGuiContainerLayout {
-    List<Rectangle> getCollisionAreas(GuiContainer gui);
+    List<Rectangle> getCollisionAreas(ContainerScreen<?> gui);
 
-    List<Snap> getSnaps(GuiContainer gui, SlotRenderStyle renderStyle);
+    List<Snap> getSnaps(ContainerScreen<?> gui, SlotRenderStyle renderStyle);
 
-    SlotRenderStyle getSlotRenderStyle(GuiContainer gui, int slotX, int slotY);
+    SlotRenderStyle getSlotRenderStyle(ContainerScreen<?> gui, int slotX, int slotY);
 
-    int getDefaultSlotX(GuiContainer gui);
+    int getDefaultSlotX(ContainerScreen<?> gui);
 
-    int getDefaultSlotY(GuiContainer gui);
+    int getDefaultSlotY(ContainerScreen<?> gui);
 
     boolean isEnabledByDefault();
 
-    int getSlotOffsetX(GuiContainer gui, SlotRenderStyle renderStyle);
+    int getSlotOffsetX(ContainerScreen<?> gui, SlotRenderStyle renderStyle);
 
-    int getSlotOffsetY(GuiContainer gui, SlotRenderStyle renderStyle);
+    int getSlotOffsetY(ContainerScreen<?> gui, SlotRenderStyle renderStyle);
 
-    default String getContainerId(GuiContainer gui) {
+    default String getContainerId(ContainerScreen<?> gui) {
         return gui.getClass().getName().replace('.', '/');
     }
 }

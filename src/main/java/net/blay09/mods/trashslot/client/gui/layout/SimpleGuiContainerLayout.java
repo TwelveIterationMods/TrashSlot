@@ -5,7 +5,7 @@ import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.ISimpleGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 
 import java.awt.Rectangle;
 import java.util.List;
@@ -64,7 +64,7 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	}
 
 	@Override
-	public List<Rectangle> getCollisionAreas(GuiContainer gui) {
+	public List<Rectangle> getCollisionAreas(ContainerScreen<?> gui) {
 		if(!defaultCollision) {
 			return collisionAreas;
 		}
@@ -74,7 +74,7 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	}
 
 	@Override
-	public List<Snap> getSnaps(GuiContainer gui, SlotRenderStyle renderStyle) {
+	public List<Snap> getSnaps(ContainerScreen<?> gui, SlotRenderStyle renderStyle) {
 		if(!defaultSnaps) {
 			return snaps;
 		}
@@ -87,7 +87,7 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	}
 
 	@Override
-	public SlotRenderStyle getSlotRenderStyle(GuiContainer gui, int slotX, int slotY) {
+	public SlotRenderStyle getSlotRenderStyle(ContainerScreen<?> gui, int slotX, int slotY) {
 		if(slotY == gui.getGuiTop() + gui.getYSize()) {
 			int slotRight = slotX + SlotRenderStyle.LONE.getWidth();
 			if(slotX == gui.getGuiLeft()) {
@@ -132,12 +132,12 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	}
 
 	@Override
-	public int getDefaultSlotX(GuiContainer gui) {
+	public int getDefaultSlotX(ContainerScreen<?> gui) {
 		return gui.getXSize() / 2 - SlotRenderStyle.LONE.getWidth();
 	}
 
 	@Override
-	public int getDefaultSlotY(GuiContainer gui) {
+	public int getDefaultSlotY(ContainerScreen<?> gui) {
 		return gui.getYSize() / 2;
 	}
 
@@ -147,12 +147,12 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	}
 
 	@Override
-	public int getSlotOffsetX(GuiContainer gui, SlotRenderStyle renderStyle) {
+	public int getSlotOffsetX(ContainerScreen<?> gui, SlotRenderStyle renderStyle) {
 		return 0;
 	}
 
 	@Override
-	public int getSlotOffsetY(GuiContainer gui, SlotRenderStyle renderStyle) {
+	public int getSlotOffsetY(ContainerScreen<?> gui, SlotRenderStyle renderStyle) {
 		return 0;
 	}
 

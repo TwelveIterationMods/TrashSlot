@@ -7,11 +7,11 @@ import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
 import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
 import net.blay09.mods.trashslot.net.MessageTrashSlotContent;
 import net.blay09.mods.trashslot.net.NetworkHandler;
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiInventory;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.client.gui.screen.inventory.ChestScreen;
+import net.minecraft.client.gui.screen.inventory.CraftingScreen;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -56,9 +56,9 @@ public class TrashSlot {
 
     private void setupClient(final FMLClientSetupEvent event) {
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            TrashSlotAPI.registerLayout(GuiInventory.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
-            TrashSlotAPI.registerLayout(GuiCrafting.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
-            TrashSlotAPI.registerLayout(GuiChest.class, new ChestContainerLayout());
+            TrashSlotAPI.registerLayout(InventoryScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+            TrashSlotAPI.registerLayout(CraftingScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
+            TrashSlotAPI.registerLayout(ChestScreen.class, new ChestContainerLayout());
 
             trashSlotGui = Optional.of(new TrashSlotGui());
 
@@ -72,22 +72,22 @@ public class TrashSlot {
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         MessageTrashSlotContent message = new MessageTrashSlotContent(ItemStack.EMPTY);
-        NetworkHandler.instance.send(PacketDistributor.PLAYER.with(() -> (EntityPlayerMP) event.getPlayer()), message);
+        NetworkHandler.instance.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) event.getPlayer()), message);
     }
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
-        if (event.getEntity() instanceof EntityPlayerMP) {
-            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(ItemStack.EMPTY), ((EntityPlayerMP) event.getEntity()).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+        if (event.getEntity() instanceof ServerPlayerEntity) {
+            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(ItemStack.EMPTY), ((ServerPlayerEntity) event.getEntity()).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 
     @SubscribeEvent
     public void onPlayerOpenContainer(PlayerContainerEvent.Open event) {
-        EntityPlayer player = event.getEntityPlayer();
-        if (player instanceof EntityPlayerMP) {
+        PlayerEntity player = event.getEntityPlayer();
+        if (player instanceof ServerPlayerEntity) {
             ItemStack trashItem = TrashHelper.getTrashItem(player);
-            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(trashItem), ((EntityPlayerMP) player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+            NetworkHandler.instance.sendTo(new MessageTrashSlotContent(trashItem), ((ServerPlayerEntity) player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
         }
     }
 }

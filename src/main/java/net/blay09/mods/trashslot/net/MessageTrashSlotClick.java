@@ -1,7 +1,7 @@
 package net.blay09.mods.trashslot.net;
 
 import net.blay09.mods.trashslot.TrashHelper;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -32,7 +32,7 @@ public class MessageTrashSlotClick {
     public static void handle(MessageTrashSlotClick message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            EntityPlayer player = context.getSender();
+            PlayerEntity player = context.getSender();
             if (player == null) {
                 return;
             }

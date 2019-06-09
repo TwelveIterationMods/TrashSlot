@@ -1,13 +1,13 @@
 package net.blay09.mods.trashslot.client.deletion;
 
 import net.blay09.mods.trashslot.client.SlotTrash;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 
 public class CreativeDeletionProvider extends DefaultDeletionProvider {
 	@Override
-	public void undeleteLast(EntityPlayer player, SlotTrash trashSlot, boolean isRightClick) {
+	public void undeleteLast(PlayerEntity player, SlotTrash trashSlot, boolean isRightClick) {
 		// No going back in this mode.
 	}
 
@@ -17,7 +17,7 @@ public class CreativeDeletionProvider extends DefaultDeletionProvider {
 	}
 
 	@Override
-	public void deleteMouseItem(EntityPlayer player, ItemStack mouseItem, SlotTrash trashSlot, boolean isRightClick) {
+	public void deleteMouseItem(PlayerEntity player, ItemStack mouseItem, SlotTrash trashSlot, boolean isRightClick) {
 		super.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
 		emptyTrashSlot(trashSlot);
 	}

@@ -1,8 +1,8 @@
 package net.blay09.mods.trashslot.client.gui.layout;
 
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.ContainerChest;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.inventory.container.ChestContainer;
 
 public class ChestContainerLayout extends SimpleGuiContainerLayout {
 	public ChestContainerLayout() {
@@ -12,7 +12,7 @@ public class ChestContainerLayout extends SimpleGuiContainerLayout {
 	}
 
 	@Override
-	public int getSlotOffsetY(GuiContainer gui, SlotRenderStyle renderStyle) {
+	public int getSlotOffsetY(ContainerScreen<?> gui, SlotRenderStyle renderStyle) {
 		switch(renderStyle) {
 			case ATTACH_BOTTOM_CENTER:
 			case ATTACH_BOTTOM_LEFT:
@@ -25,8 +25,8 @@ public class ChestContainerLayout extends SimpleGuiContainerLayout {
 	}
 
 	@Override
-	public String getContainerId(GuiContainer gui) {
-		if(((ContainerChest) gui.inventorySlots).inventorySlots.size() > 63) {
+	public String getContainerId(ContainerScreen<?> gui) {
+		if(((ChestContainer) gui.getContainer()).inventorySlots.size() > 63) {
 			return super.getContainerId(gui) + "_large";
 		}
 		return super.getContainerId(gui);

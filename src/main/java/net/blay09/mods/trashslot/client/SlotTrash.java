@@ -1,13 +1,9 @@
 package net.blay09.mods.trashslot.client;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-
-import javax.annotation.Nullable;
 
 public class SlotTrash extends Slot {
 
@@ -60,16 +56,16 @@ public class SlotTrash extends Slot {
         }
 
         @Override
-        public boolean isUsableByPlayer(EntityPlayer player) {
+        public boolean isUsableByPlayer(PlayerEntity player) {
             return true;
         }
 
         @Override
-        public void openInventory(EntityPlayer player) {
+        public void openInventory(PlayerEntity player) {
         }
 
         @Override
-        public void closeInventory(EntityPlayer player) {
+        public void closeInventory(PlayerEntity player) {
         }
 
         @Override
@@ -78,38 +74,8 @@ public class SlotTrash extends Slot {
         }
 
         @Override
-        public int getField(int id) {
-            return 0;
-        }
-
-        @Override
-        public void setField(int id, int value) {
-        }
-
-        @Override
-        public int getFieldCount() {
-            return 0;
-        }
-
-        @Override
         public void clear() {
             currentStack = null;
-        }
-
-        @Override
-        public boolean hasCustomName() {
-            return false;
-        }
-
-        @Nullable
-        @Override
-        public ITextComponent getCustomName() {
-            return null;
-        }
-
-        @Override
-        public ITextComponent getName() {
-            return new TextComponentString("Trash");
         }
     }
 

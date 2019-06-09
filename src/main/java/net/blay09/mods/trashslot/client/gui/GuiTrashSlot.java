@@ -1,30 +1,30 @@
 package net.blay09.mods.trashslot.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
-import net.blay09.mods.trashslot.client.SlotTrash;
 import net.blay09.mods.trashslot.client.ContainerSettings;
+import net.blay09.mods.trashslot.client.SlotTrash;
 import net.blay09.mods.trashslot.client.TrashSlotGui;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 import java.awt.*;
 
-public class GuiTrashSlot extends Gui {
+public class GuiTrashSlot extends AbstractGui {
 
     private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
 
     private final TrashSlotGui trashSlotGui;
-    private final GuiContainer gui;
+    private final ContainerScreen<?> gui;
     private final IGuiContainerLayout layout;
     private final ContainerSettings settings;
     private final SlotTrash trashSlot;
@@ -35,7 +35,7 @@ public class GuiTrashSlot extends Gui {
     private int dragStartX;
     private int dragStartY;
 
-    public GuiTrashSlot(TrashSlotGui trashSlotGui, GuiContainer gui, IGuiContainerLayout layout, ContainerSettings settings, SlotTrash trashSlot) {
+    public GuiTrashSlot(TrashSlotGui trashSlotGui, ContainerScreen<?> gui, IGuiContainerLayout layout, ContainerSettings settings, SlotTrash trashSlot) {
         this.trashSlotGui = trashSlotGui;
         this.gui = gui;
         this.layout = layout;
@@ -59,7 +59,7 @@ public class GuiTrashSlot extends Gui {
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if (trashSlotGui.isLeftMouseDown()) {
             if (!isDragging && isMouseOver) {
-                if (gui.mc.player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isSlotSelected(trashSlot, mouseX, mouseY))) {
+                if (gui.getMinecraft().player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isSlotSelected(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
@@ -92,7 +92,7 @@ public class GuiTrashSlot extends Gui {
                 }
             }
 
-            if (!GuiScreen.isShiftKeyDown()) {
+            if (!Screen.hasShiftDown()) {
                 int bestSnapDist = Integer.MAX_VALUE;
                 Snap bestSnap = null;
                 for (Snap snap : layout.getSnaps(gui, renderStyle)) {
@@ -137,9 +137,9 @@ public class GuiTrashSlot extends Gui {
         renderStyle = layout.getSlotRenderStyle(gui, renderX, renderY);
         trashSlot.xPos = renderX - gui.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         trashSlot.yPos = renderY - gui.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        zLevel = 1f;
+        blitOffset = 1;
         GlStateManager.color4f(1f, 1f, 1f, 1f);
-        gui.mc.getTextureManager().bindTexture(texture);
+        gui.getMinecraft().getTextureManager().bindTexture(texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
@@ -149,62 +149,62 @@ public class GuiTrashSlot extends Gui {
         }
         switch (renderStyle) {
             case LONE:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
                 break;
             case ATTACH_BOTTOM_CENTER:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 50, 29, 4, 4);
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                blit(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
                 break;
             case ATTACH_BOTTOM_LEFT:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                blit(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
                 break;
             case ATTACH_BOTTOM_RIGHT:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                blit(renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY, texOffsetX + 50, 29, 4, 4);
                 break;
             case ATTACH_TOP_CENTER:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                blit(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
                 break;
             case ATTACH_TOP_LEFT:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                blit(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
                 break;
             case ATTACH_TOP_RIGHT:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                blit(renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
                 break;
             case ATTACH_LEFT_CENTER:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                blit(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
                 break;
             case ATTACH_LEFT_TOP:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                blit(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
                 break;
             case ATTACH_LEFT_BOTTOM:
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                blit(renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
                 break;
             case ATTACH_RIGHT_CENTER:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 54, 33, 4, 4);
-                drawTexturedModalRect(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                blit(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                blit(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
                 break;
             case ATTACH_RIGHT_TOP:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                blit(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
                 break;
             case ATTACH_RIGHT_BOTTOM:
-                drawTexturedModalRect(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                drawTexturedModalRect(renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                blit(renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(renderX, renderY, texOffsetX + 54, 33, 4, 4);
                 break;
         }
-        zLevel = 0f;
+        blitOffset = 0;
     }
 
     private int getAnchoredX() {
