@@ -81,7 +81,7 @@ public class SlotTrash extends Slot {
 
     public SlotTrash() {
         super(new TrashInventory(), 0, 0, 0);
-        backgroundName = "trashslot:item/trashcan";
+        backgroundName = "trashslot:gui/trashcan";
     }
 
 }

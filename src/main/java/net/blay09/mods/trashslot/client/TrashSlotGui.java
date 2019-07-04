@@ -53,7 +53,7 @@ public class TrashSlotGui {
             }
 
             // For some reason this event gets fired with GuiInventory right after opening the creative menu, AFTER it got fired for GuiContainerCreative
-            if (gui instanceof InventoryScreen && Minecraft.getInstance().player.playerAbilities.isCreativeMode) {
+            if (gui instanceof InventoryScreen && Minecraft.getInstance().player.abilities.isCreativeMode) {
                 return;
             }
 
