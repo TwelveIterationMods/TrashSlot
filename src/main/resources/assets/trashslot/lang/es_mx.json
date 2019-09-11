@@ -1,0 +1,8 @@
+{
+  "trashslot.serverNotInstalled": "El servidor no tiene instalado el Mod TrashSlot. Estara desactivado.",
+
+  "key.trashslot.toggle": "Ranura de Palanca",
+  "key.trashslot.delete": "Borrar los elementos",
+  "key.trashslot.deleteAll": "Borrar todos los elementos",
+  "key.categories.trashslot": "Tacho de Basura"
+}
