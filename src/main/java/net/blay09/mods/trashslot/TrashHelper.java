@@ -9,14 +9,14 @@ public class TrashHelper {
     private static final String KEY = "TrashSlot";
 
     public static void setTrashItem(PlayerEntity player, ItemStack itemStack) {
-        CompoundNBT entityData = player.getPersistantData();
+        CompoundNBT entityData = player.getPersistentData();
         CompoundNBT trashSlot = new CompoundNBT();
         itemStack.write(trashSlot);
         entityData.put(KEY, trashSlot);
     }
 
     public static ItemStack getTrashItem(PlayerEntity player) {
-        CompoundNBT entityData = player.getPersistantData();
+        CompoundNBT entityData = player.getPersistentData();
         CompoundNBT trashSlot = entityData.getCompound(KEY);
         return ItemStack.read(trashSlot);
     }
