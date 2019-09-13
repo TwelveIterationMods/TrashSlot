@@ -31,6 +31,7 @@ public class GuiTrashSlot extends AbstractGui {
 
     private SlotRenderStyle renderStyle = SlotRenderStyle.LONE;
 
+    private boolean wasMouseDown;
     private boolean isDragging;
     private int dragStartX;
     private int dragStartY;
@@ -58,18 +59,20 @@ public class GuiTrashSlot extends AbstractGui {
         int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if (trashSlotGui.isLeftMouseDown()) {
-            if (!isDragging && isMouseOver) {
+            if (!isDragging && isMouseOver && !wasMouseDown) {
                 if (gui.getMinecraft().player.inventory.getItemStack().isEmpty() && (!trashSlot.getHasStack() || !gui.isSlotSelected(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
                 }
             }
+            wasMouseDown = true;
         } else {
             if (isDragging) {
                 settings.save(TrashSlotConfig.clientConfig);
                 isDragging = false;
             }
+            wasMouseDown = false;
         }
         if (isDragging) {
             int targetX = mouseX + dragStartX;

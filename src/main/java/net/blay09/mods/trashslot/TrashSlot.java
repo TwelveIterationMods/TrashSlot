@@ -1,7 +1,7 @@
 package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
-import net.blay09.mods.trashslot.client.KeyBindings;
+import net.blay09.mods.trashslot.client.ModKeyBindings;
 import net.blay09.mods.trashslot.client.TrashSlotGui;
 import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
 import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
@@ -64,7 +64,7 @@ public class TrashSlot {
 
             DeferredWorkQueue.runLater(() -> {
                 trashSlotGui.ifPresent(MinecraftForge.EVENT_BUS::register);
-                KeyBindings.init();
+                ModKeyBindings.init();
             });
         });
     }

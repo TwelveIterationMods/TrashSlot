@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
 @Mod.EventBusSubscriber(value = {Dist.CLIENT}, modid = TrashSlot.MOD_ID)
-public class KeyBindings {
+public class ModKeyBindings {
 
     public static final KeyBinding keyBindToggleSlot = new KeyBinding("key.trashslot.toggle", KeyConflictContext.GUI, KeyModifier.NONE, InputMappings.getInputByCode(GLFW.GLFW_KEY_T, 0), "key.categories.trashslot");
     public static final KeyBinding keyBindDelete = new KeyBinding("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, InputMappings.getInputByCode(GLFW.GLFW_KEY_DELETE, 0), "key.categories.trashslot");
@@ -22,5 +22,7 @@ public class KeyBindings {
         ClientRegistry.registerKeyBinding(keyBindDelete);
         ClientRegistry.registerKeyBinding(keyBindDeleteAll);
     }
+
+
 
 }

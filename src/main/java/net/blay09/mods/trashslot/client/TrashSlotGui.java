@@ -9,6 +9,7 @@ import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.GuiHelper;
 import net.blay09.mods.trashslot.client.gui.GuiTrashSlot;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
@@ -94,6 +95,12 @@ public class TrashSlotGui {
         }
 
         int mouseButton = event.getButton();
+        InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(mouseButton);
+        if (runKeyBindings(event.getGui(), input)) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (event.getGui() instanceof ContainerScreen<?>) {
             ContainerScreen<?> gui = (ContainerScreen<?>) event.getGui();
             double mouseX = event.getMouseX();
@@ -130,13 +137,24 @@ public class TrashSlotGui {
         int keyCode = event.getKeyCode();
         int scanCode = event.getScanCode();
         InputMappings.Input input = InputMappings.getInputByCode(keyCode, scanCode);
+        if (runKeyBindings(event.getGui(), input)) {
+            event.setCanceled(true);
+        }
+    }
+
+    private boolean runKeyBindings(Screen screen, InputMappings.Input input) {
+        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
+        if (deletionProvider == null) {
+            return false;
+        }
+
         if (currentContainerSettings.isEnabled()) {
-            boolean isDelete = KeyBindings.keyBindDelete.isActiveAndMatches(input);
-            boolean isDeleteAll = KeyBindings.keyBindDeleteAll.isActiveAndMatches(input);
+            boolean isDelete = ModKeyBindings.keyBindDelete.isActiveAndMatches(input);
+            boolean isDeleteAll = ModKeyBindings.keyBindDeleteAll.isActiveAndMatches(input);
             if (isDelete || isDeleteAll) {
                 PlayerEntity entityPlayer = Minecraft.getInstance().player;
-                if (entityPlayer != null && event.getGui() instanceof ContainerScreen<?>) {
-                    ContainerScreen<?> gui = ((ContainerScreen<?>) event.getGui());
+                if (entityPlayer != null && screen instanceof ContainerScreen<?>) {
+                    ContainerScreen<?> gui = ((ContainerScreen<?>) screen);
                     Slot mouseSlot = gui.getSlotUnderMouse();
                     if (mouseSlot != null && mouseSlot.getHasStack()) {
                         deletionProvider.deleteContainerItem(gui.getContainer(), mouseSlot.slotNumber, isDeleteAll);
@@ -148,15 +166,19 @@ public class TrashSlotGui {
                             deletionProvider.emptyTrashSlot(slotTrash);
                         }
                     }
+                    return true;
                 }
             }
         }
 
-        if (event.getGui() instanceof ContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
-            if (KeyBindings.keyBindToggleSlot.isActiveAndMatches(input)) {
+        if (screen instanceof ContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
+            if (ModKeyBindings.keyBindToggleSlot.isActiveAndMatches(input)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
+                return true;
             }
         }
+
+        return false;
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
