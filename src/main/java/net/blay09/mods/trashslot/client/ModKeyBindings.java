@@ -23,6 +23,4 @@ public class ModKeyBindings {
         ClientRegistry.registerKeyBinding(keyBindDeleteAll);
     }
 
-
-
 }

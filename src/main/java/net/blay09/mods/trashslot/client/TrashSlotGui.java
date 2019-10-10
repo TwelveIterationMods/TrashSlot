@@ -174,6 +174,7 @@ public class TrashSlotGui {
         if (screen instanceof ContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
             if (ModKeyBindings.keyBindToggleSlot.isActiveAndMatches(input)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
+                currentContainerSettings.save(TrashSlotConfig.clientConfig);
                 return true;
             }
         }
