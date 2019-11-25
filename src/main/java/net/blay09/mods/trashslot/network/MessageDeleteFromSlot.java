@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.net;
+package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.trashslot.TrashHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,6 +80,7 @@ public class MessageDeleteFromSlot {
 
             NetworkHandler.instance.reply(new MessageTrashSlotContent(TrashHelper.getTrashItem(player)), context);
         });
+        context.setPacketHandled(true);
     }
 
     private static boolean attemptDeleteFromSlot(PlayerEntity player, Container container, int slotNumber) {

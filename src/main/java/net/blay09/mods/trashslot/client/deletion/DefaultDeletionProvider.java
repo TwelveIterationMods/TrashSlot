@@ -1,8 +1,8 @@
 package net.blay09.mods.trashslot.client.deletion;
 
-import net.blay09.mods.trashslot.net.MessageDeleteFromSlot;
-import net.blay09.mods.trashslot.net.MessageTrashSlotClick;
-import net.blay09.mods.trashslot.net.NetworkHandler;
+import net.blay09.mods.trashslot.network.MessageDeleteFromSlot;
+import net.blay09.mods.trashslot.network.MessageTrashSlotClick;
+import net.blay09.mods.trashslot.network.NetworkHandler;
 import net.blay09.mods.trashslot.client.SlotTrash;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;

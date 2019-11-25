@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.net;
+package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.util.ResourceLocation;

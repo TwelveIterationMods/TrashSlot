@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.net;
+package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.item.ItemStack;
@@ -27,6 +27,7 @@ public class MessageTrashSlotContent {
     public static void handle(MessageTrashSlotContent message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> TrashSlot.trashSlotGui.ifPresent(it -> it.getTrashSlot().putStack(message.itemStack)));
+        context.setPacketHandled(true);
     }
 
 }

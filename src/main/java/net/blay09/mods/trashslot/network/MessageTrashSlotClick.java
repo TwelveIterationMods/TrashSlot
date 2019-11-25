@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.net;
+package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.trashslot.TrashHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,6 +51,7 @@ public class MessageTrashSlotClick {
                 }
             }
         });
+        context.setPacketHandled(true);
     }
 
 }
