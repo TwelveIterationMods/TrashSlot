@@ -13,6 +13,7 @@ import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
@@ -230,12 +231,12 @@ public class GuiTrashSlot extends AbstractGui {
         return settings.isEnabled();
     }
 
-    public Rectangle getRectangle() {
+    public Rectangle2d getRectangle() {
         int anchoredX = getAnchoredX();
         int anchoredY = getAnchoredY();
         int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        return new Rectangle(renderX, renderY, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+        return new Rectangle2d(renderX, renderY, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
     }
 
 }
