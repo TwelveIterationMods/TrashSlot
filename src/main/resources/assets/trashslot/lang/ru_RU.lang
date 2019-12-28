@@ -1,0 +1,6 @@
+trashslot.serverNotInstalled=This server does not have TrashSlot installed. It will be disabled.
+
+key.trashslot.toggle=Показать/Спрятать слот
+key.trashslot.delete=Удалить предмет
+key.trashslot.deleteAll=Удалить все предметы выбранного типа
+key.categories.trashslot=Слот для мусора
