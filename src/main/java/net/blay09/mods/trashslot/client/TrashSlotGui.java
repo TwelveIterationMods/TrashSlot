@@ -157,7 +157,7 @@ public class TrashSlotGui {
                     ContainerScreen<?> gui = ((ContainerScreen<?>) screen);
                     Slot mouseSlot = gui.getSlotUnderMouse();
                     if (mouseSlot != null && mouseSlot.getHasStack()) {
-                        deletionProvider.deleteContainerItem(gui.getContainer(), mouseSlot.slotNumber, isDeleteAll);
+                        deletionProvider.deleteContainerItem(gui.getContainer(), mouseSlot.slotNumber, isDeleteAll, slotTrash);
                     } else {
                         double mouseX = Minecraft.getInstance().mouseHelper.getMouseX();
                         double mouseY = Minecraft.getInstance().mouseHelper.getMouseY();

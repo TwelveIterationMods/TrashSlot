@@ -23,7 +23,8 @@ public class CreativeDeletionProvider extends DefaultDeletionProvider {
 	}
 
 	@Override
-	public void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll) {
-		// Do nothing. Instant deletion via DEL seems like a terrible idea.
+	public void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll, SlotTrash trashSlot) {
+		super.deleteContainerItem(container, slotNumber, isDeleteAll, trashSlot);
+		emptyTrashSlot(trashSlot);
 	}
 }

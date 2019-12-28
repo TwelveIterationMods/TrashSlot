@@ -33,7 +33,7 @@ public class DefaultDeletionProvider implements DeletionProvider {
 	}
 
 	@Override
-	public void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll) {
+	public void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll, SlotTrash slotTrash) {
 		NetworkHandler.instance.sendToServer(new MessageDeleteFromSlot(slotNumber, isDeleteAll));
 	}
 

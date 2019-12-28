@@ -9,6 +9,6 @@ public interface DeletionProvider {
 	void undeleteLast(PlayerEntity player, SlotTrash trashSlot, boolean isRightClick);
 	boolean canUndeleteLast();
 	void deleteMouseItem(PlayerEntity player, ItemStack mouseItem, SlotTrash trashSlot, boolean isRightClick);
-	void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll);
+	void deleteContainerItem(Container container, int slotNumber, boolean isDeleteAll, SlotTrash slotTrash);
 	void emptyTrashSlot(SlotTrash trashSlot);
 }

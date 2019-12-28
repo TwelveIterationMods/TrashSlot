@@ -45,6 +45,7 @@ public class MessageDeleteFromSlot {
 
             if (message.slotNumber == -1) {
                 TrashHelper.setTrashItem(player, ItemStack.EMPTY);
+                NetworkHandler.instance.reply(new MessageTrashSlotContent(ItemStack.EMPTY), context);
                 return;
             }
 
