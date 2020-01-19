@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class SlotTrash extends Slot {
 
@@ -81,7 +82,7 @@ public class SlotTrash extends Slot {
 
     public SlotTrash() {
         super(new TrashInventory(), 0, 0, 0);
-        backgroundName = "trashslot:gui/trashcan";
+        setBackground(new ResourceLocation("minecraft", "textures/atlas/blocks.png"), new ResourceLocation("trashslot", "gui/trashcan"));
     }
 
 }

@@ -84,7 +84,7 @@ public class TrashSlot {
 
     @SubscribeEvent
     public void onPlayerOpenContainer(PlayerContainerEvent.Open event) {
-        PlayerEntity player = event.getEntityPlayer();
+        PlayerEntity player = event.getPlayer();
         if (player instanceof ServerPlayerEntity) {
             ItemStack trashItem = TrashHelper.getTrashItem(player);
             NetworkHandler.instance.sendTo(new MessageTrashSlotContent(trashItem), ((ServerPlayerEntity) player).connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);

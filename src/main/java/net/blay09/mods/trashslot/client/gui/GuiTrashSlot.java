@@ -1,6 +1,6 @@
 package net.blay09.mods.trashslot.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
@@ -141,8 +141,8 @@ public class GuiTrashSlot extends AbstractGui {
         renderStyle = layout.getSlotRenderStyle(gui, renderX, renderY);
         trashSlot.xPos = renderX - gui.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         trashSlot.yPos = renderY - gui.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        blitOffset = 1;
-        GlStateManager.color4f(1f, 1f, 1f, 1f);
+        setBlitOffset(1);
+        RenderSystem.color4f(1f, 1f, 1f, 1f);
         gui.getMinecraft().getTextureManager().bindTexture(texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
@@ -208,7 +208,7 @@ public class GuiTrashSlot extends AbstractGui {
                 blit(renderX, renderY, texOffsetX + 54, 33, 4, 4);
                 break;
         }
-        blitOffset = 0;
+        setBlitOffset(0);
     }
 
     private int getAnchoredX() {

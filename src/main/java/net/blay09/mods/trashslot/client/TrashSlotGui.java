@@ -1,7 +1,7 @@
 package net.blay09.mods.trashslot.client;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
@@ -199,14 +199,14 @@ public class TrashSlotGui {
                 guiTrashSlot.update(event.getMouseX(), event.getMouseY());
                 guiTrashSlot.drawBackground();
                 if (gui.isSlotSelected(slotTrash, event.getMouseX(), event.getMouseY())) {
-                    GlStateManager.disableLighting();
-                    GlStateManager.disableDepthTest();
+                    RenderSystem.disableLighting();
+                    RenderSystem.disableDepthTest();
                     int j1 = gui.getGuiLeft() + slotTrash.xPos;
                     int k1 = gui.getGuiTop() + slotTrash.yPos;
-                    GlStateManager.colorMask(true, true, true, false);
+                    RenderSystem.colorMask(true, true, true, false);
                     GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
-                    GlStateManager.colorMask(true, true, true, true);
-                    GlStateManager.enableDepthTest();
+                    RenderSystem.colorMask(true, true, true, true);
+                    RenderSystem.enableDepthTest();
                 }
             }
         }
@@ -226,12 +226,12 @@ public class TrashSlotGui {
                 return;
             }
 
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(gui.getGuiLeft(), gui.getGuiTop(), 0);
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(gui.getGuiLeft(), gui.getGuiTop(), 0);
+            RenderHelper.func_227780_a_();
             gui.drawSlot(slotTrash);
             RenderHelper.disableStandardItemLighting();
-            GlStateManager.popMatrix();
+            RenderSystem.popMatrix();
         }
     }
 
