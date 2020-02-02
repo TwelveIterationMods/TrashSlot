@@ -8,6 +8,7 @@ import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.GuiHelper;
 import net.blay09.mods.trashslot.client.gui.GuiTrashSlot;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -21,12 +22,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.event.GuiContainerEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.config.GuiUtils;
 
-public class TrashSlotGui {
+public class TrashSlotGuiHandler {
 
     private final SlotTrash slotTrash = new SlotTrash();
     private GuiTrashSlot guiTrashSlot;
@@ -159,8 +160,11 @@ public class TrashSlotGui {
                     if (mouseSlot != null && mouseSlot.getHasStack()) {
                         deletionProvider.deleteContainerItem(gui.getContainer(), mouseSlot.slotNumber, isDeleteAll, slotTrash);
                     } else {
-                        double mouseX = Minecraft.getInstance().mouseHelper.getMouseX();
-                        double mouseY = Minecraft.getInstance().mouseHelper.getMouseY();
+                        MainWindow mainWindow = Minecraft.getInstance().getMainWindow();
+                        double rawMouseX = Minecraft.getInstance().mouseHelper.getMouseX();
+                        double rawMouseY = Minecraft.getInstance().mouseHelper.getMouseY();
+                        double mouseX = rawMouseX * (double) mainWindow.getScaledWidth() / (double) mainWindow.getWidth();
+                        double mouseY = rawMouseY * (double) mainWindow.getScaledHeight() / (double) mainWindow.getHeight();
 
                         if (gui.isSlotSelected(slotTrash, mouseX, mouseY)) {
                             deletionProvider.emptyTrashSlot(slotTrash);
@@ -183,52 +187,35 @@ public class TrashSlotGui {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onDrawScreen(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    public void onDrawScreen(GuiContainerEvent.DrawBackground event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        if (deletionProvider == null) {
+        if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;
         }
 
-        if (!currentContainerSettings.isEnabled()) {
-            return;
-        }
-
-        if (event.getGui() instanceof ContainerScreen<?>) {
-            ContainerScreen<?> gui = (ContainerScreen<?>) event.getGui();
-            if (guiTrashSlot != null) {
-                guiTrashSlot.update(event.getMouseX(), event.getMouseY());
-                guiTrashSlot.drawBackground();
-                if (gui.isSlotSelected(slotTrash, event.getMouseX(), event.getMouseY())) {
-                    RenderSystem.disableLighting();
-                    RenderSystem.disableDepthTest();
-                    int j1 = gui.getGuiLeft() + slotTrash.xPos;
-                    int k1 = gui.getGuiTop() + slotTrash.yPos;
-                    RenderSystem.colorMask(true, true, true, false);
-                    GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
-                    RenderSystem.colorMask(true, true, true, true);
-                    RenderSystem.enableDepthTest();
-                }
+        ContainerScreen<?> gui = (ContainerScreen<?>) event.getGuiContainer();
+        if (guiTrashSlot != null) {
+            guiTrashSlot.update(event.getMouseX(), event.getMouseY());
+            guiTrashSlot.drawBackground();
+            if (gui.isSlotSelected(slotTrash, event.getMouseX(), event.getMouseY())) {
+                RenderSystem.disableLighting();
+                RenderSystem.disableDepthTest();
+                int j1 = gui.getGuiLeft() + slotTrash.xPos;
+                int k1 = gui.getGuiTop() + slotTrash.yPos;
+                RenderSystem.colorMask(true, true, true, false);
+                GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
+                RenderSystem.colorMask(true, true, true, true);
+                RenderSystem.enableDepthTest();
             }
-        }
-    }
 
-    @SubscribeEvent
-    public void onBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (event.getGui() instanceof ContainerScreen<?>) {
-            ContainerScreen<?> gui = (ContainerScreen<?>) event.getGui();
             if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
                 String noHabloEspanol = TextFormatting.RED + I18n.format("trashslot.serverNotInstalled");
-                GuiUtils.drawHoveringText(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.getStringWidth(noHabloEspanol) / 2, 25, gui.width, gui.height, -1, gui.getMinecraft().fontRenderer);
-            }
-
-            DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-            if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
-                return;
+                gui.renderTooltip(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.getStringWidth(noHabloEspanol) / 2, 25, gui.getMinecraft().fontRenderer);
             }
 
             RenderSystem.pushMatrix();
             RenderSystem.translatef(gui.getGuiLeft(), gui.getGuiTop(), 0);
-            RenderHelper.func_227780_a_();
+            RenderHelper.enableStandardItemLighting();
             gui.drawSlot(slotTrash);
             RenderHelper.disableStandardItemLighting();
             RenderSystem.popMatrix();

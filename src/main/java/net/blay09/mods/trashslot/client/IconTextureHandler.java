@@ -12,7 +12,7 @@ public class IconTextureHandler {
 
     @SubscribeEvent
     public static void onTextureStitch(TextureStitchEvent.Pre event) {
-        if (event.getMap().func_229223_g_().getPath().equals("textures/atlas/blocks.png")) {
+        if (event.getMap().getBasePath().getPath().equals("textures/atlas/blocks.png")) {
             ResourceLocation trashcanIconLocation = new ResourceLocation("trashslot", "gui/trashcan");
             event.addSprite(trashcanIconLocation);
         }

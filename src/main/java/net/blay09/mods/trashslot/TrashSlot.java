@@ -2,7 +2,7 @@ package net.blay09.mods.trashslot;
 
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
 import net.blay09.mods.trashslot.client.ModKeyBindings;
-import net.blay09.mods.trashslot.client.TrashSlotGui;
+import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
 import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
 import net.blay09.mods.trashslot.network.MessageTrashSlotContent;
@@ -38,7 +38,7 @@ public class TrashSlot {
     public static final String MOD_ID = "trashslot";
     public static boolean isServerSideInstalled;
 
-    public static Optional<TrashSlotGui> trashSlotGui = Optional.empty();
+    public static Optional<TrashSlotGuiHandler> trashSlotGui = Optional.empty();
 
     public TrashSlot() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
@@ -60,7 +60,7 @@ public class TrashSlot {
             TrashSlotAPI.registerLayout(CraftingScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
             TrashSlotAPI.registerLayout(ChestScreen.class, new ChestContainerLayout());
 
-            trashSlotGui = Optional.of(new TrashSlotGui());
+            trashSlotGui = Optional.of(new TrashSlotGuiHandler());
 
             DeferredWorkQueue.runLater(() -> {
                 trashSlotGui.ifPresent(MinecraftForge.EVENT_BUS::register);
