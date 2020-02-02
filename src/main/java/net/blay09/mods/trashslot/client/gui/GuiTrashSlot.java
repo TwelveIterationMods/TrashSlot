@@ -3,6 +3,7 @@ package net.blay09.mods.trashslot.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
+import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
@@ -70,7 +71,7 @@ public class GuiTrashSlot extends AbstractGui {
             wasMouseDown = true;
         } else {
             if (isDragging) {
-                settings.save(TrashSlotConfig.clientConfig);
+                TrashSlotSaveState.save();
                 isDragging = false;
             }
             wasMouseDown = false;

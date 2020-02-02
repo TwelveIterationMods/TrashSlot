@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
+import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.GuiHelper;
@@ -60,7 +61,7 @@ public class TrashSlotGuiHandler {
             }
 
             IGuiContainerLayout layout = LayoutManager.getLayout(gui);
-            currentContainerSettings = TrashSlotConfig.getSettings(gui, layout);
+            currentContainerSettings = TrashSlotSaveState.getSettings(gui, layout);
             if (currentContainerSettings != ContainerSettings.NONE) {
                 guiTrashSlot = new GuiTrashSlot(this, gui, layout, currentContainerSettings, slotTrash);
             } else {
@@ -178,7 +179,7 @@ public class TrashSlotGuiHandler {
         if (screen instanceof ContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
             if (ModKeyBindings.keyBindToggleSlot.isActiveAndMatches(input)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
-                currentContainerSettings.save(TrashSlotConfig.clientConfig);
+                TrashSlotSaveState.save();
                 return true;
             }
         }
