@@ -22,7 +22,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.GuiContainerEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -197,27 +199,28 @@ public class TrashSlotGuiHandler {
         ContainerScreen<?> gui = (ContainerScreen<?>) event.getGuiContainer();
         if (guiTrashSlot != null) {
             guiTrashSlot.update(event.getMouseX(), event.getMouseY());
-            guiTrashSlot.drawBackground();
+            guiTrashSlot.drawBackground(event.getMatrixStack());
             if (gui.isSlotSelected(slotTrash, event.getMouseX(), event.getMouseY())) {
                 RenderSystem.disableLighting();
                 RenderSystem.disableDepthTest();
                 int j1 = gui.getGuiLeft() + slotTrash.xPos;
                 int k1 = gui.getGuiTop() + slotTrash.yPos;
                 RenderSystem.colorMask(true, true, true, false);
-                GuiHelper.drawGradientRect(j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
+                GuiHelper.drawGradientRect(event.getMatrixStack(), j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
                 RenderSystem.colorMask(true, true, true, true);
                 RenderSystem.enableDepthTest();
             }
 
             if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
-                String noHabloEspanol = TextFormatting.RED + I18n.format("trashslot.serverNotInstalled");
-                gui.renderTooltip(Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.getStringWidth(noHabloEspanol) / 2, 25, gui.getMinecraft().fontRenderer);
+                ITextComponent noHabloEspanol = new TranslationTextComponent("trashslot.serverNotInstalled");
+                noHabloEspanol.getStyle().func_240712_a_(TextFormatting.RED); // setColor
+                gui.func_238654_b_(event.getMatrixStack(), Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.func_238414_a_(noHabloEspanol) / 2, 25, gui.getMinecraft().fontRenderer); // renderTooltip, getStringWidth
             }
 
             RenderSystem.pushMatrix();
             RenderSystem.translatef(gui.getGuiLeft(), gui.getGuiTop(), 0);
             RenderHelper.enableStandardItemLighting();
-            gui.drawSlot(slotTrash);
+            gui.func_238746_a_(event.getMatrixStack(), slotTrash); // drawSlot
             RenderHelper.disableStandardItemLighting();
             RenderSystem.popMatrix();
         }
@@ -235,7 +238,7 @@ public class TrashSlotGuiHandler {
             boolean isMouseSlot = gui.isSlotSelected(slotTrash, event.getMouseX(), event.getMouseY());
             PlayerInventory inventoryPlayer = Minecraft.getInstance().player.inventory;
             if (isMouseSlot && inventoryPlayer.getItemStack().isEmpty() && slotTrash.getHasStack()) {
-                GuiHelper.renderTooltip(gui, slotTrash.getStack(), event.getMouseX(), event.getMouseY());
+                GuiHelper.renderTooltip(event.getMatrixStack(), gui, slotTrash.getStack(), event.getMouseX(), event.getMouseY());
             }
         }
     }
