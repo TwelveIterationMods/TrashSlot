@@ -23,6 +23,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.GuiContainerEvent;
@@ -212,9 +213,9 @@ public class TrashSlotGuiHandler {
             }
 
             if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
-                ITextComponent noHabloEspanol = new TranslationTextComponent("trashslot.serverNotInstalled");
-                noHabloEspanol.getStyle().func_240712_a_(TextFormatting.RED); // setColor
-                gui.func_238654_b_(event.getMatrixStack(), Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.func_238414_a_(noHabloEspanol) / 2, 25, gui.getMinecraft().fontRenderer); // renderTooltip, getStringWidth
+                TextComponent noHabloEspanol = new TranslationTextComponent("trashslot.serverNotInstalled");
+                noHabloEspanol.func_240699_a_(TextFormatting.RED);
+                gui.renderTooltip(event.getMatrixStack(), Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.func_238414_a_(noHabloEspanol) / 2, 25); // getStringWidth
             }
 
             RenderSystem.pushMatrix();

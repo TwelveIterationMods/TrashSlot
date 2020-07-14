@@ -98,7 +98,7 @@ public class GuiTrashSlot extends AbstractGui {
                 }
             }
 
-            if (!Screen.func_231173_s_()) { // hasShiftDown
+            if (!Screen.hasShiftDown()) {
                 int bestSnapDist = Integer.MAX_VALUE;
                 Snap bestSnap = null;
                 for (Snap snap : layout.getSnaps(gui, renderStyle)) {
@@ -130,10 +130,8 @@ public class GuiTrashSlot extends AbstractGui {
                     }
                 }
             }
-            final int guiWidth = gui.field_230708_k_;
-            final int guiHeight = gui.field_230709_l_;
-            targetX = MathHelper.clamp(targetX, 0, guiWidth - renderStyle.getRenderWidth());
-            targetY = MathHelper.clamp(targetY, 0, guiHeight - renderStyle.getRenderHeight());
+            targetX = MathHelper.clamp(targetX, 0, gui.width - renderStyle.getRenderWidth());
+            targetY = MathHelper.clamp(targetY, 0, gui.height - renderStyle.getRenderHeight());
             settings.setSlotX(getUnanchoredX(targetX));
             settings.setSlotY(getUnanchoredY(targetY));
         }
@@ -145,7 +143,7 @@ public class GuiTrashSlot extends AbstractGui {
         renderStyle = layout.getSlotRenderStyle(gui, renderX, renderY);
         trashSlot.xPos = renderX - gui.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
         trashSlot.yPos = renderY - gui.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(gui, renderStyle);
-        func_230926_e_(1); // setBlitOffset
+        setBlitOffset(1);
         RenderSystem.color4f(1f, 1f, 1f, 1f);
         gui.getMinecraft().getTextureManager().bindTexture(texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(gui, renderStyle);
@@ -157,67 +155,66 @@ public class GuiTrashSlot extends AbstractGui {
         }
         switch (renderStyle) {
             case LONE:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
                 break;
             case ATTACH_BOTTOM_CENTER:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
                 break;
             case ATTACH_BOTTOM_LEFT:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
                 break;
             case ATTACH_BOTTOM_RIGHT:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
                 break;
             case ATTACH_TOP_CENTER:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
                 break;
             case ATTACH_TOP_LEFT:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
                 break;
             case ATTACH_TOP_RIGHT:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
                 break;
             case ATTACH_LEFT_CENTER:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
                 break;
             case ATTACH_LEFT_TOP:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
                 break;
             case ATTACH_LEFT_BOTTOM:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
                 break;
             case ATTACH_RIGHT_CENTER:
-               func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-               func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
-               func_238474_b_(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                blit(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
                 break;
             case ATTACH_RIGHT_TOP:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
                 break;
             case ATTACH_RIGHT_BOTTOM:
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                func_238474_b_(matrixStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                blit(matrixStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                blit(matrixStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
                 break;
         }
-        func_230926_e_(0); // setBlitOffset
+        setBlitOffset(0);
     }
 
     private int getAnchoredX() {
-        final int guiWidth = gui.field_230708_k_;
-        return MathHelper.clamp(settings.getSlotX() + gui.getGuiLeft() + (int) (gui.getXSize() * settings.getAnchorX()), 0, guiWidth - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.getSlotX() + gui.getGuiLeft() + (int) (gui.getXSize() * settings.getAnchorX()), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredX(int x) {
@@ -225,8 +222,7 @@ public class GuiTrashSlot extends AbstractGui {
     }
 
     private int getAnchoredY() {
-        final int guiWidth = gui.field_230708_k_;
-        return MathHelper.clamp(settings.getSlotY() + gui.getGuiTop() + (int) (gui.getYSize() * settings.getAnchorY()), 0, guiWidth - renderStyle.getRenderWidth());
+        return MathHelper.clamp(settings.getSlotY() + gui.getGuiTop() + (int) (gui.getYSize() * settings.getAnchorY()), 0, gui.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredY(int y) {

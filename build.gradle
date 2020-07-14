@@ -68,6 +68,14 @@ minecraft {
 
 repositories {
     maven {
+        name = "Progwml6 maven"
+        url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
+    maven {
         url "https://minecraft.curseforge.com/api/maven/"
     }
 }
@@ -79,7 +87,8 @@ dependencies {
             version: "${minecraft_version}-${forge_version}"
     ])
 
-    compileOnly "jei:jei:1.14.4:6.0.0.26"
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:7.0.0.2:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:7.0.0.2")
 }
 
 jar {
