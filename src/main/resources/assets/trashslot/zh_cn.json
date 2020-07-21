@@ -1,8 +1,0 @@
-{
-  "trashslot.serverNotInstalled": "此服务器没有安装垃圾桶mod，所以您无法使用。",
-  "key.trashslot.toggle": "显示/隐藏 垃圾桶",
-  "key.trashslot.delete": "删除物品",
-  "key.trashslot.deleteAll": "删除相同物品",
-  "key.categories.trashslot": "垃圾桶",
-  "trashslot.config.instantDeletion": "立刻删除"
-}
