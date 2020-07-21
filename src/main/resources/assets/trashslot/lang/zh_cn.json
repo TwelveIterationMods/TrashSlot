@@ -1,0 +1,8 @@
+{
+  "trashslot.serverNotInstalled": "此服务器没有安装垃圾桶。 此mod已禁用。",
+  "key.trashslot.toggle": "显示/隐藏 垃圾桶",
+  "key.trashslot.delete": "删除项目",
+  "key.trashslot.deleteAll": "删除所有此类项目",
+  "key.categories.trashslot": "垃圾桶",
+  "trashslot.config.instantDeletion": "立刻删除"
+}
