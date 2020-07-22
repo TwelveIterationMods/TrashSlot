@@ -1,5 +1,5 @@
 {
-  "trashslot.serverNotInstalled": "Serwer nie ma zainstalowanego moda TrashSlot. Mod ten zostanie wyłączony.",
+  "trashslot.serverNotInstalled": "Serwer nie ma zainstalowanego moda TrashSlot. Mod ten będzie wyłączony.",
   "key.trashslot.toggle": "Pokaż/ukryj TrashSlot",
   "key.trashslot.delete": "Usuń przedmiot",
   "key.trashslot.deleteAll": "Usuń wszystkie danego typu",
