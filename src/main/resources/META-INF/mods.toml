@@ -3,6 +3,7 @@ loaderVersion="[24,)"
 issueTrackerURL="https://github.com/blay09/TrashSlot/issues"
 displayURL="https://minecraft.curseforge.com/projects/trashslot"
 authors="BlayTheNinth"
+license="MIT"
 
 [[mods]]
 modId="trashslot"

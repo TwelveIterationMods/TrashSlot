@@ -20,7 +20,7 @@ public class GuiHelper extends AbstractGui {
 
     public static void renderTooltip(MatrixStack matrixStack, Screen screen, ItemStack itemStack, int x, int y) {
         GuiUtils.preItemToolTip(itemStack);
-        screen.renderTooltip(matrixStack, screen.getTooltipFromItem(itemStack), x, y);
+        screen.func_243308_b(matrixStack, screen.getTooltipFromItem(itemStack), x, y);
         GuiUtils.postItemToolTip();
     }
 
