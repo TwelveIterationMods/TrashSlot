@@ -215,7 +215,7 @@ public class TrashSlotGuiHandler {
             if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
                 TextComponent noHabloEspanol = new TranslationTextComponent("trashslot.serverNotInstalled");
                 noHabloEspanol.mergeStyle(TextFormatting.RED);
-                gui.func_243308_b(event.getMatrixStack(), Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.func_238414_a_(noHabloEspanol) / 2, 25); // getStringWidth
+                gui.func_243308_b(event.getMatrixStack(), Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().fontRenderer.getStringPropertyWidth(noHabloEspanol) / 2, 25);
             }
 
             RenderSystem.pushMatrix();
