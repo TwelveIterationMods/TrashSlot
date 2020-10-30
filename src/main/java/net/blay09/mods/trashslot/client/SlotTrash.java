@@ -18,7 +18,7 @@ public class SlotTrash extends Slot {
 
         @Override
         public boolean isEmpty() {
-            return currentStack != null;
+            return currentStack.isEmpty();
         }
 
         @Override
@@ -76,7 +76,7 @@ public class SlotTrash extends Slot {
 
         @Override
         public void clear() {
-            currentStack = null;
+            currentStack = ItemStack.EMPTY;
         }
     }
 
