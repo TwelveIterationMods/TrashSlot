@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "id": "trashslot",
+  "version": "${version}",
+
+  "name": "TrashSlot\"",
+  "description": "Adds a trash slot to the inventory screen that allows deletion of unwanted items.",
+  "authors": [
+    "BlayTheNinth"
+  ],
+  "contact": {
+    "homepage": "https://blay09.net/",
+    "sources": "https://github.com/ModdingForBlockheads/TrashSlot",
+    "issues": "https://github.com/ModdingForBlockheads/TrashSlot\"/issues"
+  },
+
+  "license": "All Rights Reserved",
+  "icon": "assets/trashslot/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.blay09.mods.trashslot.FabricTrashSlot"
+    ],
+    "client": [
+      "net.blay09.mods.trashslot.client.FabricTrashSlotClient"
+    ],
+    "modmenu": [
+      "net.blay09.mods.trashslot.compat.ModMenuIntegration"
+    ],
+    "rei_plugins": [
+      "net.blay09.mods.trashslot.compat.RoughlyEnoughItemsIntegration"
+    ]
+  },
+  "mixins": [
+    "trashslot.mixins.json"
+  ],
+  "depends": {
+    "cloth-config2": ">=5.0.34",
+    "balm-fabric": ">=1.1.0",
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "1.17.x",
+    "java": ">=16"
+  },
+  "suggests": {
+    "modmenu": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/scGAfXC"
+      }
+    }
+  }
+}
