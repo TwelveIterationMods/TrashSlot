@@ -1,12 +1,14 @@
 package net.blay09.mods.trashslot.client;
 
+import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class SlotTrash extends Slot {
+public class TrashSlotSlot extends Slot {
 
     public static class TrashInventory implements Container {
         private ItemStack currentStack = ItemStack.EMPTY;
@@ -80,9 +82,9 @@ public class SlotTrash extends Slot {
         }
     }
 
-    public SlotTrash() {
+    public TrashSlotSlot() {
         super(new TrashInventory(), 0, 0, 0);
-        setBackground(new ResourceLocation("minecraft", "textures/atlas/blocks.png"), new ResourceLocation("trashslot", "gui/trashcan"));
+        setBackground(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(TrashSlot.MOD_ID, "gui/trashcan"));
     }
 
 }

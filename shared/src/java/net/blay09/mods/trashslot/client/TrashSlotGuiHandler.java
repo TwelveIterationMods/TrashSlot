@@ -3,23 +3,18 @@ package net.blay09.mods.trashslot.client;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.client.BalmClient;
-import net.blay09.mods.balm.api.event.EventPriority;
-import net.blay09.mods.balm.api.event.client.screen.ScreenDrawEvent;
-import net.blay09.mods.balm.api.event.client.screen.ScreenInitEvent;
-import net.blay09.mods.balm.api.event.client.screen.ScreenKeyEvent;
-import net.blay09.mods.balm.api.event.client.screen.ScreenMouseEvent;
+import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
+import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-import net.blay09.mods.trashslot.client.gui.GuiHelper;
-import net.blay09.mods.trashslot.client.gui.GuiTrashSlot;
+import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -33,8 +28,8 @@ import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotGuiHandler {
 
-    private static final SlotTrash slotTrash = new SlotTrash();
-    private static GuiTrashSlot guiTrashSlot;
+    private static final TrashSlotSlot trashSlot = new TrashSlotSlot();
+    private static TrashSlotComponent trashSlotComponent;
     private static ContainerSettings currentContainerSettings = ContainerSettings.NONE;
     private static boolean ignoreMouseUp;
 
@@ -43,18 +38,18 @@ public class TrashSlotGuiHandler {
     private static boolean isLeftMouseDown;
 
     public static void initialize() {
-        Balm.getEvents().onEvent(ScreenInitEvent.Post.class, TrashSlotGuiHandler::onInitGui);
-        Balm.getEvents().onEvent(ScreenMouseEvent.Release.Pre.class, TrashSlotGuiHandler::onGuiMouseReleased);
-        Balm.getEvents().onEvent(ScreenMouseEvent.Click.Pre.class, TrashSlotGuiHandler::onGuiMouseClicked);
-        Balm.getEvents().onEvent(ScreenKeyEvent.Press.Post.class, TrashSlotGuiHandler::onGuiKeyboard);
-        Balm.getEvents().onEvent(ScreenDrawEvent.Pre.class, TrashSlotGuiHandler::onDrawBackground, EventPriority.Lowest);
-        Balm.getEvents().onEvent(ScreenDrawEvent.Post.class, TrashSlotGuiHandler::onDrawScreen);
+        Balm.getEvents().onEvent(ScreenInitEvent.Post.class, TrashSlotGuiHandler::onScreenInit);
+        Balm.getEvents().onEvent(ScreenMouseEvent.Release.Pre.class, TrashSlotGuiHandler::onMouseRelease);
+        Balm.getEvents().onEvent(ScreenMouseEvent.Click.Pre.class, TrashSlotGuiHandler::onMouseClick);
+        Balm.getEvents().onEvent(ScreenKeyEvent.Press.Post.class, TrashSlotGuiHandler::onKeyPress);
+        Balm.getEvents().onEvent(ContainerScreenDrawEvent.Background.class, TrashSlotGuiHandler::onBackgroundDrawn);
+        Balm.getEvents().onEvent(ScreenDrawEvent.Post.class, TrashSlotGuiHandler::onScreenDrawn);
     }
 
-    private static void onInitGui(ScreenInitEvent.Post event) {
+    private static void onScreenInit(ScreenInitEvent.Post event) {
         if (event.getScreen() instanceof CreativeModeInventoryScreen) {
             currentContainerSettings = ContainerSettings.NONE;
-            guiTrashSlot = null;
+            trashSlotComponent = null;
             return;
         }
 
@@ -73,17 +68,17 @@ public class TrashSlotGuiHandler {
             IGuiContainerLayout layout = LayoutManager.getLayout(screen);
             currentContainerSettings = TrashSlotSaveState.getSettings(screen, layout);
             if (currentContainerSettings != ContainerSettings.NONE) {
-                guiTrashSlot = new GuiTrashSlot(screen, layout, currentContainerSettings, slotTrash);
+                trashSlotComponent = new TrashSlotComponent(screen, layout, currentContainerSettings, trashSlot);
             } else {
-                guiTrashSlot = null;
+                trashSlotComponent = null;
             }
         } else {
             currentContainerSettings = ContainerSettings.NONE;
-            guiTrashSlot = null;
+            trashSlotComponent = null;
         }
     }
 
-    private static void onGuiMouseReleased(ScreenMouseEvent.Release.Pre event) {
+    private static void onMouseRelease(ScreenMouseEvent.Release.Pre event) {
         if (event.getButton() == 0) {
             isLeftMouseDown = false;
         }
@@ -94,7 +89,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    private static void onGuiMouseClicked(ScreenMouseEvent.Click.Pre event) {
+    private static void onMouseClick(ScreenMouseEvent.Click.Pre event) {
         if (event.getButton() == 0) {
             isLeftMouseDown = true;
         }
@@ -113,21 +108,21 @@ public class TrashSlotGuiHandler {
         if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             double mouseX = event.getMouseX();
             double mouseY = event.getMouseY();
-            if (((AbstractContainerScreenAccessor) screen).callIsHovering(slotTrash, mouseX, mouseY)) {
+            if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY)) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {
                     ItemStack mouseItem = screen.getMenu().getCarried();
                     boolean isRightClick = mouseButton == 1;
                     if (mouseItem.isEmpty()) {
-                        deletionProvider.undeleteLast(player, slotTrash, isRightClick);
+                        deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
-                        deletionProvider.deleteMouseItem(player, mouseItem, slotTrash, isRightClick);
+                        deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
                     }
 
                     event.setCanceled(true);
                     ignoreMouseUp = true;
                 }
-            } else if (guiTrashSlot.isInside((int) mouseX, (int) mouseY)) {
+            } else if (trashSlotComponent.isInside((int) mouseX, (int) mouseY)) {
                 // Prevent click-through on the background and border of the slot
                 event.setCanceled(true);
                 ignoreMouseUp = true;
@@ -135,7 +130,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    private static void onGuiKeyboard(ScreenKeyEvent.Press.Post event) {
+    private static void onKeyPress(ScreenKeyEvent.Press.Post event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return;
@@ -163,7 +158,7 @@ public class TrashSlotGuiHandler {
                 if (entityPlayer != null && screen instanceof AbstractContainerScreen<?> gui) {
                     Slot mouseSlot = gui.getSlotUnderMouse();
                     if (mouseSlot != null && mouseSlot.hasItem()) {
-                        deletionProvider.deleteContainerItem(gui.getMenu(), mouseSlot.index, isDeleteAll, slotTrash);
+                        deletionProvider.deleteContainerItem(gui.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                     } else {
                         Window mainWindow = Minecraft.getInstance().getWindow();
                         double rawMouseX = Minecraft.getInstance().mouseHandler.xpos();
@@ -171,8 +166,8 @@ public class TrashSlotGuiHandler {
                         double mouseX = rawMouseX * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getWidth();
                         double mouseY = rawMouseY * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getHeight();
 
-                        if (((AbstractContainerScreenAccessor) gui).callIsHovering(slotTrash, mouseX, mouseY)) {
-                            deletionProvider.emptyTrashSlot(slotTrash);
+                        if (((AbstractContainerScreenAccessor) gui).callIsHovering(trashSlot, mouseX, mouseY)) {
+                            deletionProvider.emptyTrashSlot(trashSlot);
                         }
                     }
                     return true;
@@ -191,63 +186,62 @@ public class TrashSlotGuiHandler {
         return false;
     }
 
-    public static void onDrawBackground(ScreenDrawEvent.Pre event) {
+    public static void onBackgroundDrawn(ContainerScreenDrawEvent.Background event) {
         PoseStack poseStack = event.getPoseStack();
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;
         }
 
-        AbstractContainerScreen<?> gui = (AbstractContainerScreen<?>) event.getScreen();
-        if (guiTrashSlot != null) {
-            guiTrashSlot.update(event.getMouseX(), event.getMouseY());
-            guiTrashSlot.drawBackground(poseStack);
-            if (((AbstractContainerScreenAccessor) gui).callIsHovering(slotTrash, event.getMouseX(), event.getMouseY())) {
-                RenderSystem.disableDepthTest();
-                int j1 = gui.getGuiLeft() + slotTrash.x;
-                int k1 = gui.getGuiTop() + slotTrash.y;
-                RenderSystem.colorMask(true, true, true, false);
-                GuiHelper.drawGradientRect(poseStack, j1, k1, j1 + 16, k1 + 16, -600, -2130706433, -2130706433);
-                RenderSystem.colorMask(true, true, true, true);
-                RenderSystem.enableDepthTest();
-            }
+        if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
+            trashSlotComponent.update(event.getMouseX(), event.getMouseY());
+            trashSlotComponent.drawBackground(poseStack);
 
+            if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY())) {
+                poseStack.pushPose();
+                poseStack.translate(((AbstractContainerScreenAccessor) screen).getLeftPos(), ((AbstractContainerScreenAccessor) screen).getTopPos(), 0);
+                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, screen.getBlitOffset(), 0x80ffffff);
+                poseStack.popPose();
+            }
+        }
+    }
+
+    public static void onScreenDrawn(ScreenDrawEvent.Post event) {
+        PoseStack poseStack = event.getPoseStack();
+        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
+        if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
+            return;
+        }
+
+        if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
             if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
                 TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
                 noHabloEspanol.withStyle(ChatFormatting.RED);
-                gui.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), gui.getGuiLeft() + gui.getXSize() / 2 - gui.getMinecraft().font.width(noHabloEspanol) / 2, 25);
+                screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), screen.getGuiLeft() + screen.getXSize() / 2 - screen.getMinecraft().font.width(noHabloEspanol) / 2, 25);
             }
 
-            poseStack.pushPose();
-            poseStack.translate(gui.getGuiLeft(), gui.getGuiTop(), 0);
+            // TODO bit ugly for now since renderSlot ignores the pose stack translation
+            TrashSlotSlot trashSlot = TrashSlotGuiHandler.trashSlot;
+            SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
+            slotAccessor.setX(trashSlot.x + screen.getGuiLeft());
+            slotAccessor.setY(trashSlot.y + screen.getGuiTop());
+            ((AbstractContainerScreenAccessor) screen).callRenderSlot(poseStack, trashSlot);
+            slotAccessor.setX(trashSlot.x - screen.getGuiLeft());
+            slotAccessor.setY(trashSlot.y - screen.getGuiTop());
 
-            // this is drawSlot, but it also does some item moving logic, so it's called moveItems now...
-            ((AbstractContainerScreenAccessor) gui).callRenderSlot(poseStack, slotTrash);
-
-            poseStack.popPose();
-        }
-    }
-
-    private static void onDrawScreen(ScreenDrawEvent.Post event) {
-        if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-            DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-            if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
-                return;
-            }
-
-            boolean isMouseSlot = ((AbstractContainerScreenAccessor) screen).callIsHovering(slotTrash, event.getMouseX(), event.getMouseY());
-            if (isMouseSlot && screen.getMenu().getCarried().isEmpty() && slotTrash.hasItem()) {
-                screen.renderComponentTooltip(event.getPoseStack(), screen.getTooltipFromItem(slotTrash.getItem()), event.getMouseX(), event.getMouseY());
+            boolean isMouseSlot = ((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
+            if (isMouseSlot && screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
+                screen.renderComponentTooltip(poseStack, screen.getTooltipFromItem(trashSlot.getItem()), event.getMouseX(), event.getMouseY());
             }
         }
     }
 
-    public static GuiTrashSlot getGuiTrashSlot() {
-        return guiTrashSlot;
+    public static TrashSlotComponent getTrashSlotComponent() {
+        return trashSlotComponent;
     }
 
-    public static SlotTrash getTrashSlot() {
-        return slotTrash;
+    public static TrashSlotSlot getTrashSlot() {
+        return trashSlot;
     }
 
     public static boolean isLeftMouseDown() {

@@ -11,7 +11,7 @@ import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
 import net.blay09.mods.trashslot.api.Snap;
 import net.blay09.mods.trashslot.client.ContainerSettings;
-import net.blay09.mods.trashslot.client.SlotTrash;
+import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.minecraft.client.gui.GuiComponent;
@@ -21,7 +21,7 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class GuiTrashSlot extends GuiComponent {
+public class TrashSlotComponent extends GuiComponent {
 
     private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
@@ -29,7 +29,7 @@ public class GuiTrashSlot extends GuiComponent {
     private final AbstractContainerScreen<?> screen;
     private final IGuiContainerLayout layout;
     private final ContainerSettings settings;
-    private final SlotTrash trashSlot;
+    private final TrashSlotSlot trashSlot;
 
     private SlotRenderStyle renderStyle = SlotRenderStyle.LONE;
 
@@ -38,7 +38,7 @@ public class GuiTrashSlot extends GuiComponent {
     private int dragStartX;
     private int dragStartY;
 
-    public GuiTrashSlot(AbstractContainerScreen<?> screen, IGuiContainerLayout layout, ContainerSettings settings, SlotTrash trashSlot) {
+    public TrashSlotComponent(AbstractContainerScreen<?> screen, IGuiContainerLayout layout, ContainerSettings settings, TrashSlotSlot trashSlot) {
         this.screen = screen;
         this.layout = layout;
         this.settings = settings;

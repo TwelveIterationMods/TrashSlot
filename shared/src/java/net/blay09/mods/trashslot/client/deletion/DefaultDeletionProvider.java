@@ -3,14 +3,14 @@ package net.blay09.mods.trashslot.client.deletion;
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.network.MessageDeleteFromSlot;
 import net.blay09.mods.trashslot.network.MessageTrashSlotClick;
-import net.blay09.mods.trashslot.client.SlotTrash;
+import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 
 public class DefaultDeletionProvider implements DeletionProvider {
 	@Override
-	public void undeleteLast(Player player, SlotTrash trashSlot, boolean isRightClick) {
+	public void undeleteLast(Player player, TrashSlotSlot trashSlot, boolean isRightClick) {
 		ItemStack trashStack = trashSlot.getItem();
 		ItemStack mouseStack = isRightClick ? trashStack.split(1) : trashStack;
 		player.containerMenu.setCarried(mouseStack);
@@ -24,7 +24,7 @@ public class DefaultDeletionProvider implements DeletionProvider {
 	}
 
 	@Override
-	public void deleteMouseItem(Player player, ItemStack mouseItem, SlotTrash trashSlot, boolean isRightClick) {
+	public void deleteMouseItem(Player player, ItemStack mouseItem, TrashSlotSlot trashSlot, boolean isRightClick) {
 		ItemStack mouseStack = mouseItem.copy();
 		ItemStack trashStack = isRightClick ? mouseStack.split(1) : mouseStack;
 		player.containerMenu.setCarried(isRightClick ? mouseStack : ItemStack.EMPTY);
@@ -33,12 +33,12 @@ public class DefaultDeletionProvider implements DeletionProvider {
 	}
 
 	@Override
-	public void deleteContainerItem(AbstractContainerMenu container, int slotNumber, boolean isDeleteAll, SlotTrash slotTrash) {
+	public void deleteContainerItem(AbstractContainerMenu container, int slotNumber, boolean isDeleteAll, TrashSlotSlot slotTrash) {
 		Balm.getNetworking().sendToServer(new MessageDeleteFromSlot(slotNumber, isDeleteAll));
 	}
 
 	@Override
-	public void emptyTrashSlot(SlotTrash trashSlot) {
+	public void emptyTrashSlot(TrashSlotSlot trashSlot) {
 		trashSlot.set(ItemStack.EMPTY);
 		Balm.getNetworking().sendToServer(new MessageDeleteFromSlot(-1, false));
 	}

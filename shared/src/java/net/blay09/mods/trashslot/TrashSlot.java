@@ -22,7 +22,10 @@ public class TrashSlot {
         TrashSlotConfig.initialize();
         ModNetworking.initialize(Balm.getNetworking());
 
-        Balm.getEvents().onEvent(PlayerLoginEvent.class, event -> Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY)));
+        Balm.getEvents().onEvent(PlayerLoginEvent.class, event -> {
+            TrashHelper.setTrashItem(event.getPlayer(), ItemStack.EMPTY);
+            Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY));
+        });
 
         Balm.getEvents().onEvent(PlayerRespawnEvent.class, event -> Balm.getNetworking().sendTo(event.getNewPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY)));
 
@@ -30,5 +33,7 @@ public class TrashSlot {
             ItemStack trashItem = TrashHelper.getTrashItem(event.getPlayer());
             Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(trashItem));
         });
+
+        Balm.initialize(TrashSlot.MOD_ID);
     }
 }
