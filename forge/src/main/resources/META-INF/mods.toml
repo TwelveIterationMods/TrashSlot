@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/ModdingForBlockheads/TrashSlot/issues"
+
+[[mods]]
+modId="trashslot"
+version="${file.jarVersion}"
+displayName="TrashSlot"
+displayURL="https://blay09.net/mods/trashslot"
+logoFile="trashslot-icon.png"
+credits="BlayTheNinth"
+authors="BlayTheNinth"
+description='''
+
+'''
+[[dependencies.trashslot]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.trashslot]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.trashslot]]
+    modId="balm"
+    mandatory=true
+    versionRange="[1.6.0,)"
+    ordering="NONE"
+    side="BOTH"

@@ -11,8 +11,6 @@ Permission is hereby granted, free of charge, to any person:
 - to copy non-substantial portions of the code for use in other projects
 - to derive from or depend on this code as a dependency (e.g. for mod compatibility)
 
-Versions prior to 10.0.0 were licensed under [The MIT License](https://raw.githubusercontent.com/ModdingForBlockheads/CraftingCraft/1.16.x/LICENSE) and therefore fall under those terms instead of the above.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
