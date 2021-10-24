@@ -4,7 +4,7 @@ Minecraft Mod. Adds a trash slot to the inventory screen that allows deletion of
 
 See [the license](https://github.com/ModdingForBlockheads/TrashSlot/blob/1.17.x/LICENSE) for modpack permissions etc.
 
-This mod is available for both Forge and Fabric (starting Minecraft 1.17). This is a trial run to see if supporting both platforms is feasible.
+This mod is available for both Forge and Fabric (starting Minecraft 1.17).
 
 #### Forge
 

@@ -12,7 +12,7 @@ logoFile="trashslot-icon.png"
 credits="BlayTheNinth"
 authors="BlayTheNinth"
 description='''
-
+Adds a trash slot to the inventory screen that allows deletion of unwanted items.
 '''
 [[dependencies.trashslot]]
     modId="forge"
@@ -29,6 +29,6 @@ description='''
 [[dependencies.trashslot]]
     modId="balm"
     mandatory=true
-    versionRange="[1.6.0,)"
+    versionRange="[1.7.0,)"
     ordering="NONE"
     side="BOTH"
