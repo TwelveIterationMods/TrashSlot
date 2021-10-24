@@ -33,7 +33,5 @@ public class TrashSlot {
             ItemStack trashItem = TrashHelper.getTrashItem(event.getPlayer());
             Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(trashItem));
         });
-
-        Balm.initialize(TrashSlot.MOD_ID);
     }
 }

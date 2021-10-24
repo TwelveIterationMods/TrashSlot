@@ -24,8 +24,6 @@ public class TrashSlotClient {
         TrashSlotGuiHandler.initialize();
 
         Balm.getEvents().onEvent(ConnectedToServerEvent.class, it -> TrashSlot.isServerSideInstalled = false);
-
-        BalmClient.initialize(TrashSlot.MOD_ID);
     }
 
     public static void receivedTrashSlotContent(ItemStack itemStack) {
