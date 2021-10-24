@@ -55,6 +55,7 @@ public class TrashSlotGuiHandler {
 
         if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             if (!TrashSlot.isServerSideInstalled && !sentMissingMessage) {
+                TrashSlot.logger.info("TrashSlot is not installed on the server and thus will be unavailable.");
                 missingMessageTime = System.currentTimeMillis();
                 sentMissingMessage = true;
                 return;
@@ -208,18 +209,18 @@ public class TrashSlotGuiHandler {
 
     public static void onScreenDrawn(ScreenDrawEvent.Post event) {
         PoseStack poseStack = event.getPoseStack();
+        if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
+            TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
+            noHabloEspanol.withStyle(ChatFormatting.RED);
+            screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), screen.getGuiLeft() + screen.getXSize() / 2 - screen.getMinecraft().font.width(noHabloEspanol) / 2, 25);
+        }
+
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;
         }
 
         if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
-            if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000) {
-                TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
-                noHabloEspanol.withStyle(ChatFormatting.RED);
-                screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), screen.getGuiLeft() + screen.getXSize() / 2 - screen.getMinecraft().font.width(noHabloEspanol) / 2, 25);
-            }
-
             // TODO bit ugly for now since renderSlot ignores the pose stack translation
             TrashSlotSlot trashSlot = TrashSlotGuiHandler.trashSlot;
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
