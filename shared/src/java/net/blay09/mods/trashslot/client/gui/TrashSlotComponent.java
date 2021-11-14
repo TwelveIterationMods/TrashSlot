@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.TrashSlotConfig;
+import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.api.SlotRenderStyle;
@@ -14,6 +14,7 @@ import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -61,7 +62,7 @@ public class TrashSlotComponent extends GuiComponent {
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if (TrashSlotGuiHandler.isLeftMouseDown()) {
             if (!isDragging && isMouseOver && !wasMouseDown) {
-                if (screen.getMinecraft().player.containerMenu.getCarried().isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
+                if (Minecraft.getInstance().player.containerMenu.getCarried().isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
@@ -135,8 +136,9 @@ public class TrashSlotComponent extends GuiComponent {
         int renderX = getAnchoredX();
         int renderY = getAnchoredY();
         renderStyle = layout.getSlotRenderStyle(screen, renderX, renderY);
-        ((SlotAccessor) trashSlot).setX(renderX - screen.getGuiLeft() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(screen, renderStyle));
-        ((SlotAccessor) trashSlot).setY(renderY - screen.getGuiTop() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
+        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
+        ((SlotAccessor) trashSlot).setX(renderX - screenAccessor.getLeftPos() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(screen, renderStyle));
+        ((SlotAccessor) trashSlot).setY(renderY - screenAccessor.getTopPos() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
         setBlitOffset(1);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, texture);
@@ -206,19 +208,23 @@ public class TrashSlotComponent extends GuiComponent {
     }
 
     private int getAnchoredX() {
-        return Mth.clamp(settings.getSlotX() + screen.getGuiLeft() + (int) (screen.getXSize() * settings.getAnchorX()), 0, screen.width - renderStyle.getRenderWidth());
+        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
+        return Mth.clamp(settings.getSlotX() + screenAccessor.getLeftPos() + (int) (screenAccessor.getImageWidth() * settings.getAnchorX()), 0, screen.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredX(int x) {
-        return x - screen.getGuiLeft() - (int) (screen.getXSize() * settings.getAnchorX());
+        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
+        return x - screenAccessor.getLeftPos() - (int) (screenAccessor.getImageWidth() * settings.getAnchorX());
     }
 
     private int getAnchoredY() {
-        return Mth.clamp(settings.getSlotY() + screen.getGuiTop() + (int) (screen.getYSize() * settings.getAnchorY()), 0, screen.width - renderStyle.getRenderWidth());
+        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
+        return Mth.clamp(settings.getSlotY() + screenAccessor.getTopPos() + (int) (screenAccessor.getImageHeight() * settings.getAnchorY()), 0, screen.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredY(int y) {
-        return y - screen.getGuiTop() - (int) (screen.getYSize() * settings.getAnchorY());
+        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
+        return y - screenAccessor.getTopPos() - (int) (screenAccessor.getImageHeight() * settings.getAnchorY());
     }
 
     public boolean isVisible() {

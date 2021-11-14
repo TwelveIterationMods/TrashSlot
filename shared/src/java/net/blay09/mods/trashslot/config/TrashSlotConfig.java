@@ -1,12 +1,12 @@
-package net.blay09.mods.trashslot;
+package net.blay09.mods.trashslot.config;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.event.ConfigReloadedEvent;
+import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TrashSlotConfig {
 

@@ -10,7 +10,7 @@ import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.TrashSlotConfig;
+import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
@@ -156,10 +156,10 @@ public class TrashSlotGuiHandler {
             boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
             if (isDelete || isDeleteAll) {
                 Player entityPlayer = Minecraft.getInstance().player;
-                if (entityPlayer != null && screen instanceof AbstractContainerScreen<?> gui) {
-                    Slot mouseSlot = gui.getSlotUnderMouse();
+                if (entityPlayer != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
+                    Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                     if (mouseSlot != null && mouseSlot.hasItem()) {
-                        deletionProvider.deleteContainerItem(gui.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
+                        deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                     } else {
                         Window mainWindow = Minecraft.getInstance().getWindow();
                         double rawMouseX = Minecraft.getInstance().mouseHandler.xpos();
@@ -167,7 +167,7 @@ public class TrashSlotGuiHandler {
                         double mouseX = rawMouseX * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getWidth();
                         double mouseY = rawMouseY * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getHeight();
 
-                        if (((AbstractContainerScreenAccessor) gui).callIsHovering(trashSlot, mouseX, mouseY)) {
+                        if (((AbstractContainerScreenAccessor) containerScreen).callIsHovering(trashSlot, mouseX, mouseY)) {
                             deletionProvider.emptyTrashSlot(trashSlot);
                         }
                     }
@@ -201,7 +201,7 @@ public class TrashSlotGuiHandler {
             if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY())) {
                 poseStack.pushPose();
                 poseStack.translate(((AbstractContainerScreenAccessor) screen).getLeftPos(), ((AbstractContainerScreenAccessor) screen).getTopPos(), 0);
-                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, screen.getBlitOffset(), 0x80ffffff);
+                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, screen.getBlitOffset());
                 poseStack.popPose();
             }
         }
@@ -212,7 +212,7 @@ public class TrashSlotGuiHandler {
         if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
             noHabloEspanol.withStyle(ChatFormatting.RED);
-            screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), screen.getGuiLeft() + screen.getXSize() / 2 - screen.getMinecraft().font.width(noHabloEspanol) / 2, 25);
+            screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(noHabloEspanol) / 2, 25);
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
@@ -224,11 +224,11 @@ public class TrashSlotGuiHandler {
             // TODO bit ugly for now since renderSlot ignores the pose stack translation
             TrashSlotSlot trashSlot = TrashSlotGuiHandler.trashSlot;
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
-            slotAccessor.setX(trashSlot.x + screen.getGuiLeft());
-            slotAccessor.setY(trashSlot.y + screen.getGuiTop());
+            slotAccessor.setX(trashSlot.x + ((AbstractContainerScreenAccessor) screen).getLeftPos());
+            slotAccessor.setY(trashSlot.y + ((AbstractContainerScreenAccessor) screen).getTopPos());
             ((AbstractContainerScreenAccessor) screen).callRenderSlot(poseStack, trashSlot);
-            slotAccessor.setX(trashSlot.x - screen.getGuiLeft());
-            slotAccessor.setY(trashSlot.y - screen.getGuiTop());
+            slotAccessor.setX(trashSlot.x - ((AbstractContainerScreenAccessor) screen).getLeftPos());
+            slotAccessor.setY(trashSlot.y - ((AbstractContainerScreenAccessor) screen).getTopPos());
 
             boolean isMouseSlot = ((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
             if (isMouseSlot && screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {

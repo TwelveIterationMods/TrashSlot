@@ -5,6 +5,7 @@ import net.blay09.mods.balm.api.event.PlayerLoginEvent;
 import net.blay09.mods.balm.api.event.PlayerOpenMenuEvent;
 import net.blay09.mods.balm.api.event.PlayerRespawnEvent;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
+import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.network.MessageTrashSlotContent;
 import net.blay09.mods.trashslot.network.ModNetworking;
 import net.minecraft.world.item.ItemStack;

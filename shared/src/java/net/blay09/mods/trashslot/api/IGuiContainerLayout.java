@@ -6,23 +6,23 @@ import net.minecraft.client.renderer.Rect2i;
 import java.util.List;
 
 public interface IGuiContainerLayout {
-    List<Rect2i> getCollisionAreas(AbstractContainerScreen<?> gui);
+    List<Rect2i> getCollisionAreas(AbstractContainerScreen<?> screen);
 
-    List<Snap> getSnaps(AbstractContainerScreen<?> gui, SlotRenderStyle renderStyle);
+    List<Snap> getSnaps(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
 
-    SlotRenderStyle getSlotRenderStyle(AbstractContainerScreen<?> gui, int slotX, int slotY);
+    SlotRenderStyle getSlotRenderStyle(AbstractContainerScreen<?> screen, int slotX, int slotY);
 
-    int getDefaultSlotX(AbstractContainerScreen<?> gui);
+    int getDefaultSlotX(AbstractContainerScreen<?> screen);
 
-    int getDefaultSlotY(AbstractContainerScreen<?> gui);
+    int getDefaultSlotY(AbstractContainerScreen<?> screen);
 
     boolean isEnabledByDefault();
 
-    int getSlotOffsetX(AbstractContainerScreen<?> gui, SlotRenderStyle renderStyle);
+    int getSlotOffsetX(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
 
-    int getSlotOffsetY(AbstractContainerScreen<?> gui, SlotRenderStyle renderStyle);
+    int getSlotOffsetY(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
 
-    default String getContainerId(AbstractContainerScreen<?> gui) {
-        return gui.getClass().getName().replace('.', '/');
+    default String getContainerId(AbstractContainerScreen<?> screen) {
+        return screen.getClass().getName().replace('.', '/');
     }
 }
