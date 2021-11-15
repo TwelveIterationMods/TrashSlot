@@ -3,7 +3,7 @@
   "id": "trashslot",
   "version": "${version}",
 
-  "name": "TrashSlot\"",
+  "name": "TrashSlot",
   "description": "Adds a trash slot to the inventory screen that allows deletion of unwanted items.",
   "authors": [
     "BlayTheNinth"
