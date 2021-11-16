@@ -9,6 +9,7 @@ import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
+import net.blay09.mods.trashslot.PlatformBindings;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
@@ -154,6 +155,13 @@ public class TrashSlotGuiHandler {
         if (currentContainerSettings.isEnabled()) {
             boolean isDelete = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode);
             boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
+
+            // For Fabric: if both delete and delete all match, and we don't support key modifiers (as in Fabric), specifically require Shift for isDeleteAll
+            if(isDelete && isDeleteAll && !PlatformBindings.INSTANCE.supportsKeyModifiers()) {
+                isDelete = !Screen.hasShiftDown();
+                isDeleteAll = Screen.hasShiftDown();
+            }
+
             if (isDelete || isDeleteAll) {
                 Player entityPlayer = Minecraft.getInstance().player;
                 if (entityPlayer != null && screen instanceof AbstractContainerScreen<?> containerScreen) {

@@ -11,6 +11,13 @@ import net.minecraftforge.fml.common.Mod;
 public class ForgeTrashSlot {
 
     public ForgeTrashSlot() {
+        PlatformBindings.INSTANCE = new PlatformBindings() {
+            @Override
+            public boolean supportsKeyModifiers() {
+                return true;
+            }
+        };
+
         Balm.initialize(TrashSlot.MOD_ID, TrashSlot::initialize);
         DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> BalmClient.initialize(TrashSlot.MOD_ID, TrashSlotClient::initialize));
     }
