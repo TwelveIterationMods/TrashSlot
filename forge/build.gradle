@@ -124,7 +124,7 @@ dependencies {
     testCompileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:5.0.38")
 
     compileOnly fg.deobf("mezz.jei:jei-1.17.1:8.2.0.37:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.2.0.37")
+//    runtimeOnly fg.deobf("mezz.jei:jei-1.17.1:8.2.0.37")
 
     implementation "org.jetbrains:annotations:22.0.0"
 }
