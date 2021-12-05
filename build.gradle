@@ -13,8 +13,12 @@ subprojects {
                     "Implementation-Version"  : project.jar.archiveVersion,
                     "Implementation-Vendor"   : "BlayTheNinth",
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                    "MixinConfigs"            : mod_id + ".mixins.json"
             ])
+            if (forge_mixins.toBoolean()) {
+                attributes([
+                        "MixinConfigs": mod_id + ".mixins.json"
+                ])
+            }
         }
     }
 
