@@ -6,6 +6,8 @@ import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,6 +19,7 @@ import java.util.Set;
 
 public class TrashSlotSaveState {
 
+    private static final Logger logger = LogManager.getLogger();
     private static final String SETTINGS_FILE = "TrashSlotSaveState.json";
     private static final Gson gson = new Gson();
     private static final Set<String> hardcodedGuiBlackList = Sets.newHashSet();
@@ -54,8 +57,8 @@ public class TrashSlotSaveState {
             if (saveStateFile.exists()) {
                 try (FileReader reader = new FileReader(saveStateFile)) {
                     instance = gson.fromJson(reader, TrashSlotSaveState.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Throwable e) {
+                    logger.error("Failed to load TrashSlot save state, resetting to default", e);
                 }
             }
         }
