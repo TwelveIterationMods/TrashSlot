@@ -28,7 +28,7 @@ public class MessageTrashSlotClick {
 
     public static void handle(ServerPlayer player, MessageTrashSlotClick message) {
         ItemStack actualMouseItem = player.containerMenu.getCarried();
-        if (ItemStack.isSame(actualMouseItem, message.itemStack)) {
+        if (ItemStack.matches(actualMouseItem, message.itemStack)) {
             if (actualMouseItem.isEmpty()) {
                 ItemStack trashStack = TrashHelper.getTrashItem(player);
                 ItemStack mouseStack = message.isRightClick ? trashStack.split(1) : trashStack;

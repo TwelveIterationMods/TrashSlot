@@ -77,7 +77,7 @@ public class MessageDeleteFromSlot {
         ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
         container.clicked(slotNumber, 0, ClickType.PICKUP, player);
         ItemStack mouseStack = container.getCarried();
-        if (ItemStack.isSame(itemStack, mouseStack)) {
+        if (ItemStack.matches(itemStack, mouseStack)) {
             container.setCarried(ItemStack.EMPTY);
             TrashHelper.setTrashItem(player, mouseStack);
             return !itemStack.isEmpty();
