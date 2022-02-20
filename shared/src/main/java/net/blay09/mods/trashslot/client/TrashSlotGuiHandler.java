@@ -44,7 +44,7 @@ public class TrashSlotGuiHandler {
         Balm.getEvents().onEvent(ScreenMouseEvent.Click.Pre.class, TrashSlotGuiHandler::onMouseClick);
         Balm.getEvents().onEvent(ScreenKeyEvent.Press.Post.class, TrashSlotGuiHandler::onKeyPress);
         Balm.getEvents().onEvent(ContainerScreenDrawEvent.Background.class, TrashSlotGuiHandler::onBackgroundDrawn);
-        Balm.getEvents().onEvent(ContainerScreenDrawEvent.Foreground.class, TrashSlotGuiHandler::onScreenDrawn);
+        Balm.getEvents().onEvent(ContainerScreenDrawEvent.Background.class, TrashSlotGuiHandler::onScreenDrawn);
     }
 
     private static void onScreenInit(ScreenInitEvent.Post event) {
@@ -215,7 +215,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    public static void onScreenDrawn(ContainerScreenDrawEvent.Foreground event) {
+    public static void onScreenDrawn(ContainerScreenDrawEvent.Background event) {
         PoseStack poseStack = event.getPoseStack();
         if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
