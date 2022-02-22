@@ -12,7 +12,7 @@ This mod is available for both Forge and Fabric (starting Minecraft 1.17).
 
 #### Fabric
 
-[![Versions](http://cf.way2muchnoise.eu/versions/547689_latest.svg)](https://minecraft.curseforge.com/projects/trashslot-fabric-edition) [![Downloads](http://cf.way2muchnoise.eu/full_547689_downloads.svg)](https://minecraft.curseforge.com/projects/trashslot-fabric-edition)
+[![Versions](http://cf.way2muchnoise.eu/versions/547689_latest.svg)](https://www.curseforge.com/minecraft/mc-mods/trashslot-fabric-edition) [![Downloads](http://cf.way2muchnoise.eu/full_547689_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/trashslot-fabric-edition)
 
 ## Contributing
 
