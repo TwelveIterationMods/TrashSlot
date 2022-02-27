@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,9 +22,12 @@ public class TrashSlotSaveState {
 
     private static final Logger logger = LogManager.getLogger();
     private static final String SETTINGS_FILE = "TrashSlotSaveState.json";
+    private static final String DEFAULT_SETTINGS_FILE = "TrashSlotSaveState.default.json";
     private static final Gson gson = new Gson();
     private static final Set<String> hardcodedGuiBlackList = Sets.newHashSet();
     private static TrashSlotSaveState instance;
+
+    private final Map<String, ContainerSettings> cachedSettings = new HashMap<>();
 
     static {
         hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/module/GuiTinkerTabs");
@@ -40,7 +44,7 @@ public class TrashSlotSaveState {
         }
 
         TrashSlotSaveState saveState = getInstance();
-        return saveState.settingsMap.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault()));
+        return saveState.cachedSettings.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault()));
     }
 
     public static void save() {
@@ -54,6 +58,15 @@ public class TrashSlotSaveState {
     private static TrashSlotSaveState getInstance() {
         if (instance == null) {
             File saveStateFile = new File(Minecraft.getInstance().gameDirectory, SETTINGS_FILE);
+            File defaultSaveStateFile = new File(Minecraft.getInstance().gameDirectory, DEFAULT_SETTINGS_FILE);
+            if (!saveStateFile.exists() && defaultSaveStateFile.exists()) {
+                try {
+                    Files.copy(defaultSaveStateFile.toPath(), saveStateFile.toPath());
+                } catch (IOException e) {
+                    logger.error("Failed to load TrashSlot default save state, will ignore defaults", e);
+                }
+            }
+
             if (saveStateFile.exists()) {
                 try (FileReader reader = new FileReader(saveStateFile)) {
                     instance = gson.fromJson(reader, TrashSlotSaveState.class);
@@ -71,9 +84,4 @@ public class TrashSlotSaveState {
         return instance;
     }
 
-    private Map<String, ContainerSettings> settingsMap = new HashMap<>();
-
-    public Map<String, ContainerSettings> getSettingsMap() {
-        return settingsMap;
-    }
 }
