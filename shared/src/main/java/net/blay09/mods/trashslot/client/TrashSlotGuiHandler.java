@@ -167,7 +167,7 @@ public class TrashSlotGuiHandler {
         LocalPlayer player = Minecraft.getInstance().player;
 
         // Special handling for creative inventory. We don't have a TrashSlot here, but we still allow deleting via DELETE key
-        if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeyInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
+        if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeysInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
             Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
             DeletionProvider creativeDeletionProvider = TrashSlotConfig.getCreativeDeletionProvider();
             if (mouseSlot != null && mouseSlot.getClass() == Slot.class) {
