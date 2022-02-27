@@ -1,3 +1,8 @@
+### Version 11.1.0 for Minecraft 1.18.x
+
+- Added loading of default settings from TrashSlotSaveState.default.json if none exist, allowing modpacks to provide defaults
+- Updated Chinese Translation (by Q2297045667)
+
 ### Version 11.0.2 for Minecraft 1.18.x
 
 - Fixed trash slot rendering incorrectly on Fabric (and Forge with latest Balm)
