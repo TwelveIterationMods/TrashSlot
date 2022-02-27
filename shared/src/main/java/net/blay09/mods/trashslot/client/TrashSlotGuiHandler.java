@@ -22,8 +22,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -152,38 +155,50 @@ public class TrashSlotGuiHandler {
             return false;
         }
 
-        if (currentContainerSettings.isEnabled()) {
-            boolean isDelete = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode);
-            boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
+        boolean isDelete = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode);
+        boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
 
-            // For Fabric: if both delete and delete all match, and we don't support key modifiers (as in Fabric), specifically require Shift for isDeleteAll
-            if(isDelete && isDeleteAll && !PlatformBindings.INSTANCE.supportsKeyModifiers()) {
-                isDelete = !Screen.hasShiftDown();
-                isDeleteAll = Screen.hasShiftDown();
-            }
+        // For Fabric: if both delete and delete all match, and we don't support key modifiers (as in Fabric), specifically require Shift for isDeleteAll
+        if (isDelete && isDeleteAll && !PlatformBindings.INSTANCE.supportsKeyModifiers()) {
+            isDelete = !Screen.hasShiftDown();
+            isDeleteAll = Screen.hasShiftDown();
+        }
 
-            if (isDelete || isDeleteAll) {
-                Player entityPlayer = Minecraft.getInstance().player;
-                if (entityPlayer != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
-                    Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
-                    if (mouseSlot != null && mouseSlot.hasItem()) {
-                        deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
-                    } else {
-                        Window mainWindow = Minecraft.getInstance().getWindow();
-                        double rawMouseX = Minecraft.getInstance().mouseHandler.xpos();
-                        double rawMouseY = Minecraft.getInstance().mouseHandler.ypos();
-                        double mouseX = rawMouseX * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getWidth();
-                        double mouseY = rawMouseY * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getHeight();
+        LocalPlayer player = Minecraft.getInstance().player;
 
-                        if (((AbstractContainerScreenAccessor) containerScreen).callIsHovering(trashSlot, mouseX, mouseY)) {
-                            deletionProvider.emptyTrashSlot(trashSlot);
-                        }
-                    }
-                    return true;
-                }
+        // Special handling for creative inventory. We don't have a TrashSlot here, but we still allow deleting via DELETE key
+        if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeyInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
+            Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
+            DeletionProvider creativeDeletionProvider = TrashSlotConfig.getCreativeDeletionProvider();
+            if (mouseSlot != null && mouseSlot.getClass() == Slot.class) {
+                creativeDeletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index - 9, isDeleteAll, trashSlot);
+            } else if (mouseSlot != null && mouseSlot.getClass().getSimpleName().equals("SlotWrapper")) {
+                creativeDeletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.getContainerSlot(), isDeleteAll, trashSlot);
             }
         }
 
+        // For all other screens, respect the normal settings
+        if (currentContainerSettings.isEnabled() && (isDelete || isDeleteAll)) {
+            if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
+                Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
+                if (mouseSlot != null && mouseSlot.hasItem()) {
+                    deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
+                } else {
+                    Window mainWindow = Minecraft.getInstance().getWindow();
+                    double rawMouseX = Minecraft.getInstance().mouseHandler.xpos();
+                    double rawMouseY = Minecraft.getInstance().mouseHandler.ypos();
+                    double mouseX = rawMouseX * (double) mainWindow.getGuiScaledWidth() / (double) mainWindow.getWidth();
+                    double mouseY = rawMouseY * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getHeight();
+
+                    if (((AbstractContainerScreenAccessor) containerScreen).callIsHovering(trashSlot, mouseX, mouseY)) {
+                        deletionProvider.emptyTrashSlot(trashSlot);
+                    }
+                }
+                return true;
+            }
+        }
+
+        // Toggling of trashslot
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
             if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlot, type, keyCode, scanCode)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());

@@ -1,6 +1,7 @@
 ### Version 11.1.0 for Minecraft 1.18.x
 
 - Added loading of default settings from TrashSlotSaveState.default.json if none exist, allowing modpacks to provide defaults
+- Added enableDeleteKeysInCreative option to make the delete keys work in Creative Mode as well
 - Updated Chinese Translation (by Q2297045667)
 
 ### Version 11.0.2 for Minecraft 1.18.x

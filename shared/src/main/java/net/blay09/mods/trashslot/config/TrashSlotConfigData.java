@@ -11,4 +11,6 @@ public class TrashSlotConfigData implements BalmConfigData {
     @Comment("This causes the deletion slot to delete items instantly, similar to Creative Mode.")
     public boolean instantDeletion = false;
 
+    @Comment("Set to true if you want the delete keybindings to work in creative as well. Note: Items will be deleted permanently in creative, regardless of instantDeletion setting!")
+    public boolean enableDeleteKeysInCreative = true;
 }

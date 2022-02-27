@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class TrashSlotConfig {
 
     private static DeletionProvider deletionProvider;
+    private static final DeletionProvider creativeDeletionProvider = new CreativeDeletionProvider();
 
     public static TrashSlotConfigData getActive() {
         return Balm.getConfig().getActive(TrashSlotConfigData.class);
@@ -25,10 +26,13 @@ public class TrashSlotConfig {
     @Nullable
     public static DeletionProvider getDeletionProvider() {
         if (TrashSlot.isServerSideInstalled && deletionProvider == null) {
-            deletionProvider = getActive().instantDeletion ? new CreativeDeletionProvider() : new DefaultDeletionProvider();
+            deletionProvider = getActive().instantDeletion ? creativeDeletionProvider : new DefaultDeletionProvider();
         }
 
         return deletionProvider;
     }
 
+    public static DeletionProvider getCreativeDeletionProvider() {
+        return creativeDeletionProvider;
+    }
 }

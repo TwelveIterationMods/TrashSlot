@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,22 +16,22 @@ import net.minecraft.world.item.ItemStack;
 public class MessageDeleteFromSlot {
 
     private final int slotNumber;
-    private final boolean isShiftDown;
+    private final boolean isDeleteAll;
 
-    public MessageDeleteFromSlot(int slotNumber, boolean isShiftDown) {
+    public MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) {
         this.slotNumber = slotNumber;
-        this.isShiftDown = isShiftDown;
+        this.isDeleteAll = isDeleteAll;
     }
 
     public static void encode(final MessageDeleteFromSlot message, final FriendlyByteBuf buf) {
         buf.writeByte(message.slotNumber);
-        buf.writeBoolean(message.isShiftDown);
+        buf.writeBoolean(message.isDeleteAll);
     }
 
     public static MessageDeleteFromSlot decode(final FriendlyByteBuf buf) {
         int slotNumber = buf.readByte();
-        boolean isShiftDown = buf.readBoolean();
-        return new MessageDeleteFromSlot(slotNumber, isShiftDown);
+        boolean isDeleteAll = buf.readBoolean();
+        return new MessageDeleteFromSlot(slotNumber, isDeleteAll);
     }
 
     public static void handle(ServerPlayer player, MessageDeleteFromSlot message) {
@@ -50,7 +51,7 @@ public class MessageDeleteFromSlot {
             return;
         }
 
-        if (message.isShiftDown) {
+        if (message.isDeleteAll) {
             ItemStack deleteStack = deleteSlot.getItem().copy();
             if (!deleteStack.isEmpty()) {
                 if (attemptDeleteFromSlot(player, container, message.slotNumber)) {
