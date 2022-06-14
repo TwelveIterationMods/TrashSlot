@@ -23,10 +23,9 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -233,7 +232,7 @@ public class TrashSlotGuiHandler {
     public static void onScreenDrawn(ContainerScreenDrawEvent.Background event) {
         PoseStack poseStack = event.getPoseStack();
         if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-            TranslatableComponent noHabloEspanol = new TranslatableComponent("trashslot.serverNotInstalled");
+            MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
             noHabloEspanol.withStyle(ChatFormatting.RED);
             screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(noHabloEspanol) / 2, 25);
         }
