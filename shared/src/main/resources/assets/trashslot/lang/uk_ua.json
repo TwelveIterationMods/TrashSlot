@@ -1,0 +1,10 @@
+{
+  "trashslot.serverNotInstalled": "На сервері не встановлено TrashSlot. Цей мод буде вимкнено.",
+  "key.trashslot.toggle": "Показати/Приховати корзину",
+  "key.trashslot.delete": "Видалити предмет",
+  "key.trashslot.deleteAll": "Видалити всі предмети цього типу",
+  "key.categories.trashslot": "TrashSlot",
+  "trashslot.config.instantDeletion": "Миттєве видалення",
+  "text.autoconfig.trashslot.title": "TrashSlot",
+  "text.autoconfig.trashslot.option.instantDeletion": "Миттєве видалення"
+}
