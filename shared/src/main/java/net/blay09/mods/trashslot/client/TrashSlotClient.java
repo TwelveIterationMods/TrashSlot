@@ -15,7 +15,6 @@ import net.minecraft.world.item.ItemStack;
 public class TrashSlotClient {
     public static void initialize() {
         ModKeyMappings.initialize(BalmClient.getKeyMappings());
-        ModTextures.initialize(BalmClient.getTextures());
 
         TrashSlotAPI.registerLayout(InventoryScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
         TrashSlotAPI.registerLayout(CraftingScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
