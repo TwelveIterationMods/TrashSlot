@@ -1,7 +1,7 @@
 modLoader="javafml"
 loaderVersion="[38,)"
 license="All rights reserved"
-issueTrackerURL="https://github.com/ModdingForBlockheads/TrashSlot/issues"
+issueTrackerURL="https://github.com/TwelveIterationMods/TrashSlot/issues"
 
 [[mods]]
 modId="trashslot"
