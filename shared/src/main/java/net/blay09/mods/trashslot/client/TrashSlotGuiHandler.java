@@ -50,6 +50,11 @@ public class TrashSlotGuiHandler {
     }
 
     private static void onScreenInit(ScreenInitEvent.Post event) {
+        // Ignore screens from ReplayMod because they wrap every screen with their own class for some reason
+        if (event.getScreen().getClass().getName().startsWith("com.replaymod")) {
+            return;
+        }
+
         if (event.getScreen() instanceof CreativeModeInventoryScreen) {
             currentContainerSettings = ContainerSettings.NONE;
             trashSlotComponent = null;
