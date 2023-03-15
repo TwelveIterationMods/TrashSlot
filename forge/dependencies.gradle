@@ -1,5 +1,2 @@
 dependencies {
-    compileOnly fg.deobf("mezz.jei:jei-1.19.2-common-api:11.4.0.288")
-    compileOnly fg.deobf("mezz.jei:jei-1.19.2-forge-api:11.4.0.288")
-    //runtimeOnly fg.deobf("mezz.jei:jei-1.19.2-forge:11.4.0.288")
 }

@@ -50,6 +50,11 @@ public class TrashSlotGuiHandler {
     }
 
     private static void onScreenInit(ScreenInitEvent.Post event) {
+        // Ignore screens from ReplayMod because they wrap every screen with their own class for some reason
+        if (event.getScreen().getClass().getName().startsWith("com.replaymod")) {
+            return;
+        }
+
         if (event.getScreen() instanceof CreativeModeInventoryScreen) {
             currentContainerSettings = ContainerSettings.NONE;
             trashSlotComponent = null;
@@ -234,7 +239,11 @@ public class TrashSlotGuiHandler {
         if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
             noHabloEspanol.withStyle(ChatFormatting.RED);
-            screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(noHabloEspanol) / 2, 25);
+            screen.renderComponentTooltip(poseStack,
+                    Lists.newArrayList(noHabloEspanol),
+                    ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(
+                            noHabloEspanol) / 2,
+                    25);
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
