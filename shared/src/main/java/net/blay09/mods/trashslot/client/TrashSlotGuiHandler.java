@@ -228,7 +228,7 @@ public class TrashSlotGuiHandler {
             if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY())) {
                 poseStack.pushPose();
                 poseStack.translate(((AbstractContainerScreenAccessor) screen).getLeftPos(), ((AbstractContainerScreenAccessor) screen).getTopPos(), 0);
-                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, screen.getBlitOffset());
+                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, 0);
                 poseStack.popPose();
             }
         }

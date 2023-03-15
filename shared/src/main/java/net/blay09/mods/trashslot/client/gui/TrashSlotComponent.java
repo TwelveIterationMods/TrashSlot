@@ -139,7 +139,10 @@ public class TrashSlotComponent extends GuiComponent {
         AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
         ((SlotAccessor) trashSlot).setX(renderX - screenAccessor.getLeftPos() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(screen, renderStyle));
         ((SlotAccessor) trashSlot).setY(renderY - screenAccessor.getTopPos() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
-        setBlitOffset(1);
+
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 1);
+
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, texture);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
@@ -204,7 +207,8 @@ public class TrashSlotComponent extends GuiComponent {
                 blit(poseStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
             }
         }
-        setBlitOffset(0);
+
+        poseStack.popPose();
     }
 
     private int getAnchoredX() {
