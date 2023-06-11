@@ -15,14 +15,14 @@ import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-public class TrashSlotComponent extends GuiComponent {
+public class TrashSlotComponent {
 
     private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
@@ -62,7 +62,8 @@ public class TrashSlotComponent extends GuiComponent {
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if (TrashSlotGuiHandler.isLeftMouseDown()) {
             if (!isDragging && isMouseOver && !wasMouseDown) {
-                if (Minecraft.getInstance().player.containerMenu.getCarried().isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
+                if (Minecraft.getInstance().player.containerMenu.getCarried()
+                        .isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
                     isDragging = true;
@@ -132,7 +133,7 @@ public class TrashSlotComponent extends GuiComponent {
         }
     }
 
-    public void drawBackground(PoseStack poseStack) {
+    public void drawBackground(GuiGraphics guiGraphics) {
         int renderX = getAnchoredX();
         int renderY = getAnchoredY();
         renderStyle = layout.getSlotRenderStyle(screen, renderX, renderY);
@@ -140,11 +141,11 @@ public class TrashSlotComponent extends GuiComponent {
         ((SlotAccessor) trashSlot).setX(renderX - screenAccessor.getLeftPos() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(screen, renderStyle));
         ((SlotAccessor) trashSlot).setY(renderY - screenAccessor.getTopPos() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
 
+        var poseStack = guiGraphics.pose();
         poseStack.pushPose();
         poseStack.translate(0, 0, 1);
 
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-        RenderSystem.setShaderTexture(0, texture);
+        guiGraphics.setColor(1f, 1f, 1f, 1f);
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
@@ -153,58 +154,58 @@ public class TrashSlotComponent extends GuiComponent {
             texOffsetX = 64;
         }
         switch (renderStyle) {
-            case LONE -> blit(poseStack, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+            case LONE -> guiGraphics.blit(texture, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
             case ATTACH_BOTTOM_CENTER -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
             }
             case ATTACH_BOTTOM_LEFT -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4);
             }
             case ATTACH_BOTTOM_RIGHT -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY, texOffsetX + 50, 29, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 50, 29, 4, 4);
             }
             case ATTACH_TOP_CENTER -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
             }
             case ATTACH_TOP_LEFT -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4);
             }
             case ATTACH_TOP_RIGHT -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4);
             }
             case ATTACH_LEFT_CENTER -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
             }
             case ATTACH_LEFT_TOP -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4);
             }
             case ATTACH_LEFT_BOTTOM -> {
-                blit(poseStack, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4);
             }
             case ATTACH_RIGHT_CENTER -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
-                blit(poseStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
             }
             case ATTACH_RIGHT_TOP -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4);
             }
             case ATTACH_RIGHT_BOTTOM -> {
-                blit(poseStack, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
-                blit(poseStack, renderX, renderY, texOffsetX + 54, 33, 4, 4);
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+                guiGraphics.blit(texture, renderX, renderY, texOffsetX + 54, 33, 4, 4);
             }
         }
 
@@ -213,7 +214,9 @@ public class TrashSlotComponent extends GuiComponent {
 
     private int getAnchoredX() {
         AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return Mth.clamp(settings.getSlotX() + screenAccessor.getLeftPos() + (int) (screenAccessor.getImageWidth() * settings.getAnchorX()), 0, screen.width - renderStyle.getRenderWidth());
+        return Mth.clamp(settings.getSlotX() + screenAccessor.getLeftPos() + (int) (screenAccessor.getImageWidth() * settings.getAnchorX()),
+                0,
+                screen.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredX(int x) {
@@ -223,7 +226,9 @@ public class TrashSlotComponent extends GuiComponent {
 
     private int getAnchoredY() {
         AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return Mth.clamp(settings.getSlotY() + screenAccessor.getTopPos() + (int) (screenAccessor.getImageHeight() * settings.getAnchorY()), 0, screen.width - renderStyle.getRenderWidth());
+        return Mth.clamp(settings.getSlotY() + screenAccessor.getTopPos() + (int) (screenAccessor.getImageHeight() * settings.getAnchorY()),
+                0,
+                screen.width - renderStyle.getRenderWidth());
     }
 
     private int getUnanchoredY(int y) {

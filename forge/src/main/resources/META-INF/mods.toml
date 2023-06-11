@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/TwelveIterationMods/TrashSlot/issues"
 
 [[mods]]
 modId="trashslot"
-version="${file.jarVersion}"
+version="${mod_version}"
 displayName="TrashSlot"
 displayURL="https://mods.twelveiterations.com/mc/trashslot"
 logoFile="trashslot-icon.png"

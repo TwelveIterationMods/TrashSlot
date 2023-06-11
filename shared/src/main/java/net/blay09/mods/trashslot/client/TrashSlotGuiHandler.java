@@ -3,7 +3,6 @@ package net.blay09.mods.trashslot.client;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.screen.*;
@@ -28,6 +27,8 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+
+import java.util.Optional;
 
 public class TrashSlotGuiHandler {
 
@@ -215,7 +216,6 @@ public class TrashSlotGuiHandler {
     }
 
     public static void onBackgroundDrawn(ContainerScreenDrawEvent.Background event) {
-        PoseStack poseStack = event.getPoseStack();
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;
@@ -223,27 +223,28 @@ public class TrashSlotGuiHandler {
 
         if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
             trashSlotComponent.update(event.getMouseX(), event.getMouseY());
-            trashSlotComponent.drawBackground(poseStack);
+            trashSlotComponent.drawBackground(event.getGuiGraphics());
 
             if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY())) {
+                var poseStack = event.getGuiGraphics().pose();
                 poseStack.pushPose();
                 poseStack.translate(((AbstractContainerScreenAccessor) screen).getLeftPos(), ((AbstractContainerScreenAccessor) screen).getTopPos(), 0);
-                AbstractContainerScreen.renderSlotHighlight(poseStack, trashSlot.x, trashSlot.y, 0);
+                AbstractContainerScreen.renderSlotHighlight(event.getGuiGraphics(), trashSlot.x, trashSlot.y, 0);
                 poseStack.popPose();
             }
         }
     }
 
     public static void onScreenDrawn(ContainerScreenDrawEvent.Background event) {
-        PoseStack poseStack = event.getPoseStack();
         if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
             noHabloEspanol.withStyle(ChatFormatting.RED);
-            screen.renderComponentTooltip(poseStack,
+            event.getGuiGraphics().renderTooltip(
+                    Minecraft.getInstance().font,
                     Lists.newArrayList(noHabloEspanol),
+                    Optional.empty(),
                     ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(
-                            noHabloEspanol) / 2,
-                    25);
+                            noHabloEspanol) / 2, 25);
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
@@ -257,13 +258,13 @@ public class TrashSlotGuiHandler {
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
             slotAccessor.setX(trashSlot.x + ((AbstractContainerScreenAccessor) screen).getLeftPos());
             slotAccessor.setY(trashSlot.y + ((AbstractContainerScreenAccessor) screen).getTopPos());
-            ((AbstractContainerScreenAccessor) screen).callRenderSlot(poseStack, trashSlot);
+            ((AbstractContainerScreenAccessor) screen).callRenderSlot(event.getGuiGraphics(), trashSlot);
             slotAccessor.setX(trashSlot.x - ((AbstractContainerScreenAccessor) screen).getLeftPos());
             slotAccessor.setY(trashSlot.y - ((AbstractContainerScreenAccessor) screen).getTopPos());
 
             boolean isMouseSlot = ((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
             if (isMouseSlot && screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
-                screen.renderComponentTooltip(poseStack, screen.getTooltipFromItem(trashSlot.getItem()), event.getMouseX(), event.getMouseY());
+                event.getGuiGraphics().renderTooltip(Minecraft.getInstance().font, trashSlot.getItem(), event.getMouseX(), event.getMouseY());
             }
         }
     }

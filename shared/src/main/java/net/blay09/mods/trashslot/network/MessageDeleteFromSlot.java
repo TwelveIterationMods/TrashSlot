@@ -57,9 +57,7 @@ public class MessageDeleteFromSlot {
                 if (attemptDeleteFromSlot(player, container, message.slotNumber)) {
                     for (int i = 0; i < container.slots.size(); i++) {
                         ItemStack slotStack = container.slots.get(i).getItem();
-                        if (!slotStack.isEmpty()
-                                && ItemStack.isSame(slotStack, deleteStack)
-                                && ItemStack.isSameItemSameTags(slotStack, deleteStack)) {
+                        if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(slotStack, deleteStack)) {
                             if (!attemptDeleteFromSlot(player, container, i)) {
                                 break;
                             }
