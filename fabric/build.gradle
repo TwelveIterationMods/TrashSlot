@@ -33,9 +33,7 @@ dependencies {
 		modRuntimeOnly "mezz.jei:jei-$jei_minecraft_version-fabric:$jei_version"
 	}
 
-	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:$rei_version") {
-		transitive = false
-	}
+	modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:$rei_version")
 
 	modCompileOnly "curse.maven:jade-324717:$jade_forge_version"
 	modCompileOnly "mcp.mobius.waila:wthit-api:mojmap-$wthit_version"
