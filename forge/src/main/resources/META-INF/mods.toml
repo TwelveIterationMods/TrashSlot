@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[45,)"
+loaderVersion="${forge_loader_version_range}"
 license="All rights reserved"
 issueTrackerURL="https://github.com/TwelveIterationMods/TrashSlot/issues"
 
@@ -7,7 +7,7 @@ issueTrackerURL="https://github.com/TwelveIterationMods/TrashSlot/issues"
 modId="trashslot"
 version="${file.jarVersion}"
 displayName="TrashSlot"
-displayURL="https://blay09.net/mods/trashslot"
+displayURL="https://mods.twelveiterations.com/mc/trashslot"
 logoFile="trashslot-icon.png"
 credits="BlayTheNinth"
 authors="BlayTheNinth"
@@ -18,18 +18,18 @@ Adds a trash slot to the inventory screen that allows deletion of unwanted items
 [[dependencies.trashslot]]
     modId="forge"
     mandatory=true
-    versionRange="[45,)"
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.trashslot]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.4,1.20)"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
 [[dependencies.trashslot]]
     modId="balm"
     mandatory=true
-    versionRange="[6.0.0,)"
+    versionRange="${balm_version_range}"
     ordering="NONE"
     side="BOTH"
