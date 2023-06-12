@@ -24,12 +24,12 @@ public class MessageDeleteFromSlot {
     }
 
     public static void encode(final MessageDeleteFromSlot message, final FriendlyByteBuf buf) {
-        buf.writeByte(message.slotNumber);
+        buf.writeVarInt(message.slotNumber);
         buf.writeBoolean(message.isDeleteAll);
     }
 
     public static MessageDeleteFromSlot decode(final FriendlyByteBuf buf) {
-        int slotNumber = buf.readByte();
+        int slotNumber = buf.readVarInt();
         boolean isDeleteAll = buf.readBoolean();
         return new MessageDeleteFromSlot(slotNumber, isDeleteAll);
     }
