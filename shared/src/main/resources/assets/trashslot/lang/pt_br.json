@@ -5,7 +5,7 @@
     "key.trashslot.deleteAll": "Excluir todos os itens do tipo",
     "key.categories.trashslot": "TrashSlot",
     "trashslot.config.instantDeletion": "Exclusão instantânea",
-    "text.autoconfig.trashslot.title": "TrashSlot",
-    "text.autoconfig.trashslot.option.instantDeletion": "Exclusão instantânea"
+    "config.trashslot.title": "TrashSlot",
+    "config.trashslot.instantDeletion": "Exclusão instantânea"
   }
   

@@ -5,6 +5,6 @@
   "key.trashslot.deleteAll": "유형의 모든 아이템 삭제",
   "key.categories.trashslot": "쓰레기 슬롯",
   "trashslot.config.instantDeletion": "즉시 삭제하기",
-  "text.autoconfig.trashslot.title": "쓰레기 슬롯",
-  "text.autoconfig.trashslot.option.instantDeletion": "즉시 삭제"
+  "config.trashslot.title": "쓰레기 슬롯",
+  "config.trashslot.instantDeletion": "즉시 삭제"
 }
