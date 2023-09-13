@@ -56,6 +56,11 @@ public class TrashSlotGuiHandler {
             return;
         }
 
+        Player player = Minecraft.getInstance().player;
+        if (player != null && player.isSpectator()) {
+            return;
+        }
+
         if (event.getScreen() instanceof CreativeModeInventoryScreen) {
             currentContainerSettings = ContainerSettings.NONE;
             trashSlotComponent = null;
@@ -71,7 +76,7 @@ public class TrashSlotGuiHandler {
             }
 
             // For some reason this event gets fired with GuiInventory right after opening the creative menu, AFTER it got fired for GuiContainerCreative
-            if (screen instanceof InventoryScreen && Minecraft.getInstance().player.getAbilities().instabuild) {
+            if (screen instanceof InventoryScreen && player != null && player.getAbilities().instabuild) {
                 return;
             }
 
