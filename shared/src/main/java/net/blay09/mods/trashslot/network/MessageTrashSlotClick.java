@@ -27,6 +27,10 @@ public class MessageTrashSlotClick {
     }
 
     public static void handle(ServerPlayer player, MessageTrashSlotClick message) {
+        if (player.isSpectator()) {
+            return;
+        }
+
         ItemStack actualMouseItem = player.containerMenu.getCarried();
         if (ItemStack.matches(actualMouseItem, message.itemStack)) {
             if (actualMouseItem.isEmpty()) {

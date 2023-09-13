@@ -35,6 +35,10 @@ public class MessageDeleteFromSlot {
     }
 
     public static void handle(ServerPlayer player, MessageDeleteFromSlot message) {
+        if (player.isSpectator()) {
+            return;
+        }
+
         if (message.slotNumber == -1) {
             TrashHelper.setTrashItem(player, ItemStack.EMPTY);
             Balm.getNetworking().reply(new MessageTrashSlotContent(ItemStack.EMPTY));
