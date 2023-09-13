@@ -1,1 +1,2 @@
-- Updated to Minecraft 1.20
+- Fixed delete key not working correctly in large inventories
+- Fixed trash slot being accessible in spectator mode
