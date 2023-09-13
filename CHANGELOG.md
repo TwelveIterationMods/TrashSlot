@@ -1,1 +1,2 @@
-- Fixed incompatibility with ReplayMod
+- Fixed delete key not working correctly in large inventories
+- Fixed trash slot being accessible in spectator mode
