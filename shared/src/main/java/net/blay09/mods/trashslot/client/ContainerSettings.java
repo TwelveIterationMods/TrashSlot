@@ -6,6 +6,10 @@ public class ContainerSettings {
         @Override
         public void setEnabled(boolean isEnabled) {
         }
+
+        @Override
+        public void setLocked(boolean isLocked) {
+        }
     };
 
     private int slotX;
@@ -13,6 +17,7 @@ public class ContainerSettings {
     private float anchorX;
     private float anchorY;
     private boolean isEnabled;
+    private boolean isLocked;
 
     public ContainerSettings() {
     }
@@ -31,6 +36,14 @@ public class ContainerSettings {
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean isLocked) {
+        this.isLocked = isLocked;
     }
 
     public int getSlotX() {

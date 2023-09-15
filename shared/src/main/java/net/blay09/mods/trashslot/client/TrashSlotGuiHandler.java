@@ -244,6 +244,19 @@ public class TrashSlotGuiHandler {
                 }
                 TrashSlotSaveState.save();
                 return true;
+            } else if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlotLock, type, keyCode, scanCode)) {
+                currentContainerSettings.setLocked(!currentContainerSettings.isLocked());
+                if (currentContainerSettings.isLocked()) {
+                    var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    hintMessage.withStyle(ChatFormatting.GOLD);
+                    showHint(Hints.LOCKED, hintMessage, 5000, true);
+                } else {
+                    var hintMessage = Component.translatable("trashslot.hint.unlocked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    hintMessage.withStyle(ChatFormatting.GOLD);
+                    showHint(Hints.UNLOCKED, hintMessage, 5000, true);
+                }
+                TrashSlotSaveState.save();
+                return true;
             }
         }
 
