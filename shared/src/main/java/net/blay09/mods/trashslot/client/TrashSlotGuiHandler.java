@@ -195,11 +195,16 @@ public class TrashSlotGuiHandler {
         }
 
         // For all other screens, respect the normal settings
-        if (currentContainerSettings.isEnabled() && (isDelete || isDeleteAll)) {
+        if ((currentContainerSettings.isEnabled() || TrashSlotConfig.getActive().allowDeletionWhileTrashSlotIsInvisible) && (isDelete || isDeleteAll)) {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
                     deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
+                    if(!currentContainerSettings.isEnabled()) {
+                        var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
+                        hintMessage.withStyle(ChatFormatting.GOLD);
+                        showHint(Hints.DELETED_WHILE_HIDDEN, hintMessage, 800, true);
+                    }
                 } else {
                     Window mainWindow = Minecraft.getInstance().getWindow();
                     double rawMouseX = Minecraft.getInstance().mouseHandler.xpos();

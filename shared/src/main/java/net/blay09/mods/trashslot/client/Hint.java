@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import java.util.Optional;
 
 public class Hint {
+
     private final String id;
     private final Component message;
     private final long endOfLife;
@@ -25,7 +26,7 @@ public class Hint {
                 Minecraft.getInstance().font,
                 Lists.newArrayList(message),
                 Optional.empty(),
-                ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(message) / 2, ((AbstractContainerScreenAccessor) screen).getTopPos() - 10);
+                ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(message) / 2 - 12, ((AbstractContainerScreenAccessor) screen).getTopPos() - 20 + 12);
     }
 
     public boolean isComplete() {

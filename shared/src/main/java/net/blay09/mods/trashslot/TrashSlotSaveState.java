@@ -58,7 +58,7 @@ public class TrashSlotSaveState {
     }
 
     public boolean hasSeenHint(String hint) {
-        return false && hintsSeen.contains(hint);
+        return hintsSeen.contains(hint);
     }
 
     public void markHintAsSeen(String hint) {
