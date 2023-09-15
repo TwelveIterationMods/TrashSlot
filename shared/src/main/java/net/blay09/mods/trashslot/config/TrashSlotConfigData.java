@@ -3,7 +3,11 @@ package net.blay09.mods.trashslot.config;
 import me.shedaniel.autoconfig.annotation.Config;
 import net.blay09.mods.balm.api.config.BalmConfigData;
 import net.blay09.mods.balm.api.config.Comment;
+import net.blay09.mods.balm.api.config.ExpectedType;
 import net.blay09.mods.trashslot.TrashSlot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Config(name = TrashSlot.MOD_ID)
 public class TrashSlotConfigData implements BalmConfigData {
@@ -19,4 +23,8 @@ public class TrashSlotConfigData implements BalmConfigData {
 
     @Comment("Not recommended, but this will allow you to use the keybinds for deleting items even if the trash slot itself is hidden.")
     public boolean allowDeletionWhileTrashSlotIsInvisible = false;
+
+    @Comment("List of items that cannot be deleted, in comma-separated format of \"modid:name\".")
+    @ExpectedType(String.class)
+    public List<String> deletionDenyList = new ArrayList<>();
 }

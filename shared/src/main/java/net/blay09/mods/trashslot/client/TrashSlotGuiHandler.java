@@ -138,7 +138,15 @@ public class TrashSlotGuiHandler {
                     if (mouseItem.isEmpty()) {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
-                        deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
+                        // check deny list first
+                        var registryName = Balm.getRegistries().getKey(mouseItem.getItem());
+                        if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                            deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
+                        } else {
+                            var hintMessage = Component.translatable("trashslot.hint.deletionDenied");
+                            hintMessage.withStyle(ChatFormatting.RED);
+                            showHint(Hints.DELETION_DENIED, hintMessage, 1000, true);
+                        }
                     }
 
                     event.setCanceled(true);
@@ -199,11 +207,18 @@ public class TrashSlotGuiHandler {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
-                    deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
-                    if(!currentContainerSettings.isEnabled()) {
-                        var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
-                        hintMessage.withStyle(ChatFormatting.GOLD);
-                        showHint(Hints.DELETED_WHILE_HIDDEN, hintMessage, 800, true);
+                    var registryName = Balm.getRegistries().getKey(mouseSlot.getItem().getItem());
+                    if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                        deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
+                        if (!currentContainerSettings.isEnabled()) {
+                            var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
+                            hintMessage.withStyle(ChatFormatting.GOLD);
+                            showHint(Hints.DELETED_WHILE_HIDDEN, hintMessage, 800, true);
+                        }
+                    } else {
+                        var hintMessage = Component.translatable("trashslot.hint.deletionDenied");
+                        hintMessage.withStyle(ChatFormatting.RED);
+                        showHint(Hints.DELETION_DENIED, hintMessage, 1000, true);
                     }
                 } else {
                     Window mainWindow = Minecraft.getInstance().getWindow();
