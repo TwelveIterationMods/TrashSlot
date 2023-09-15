@@ -298,7 +298,7 @@ public class TrashSlotGuiHandler {
     public static void onScreenDrawn(ContainerScreenDrawEvent.Background event) {
         PoseStack poseStack = event.getPoseStack();
         if (currentHint != null) {
-            currentHint.render(event.getScreen(), event.getGuiGraphics());
+            currentHint.render(event.getScreen(), poseStack);
             if (currentHint.isComplete()) {
                 TrashSlotSaveState.getInstance().markHintAsSeen(currentHint.getId());
                 TrashSlotSaveState.save();

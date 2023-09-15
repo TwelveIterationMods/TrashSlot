@@ -1,13 +1,11 @@
 package net.blay09.mods.trashslot.client;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-
-import java.util.Optional;
 
 public class Hint {
 
@@ -21,12 +19,8 @@ public class Hint {
         this.endOfLife = System.currentTimeMillis() + timeToDisplay;
     }
 
-    public void render(Screen screen, GuiGraphics guiGraphics) {
-        guiGraphics.renderTooltip(
-                Minecraft.getInstance().font,
-                Lists.newArrayList(message),
-                Optional.empty(),
-                ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(message) / 2 - 12, ((AbstractContainerScreenAccessor) screen).getTopPos() - 20 + 12);
+    public void render(Screen screen, PoseStack poseStack) {
+        screen.renderComponentTooltip(poseStack, Lists.newArrayList(message), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(message) / 2 - 12, 25 + 12);
     }
 
     public boolean isComplete() {
