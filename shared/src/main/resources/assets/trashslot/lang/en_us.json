@@ -9,5 +9,7 @@
   "config.trashslot.instantDeletion": "Instant Deletion",
   "config.trashslot.instantDeletion.tooltip": "This causes the deletion slot to delete items instantly, similar to Creative Mode.",
   "config.trashslot.enableDeleteKeysInCreative": "Delete Keys in Creative",
-  "config.trashslot.enableDeleteKeysInCreative.tooltip": "Set to true if you want the delete keybindings to work in creative as well. Note: Items will be deleted permanently in creative, regardless of instantDeletion setting!"
+  "config.trashslot.enableDeleteKeysInCreative.tooltip": "Set to true if you want the delete keybindings to work in creative as well. Note: Items will be deleted permanently in creative, regardless of instantDeletion setting!",
+  "trashslot.hint.toggleOn": "Press %s to enable the trash slot for this screen!",
+  "trashslot.hint.toggledOff": "You've toggled off the trash slot! Press %s to re-enable it."
 }

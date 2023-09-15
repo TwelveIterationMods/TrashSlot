@@ -13,4 +13,7 @@ public class TrashSlotConfigData implements BalmConfigData {
 
     @Comment("Set to true if you want the delete keybindings to work in creative as well. Note: Items will be deleted permanently in creative, regardless of instantDeletion setting!")
     public boolean enableDeleteKeysInCreative = true;
+
+    @Comment("TrashSlot will show a hint the first time the trash slot is toggled off or can be enabled on a supported screen. Set to false to disable.")
+    public boolean enableHints = true;
 }
