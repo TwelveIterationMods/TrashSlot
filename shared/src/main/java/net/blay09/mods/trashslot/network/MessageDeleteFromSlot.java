@@ -2,7 +2,7 @@ package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -78,6 +78,11 @@ public class MessageDeleteFromSlot {
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
         ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
+        var registryName = Balm.getRegistries().getKey(itemStack.getItem());
+        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+            return false;
+        }
+
         container.clicked(slotNumber, 0, ClickType.PICKUP, player);
         ItemStack mouseStack = container.getCarried();
         if (ItemStack.matches(itemStack, mouseStack)) {

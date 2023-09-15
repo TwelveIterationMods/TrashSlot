@@ -1,6 +1,8 @@
 package net.blay09.mods.trashslot.network;
 
+import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
+import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -32,6 +34,11 @@ public class MessageTrashSlotClick {
         }
 
         ItemStack actualMouseItem = player.containerMenu.getCarried();
+        var registryName = Balm.getRegistries().getKey(actualMouseItem.getItem());
+        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+            return;
+        }
+
         if (ItemStack.matches(actualMouseItem, message.itemStack)) {
             if (actualMouseItem.isEmpty()) {
                 ItemStack trashStack = TrashHelper.getTrashItem(player);
