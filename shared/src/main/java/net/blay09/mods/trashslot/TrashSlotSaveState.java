@@ -1,6 +1,5 @@
 package net.blay09.mods.trashslot;
 
-import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.ContainerSettings;
@@ -25,26 +24,13 @@ public class TrashSlotSaveState {
     private static final String SETTINGS_FILE = "TrashSlotSaveState.json";
     private static final String DEFAULT_SETTINGS_FILE = "TrashSlotSaveState.default.json";
     private static final Gson gson = new Gson();
-    private static final Set<String> hardcodedGuiBlackList = Sets.newHashSet();
     private static TrashSlotSaveState instance;
 
     private final Set<String> hintsSeen = new HashSet<>();
     private final Map<String, ContainerSettings> cachedSettings = new HashMap<>();
 
-    static {
-        hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/module/GuiTinkerTabs");
-        hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/GuiCraftingStation");
-        hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/GuiPatternChest");
-        hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/module/GuiButtonsStencilTable");
-        hardcodedGuiBlackList.add("slimeknights/tconstruct/tools/common/client/GuiPartBuilder");
-    }
-
     public static ContainerSettings getSettings(AbstractContainerScreen<?> gui, IGuiContainerLayout layout) {
         String containerId = layout.getContainerId(gui);
-        if (hardcodedGuiBlackList.contains(containerId)) {
-            return ContainerSettings.NONE;
-        }
-
         TrashSlotSaveState saveState = getInstance();
         return saveState.cachedSettings.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault()));
     }
