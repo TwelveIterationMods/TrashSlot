@@ -16,4 +16,7 @@ public class TrashSlotConfigData implements BalmConfigData {
 
     @Comment("TrashSlot will show a hint the first time the trash slot is toggled off or can be enabled on a supported screen. Set to false to disable.")
     public boolean enableHints = true;
+
+    @Comment("Not recommended, but this will allow you to use the keybinds for deleting items even if the trash slot itself is hidden.")
+    public boolean allowDeletionWhileTrashSlotIsInvisible = false;
 }
