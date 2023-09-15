@@ -61,7 +61,7 @@ public class TrashSlotComponent extends GuiComponent {
         int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
         boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
         if (TrashSlotGuiHandler.isLeftMouseDown()) {
-            if (!isDragging && isMouseOver && !wasMouseDown) {
+            if (!isDragging && isMouseOver && !wasMouseDown && !settings.isLocked()) {
                 if (Minecraft.getInstance().player.containerMenu.getCarried().isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
                     dragStartX = renderX - mouseX;
                     dragStartY = renderY - mouseY;
