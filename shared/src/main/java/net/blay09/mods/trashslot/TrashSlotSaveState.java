@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public class TrashSlotSaveState {
     private static final Set<String> hardcodedGuiBlackList = Sets.newHashSet();
     private static TrashSlotSaveState instance;
 
+    private final Set<String> hintsSeen = new HashSet<>();
     private final Map<String, ContainerSettings> cachedSettings = new HashMap<>();
 
     static {
@@ -55,7 +57,15 @@ public class TrashSlotSaveState {
         }
     }
 
-    private static TrashSlotSaveState getInstance() {
+    public boolean hasSeenHint(String hint) {
+        return false && hintsSeen.contains(hint);
+    }
+
+    public void markHintAsSeen(String hint) {
+        hintsSeen.add(hint);
+    }
+
+    public static TrashSlotSaveState getInstance() {
         if (instance == null) {
             File saveStateFile = new File(Minecraft.getInstance().gameDirectory, SETTINGS_FILE);
             File defaultSaveStateFile = new File(Minecraft.getInstance().gameDirectory, DEFAULT_SETTINGS_FILE);
@@ -78,7 +88,6 @@ public class TrashSlotSaveState {
 
         if (instance == null) {
             instance = new TrashSlotSaveState();
-
         }
 
         return instance;

@@ -9,6 +9,7 @@ import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
+import net.blay09.mods.trashslot.Hints;
 import net.blay09.mods.trashslot.PlatformBindings;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
@@ -39,6 +40,8 @@ public class TrashSlotGuiHandler {
     private static boolean sentMissingMessage;
     private static long missingMessageTime;
     private static boolean isLeftMouseDown;
+
+    private static Hint currentHint;
 
     public static void initialize() {
         Balm.getEvents().onEvent(ScreenInitEvent.Post.class, TrashSlotGuiHandler::onScreenInit);
@@ -83,6 +86,11 @@ public class TrashSlotGuiHandler {
             currentContainerSettings = TrashSlotSaveState.getSettings(screen, layout);
             if (currentContainerSettings != ContainerSettings.NONE) {
                 trashSlotComponent = new TrashSlotComponent(screen, layout, currentContainerSettings, trashSlot);
+
+                if (!currentContainerSettings.isEnabled() && !layout.isEnabledByDefault()) {
+                    var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    showHint(Hints.TOGGLE_ON, hintMessage, 5000);
+                }
             } else {
                 trashSlotComponent = null;
             }
@@ -211,12 +219,23 @@ public class TrashSlotGuiHandler {
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
             if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlot, type, keyCode, scanCode)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
+                if (!currentContainerSettings.isEnabled()) {
+                    var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    showHint(Hints.TOGGLED_OFF, hintMessage, 5000);
+                }
                 TrashSlotSaveState.save();
                 return true;
             }
         }
 
         return false;
+    }
+
+    private static void showHint(String id, MutableComponent message, int timeToDisplay) {
+        var saveState = TrashSlotSaveState.getInstance();
+        if (!saveState.hasSeenHint(id) && TrashSlotConfig.getActive().enableHints) {
+            currentHint = new Hint(id, message, timeToDisplay);
+        }
     }
 
     public static void onBackgroundDrawn(ContainerScreenDrawEvent.Background event) {
@@ -245,6 +264,15 @@ public class TrashSlotGuiHandler {
             MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
             noHabloEspanol.withStyle(ChatFormatting.RED);
             screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(noHabloEspanol) / 2, 25);
+        }
+
+        if (currentHint != null) {
+            currentHint.render(event.getScreen(), event.getGuiGraphics());
+            if (currentHint.isComplete()) {
+                TrashSlotSaveState.getInstance().markHintAsSeen(currentHint.getId());
+                TrashSlotSaveState.save();
+                currentHint = null;
+            }
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
