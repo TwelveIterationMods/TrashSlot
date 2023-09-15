@@ -1,6 +1,5 @@
 package net.blay09.mods.trashslot.client;
 
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -38,7 +37,6 @@ public class TrashSlotGuiHandler {
     private static boolean ignoreMouseUp;
 
     private static boolean sentMissingMessage;
-    private static long missingMessageTime;
     private static boolean isLeftMouseDown;
 
     private static Hint currentHint;
@@ -72,7 +70,9 @@ public class TrashSlotGuiHandler {
         if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
             if (!TrashSlot.isServerSideInstalled && !sentMissingMessage) {
                 TrashSlot.logger.info("TrashSlot is not installed on the server and thus will be unavailable.");
-                missingMessageTime = System.currentTimeMillis();
+                MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
+                noHabloEspanol.withStyle(ChatFormatting.RED);
+                showHint(Hints.SERVER_NOT_INSTALLED, noHabloEspanol, 5000, true);
                 sentMissingMessage = true;
                 return;
             }
@@ -232,8 +232,12 @@ public class TrashSlotGuiHandler {
     }
 
     private static void showHint(String id, MutableComponent message, int timeToDisplay) {
+        showHint(id, message, timeToDisplay, false);
+    }
+
+    private static void showHint(String id, MutableComponent message, int timeToDisplay, boolean force) {
         var saveState = TrashSlotSaveState.getInstance();
-        if (!saveState.hasSeenHint(id) && TrashSlotConfig.getActive().enableHints) {
+        if (force || (!saveState.hasSeenHint(id) && TrashSlotConfig.getActive().enableHints)) {
             currentHint = new Hint(id, message, timeToDisplay);
         }
     }
@@ -260,12 +264,6 @@ public class TrashSlotGuiHandler {
 
     public static void onScreenDrawn(ContainerScreenDrawEvent.Background event) {
         PoseStack poseStack = event.getPoseStack();
-        if (missingMessageTime != 0 && System.currentTimeMillis() - missingMessageTime < 3000 && event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-            MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
-            noHabloEspanol.withStyle(ChatFormatting.RED);
-            screen.renderComponentTooltip(poseStack, Lists.newArrayList(noHabloEspanol), ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(noHabloEspanol) / 2, 25);
-        }
-
         if (currentHint != null) {
             currentHint.render(event.getScreen(), event.getGuiGraphics());
             if (currentHint.isComplete()) {
