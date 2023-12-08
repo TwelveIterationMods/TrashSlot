@@ -1,6 +1,8 @@
-package net.blay09.mods.trashslot;
+package net.blay09.mods.trashslot.fabric;
 
 import net.blay09.mods.balm.api.Balm;
+import net.blay09.mods.trashslot.PlatformBindings;
+import net.blay09.mods.trashslot.TrashSlot;
 import net.fabricmc.api.ModInitializer;
 
 public class FabricTrashSlot implements ModInitializer {
