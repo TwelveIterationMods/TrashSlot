@@ -20,21 +20,21 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.blay09.mods.${mod_id}.fabric.Fabric${mod_main}"
+      "net.blay09.mods.trashslot.fabric.FabricTrashSlot"
     ],
     "client": [
-      "net.blay09.mods.${mod_id}.fabric.client.Fabric${mod_main}Client"
+      "net.blay09.mods.trashslot.fabric.client.FabricTrashSlotClient"
     ],
     "modmenu": [
-      "net.blay09.mods.${mod_id}.fabric.compat.ModMenuIntegration"
+      "net.blay09.mods.trashslot.fabric.compat.ModMenuIntegration"
     ],
     "rei_client": [
-      "net.blay09.mods.trashslot.compat.RoughlyEnoughItemsIntegration"
+      "net.blay09.mods.trashslot.fabric.compat.RoughlyEnoughItemsIntegration"
     ]
   },
   "mixins": [
-    "${mod_id}.mixins.json",
-    "${mod_id}.fabric.mixins.json"
+    "trashslot.mixins.json",
+    "trashslot.fabric.mixins.json"
   ],
 
   "depends": {

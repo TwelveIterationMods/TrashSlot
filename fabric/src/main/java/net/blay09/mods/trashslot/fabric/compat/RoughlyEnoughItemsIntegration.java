@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.compat;
+package net.blay09.mods.trashslot.fabric.compat;
 
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
