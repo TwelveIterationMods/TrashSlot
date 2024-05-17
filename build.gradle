@@ -14,6 +14,11 @@ subprojects {
     java.withSourcesJar()
     java.withJavadocJar()
 
+    configurations.all {
+        resolutionStrategy.cacheDynamicVersionsFor 5, 'minutes'
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+
     jar {
         from(rootProject.file("LICENSE")) {
             rename { "${it}_${mod_id}" }
