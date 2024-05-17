@@ -1,8 +1,8 @@
 {
-    "trashslot.serverNotInstalled": "Questo server non ha TrashSlot installato. TrashSlot verrà disabilitato.",
+    "trashslot.serverNotInstalled": "Questo server non ha TrashSlot installato. TrashSlot non funzionerà.",
 
-    "key.trashslot.toggle": "Disattiva Slot",
-    "key.trashslot.delete": "Elimina Oggetto",
-    "key.trashslot.deleteAll": "Elimina Tutti gli Oggetti di un Tipo",
+    "key.trashslot.toggle": "Disattiva slot",
+    "key.trashslot.delete": "Elimina oggetto",
+    "key.trashslot.deleteAll": "Elimina tutti gli oggetti di un tipo",
     "key.categories.trashslot": "TrashSlot"
 }
