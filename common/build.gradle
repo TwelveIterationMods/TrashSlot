@@ -15,8 +15,6 @@ minecraft {
     }
 }
 
-sourceSets.main.resources.srcDir('src/generated/resources')
-
 dependencies {
     compileOnly "org.spongepowered:mixin:$mixin_version"
 }
@@ -33,17 +31,22 @@ configurations {
         canBeResolved = false
         canBeConsumed = true
     }
+    commonGeneratedResources {
+        canBeResolved = false
+        canBeConsumed = true
+    }
 }
 
 artifacts {
     commonJava sourceSets.main.java.sourceDirectories.singleFile
     commonResources sourceSets.main.resources.sourceDirectories.singleFile
+    commonGeneratedResources sourceSets.generated.resources.sourceDirectories.singleFile
 }
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/shell/java'
+    generated {
+        resources {
+            srcDir 'src/generated/resources'
         }
     }
 }
