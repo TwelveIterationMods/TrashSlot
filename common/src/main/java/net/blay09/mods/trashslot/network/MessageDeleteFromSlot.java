@@ -2,9 +2,12 @@ package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
+import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -13,8 +16,9 @@ import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class MessageDeleteFromSlot {
+public class MessageDeleteFromSlot implements CustomPacketPayload {
 
+    public static Type<MessageDeleteFromSlot> TYPE = new Type<>(new ResourceLocation(TrashSlot.MOD_ID, "delete_from_slot"));
     private final int slotNumber;
     private final boolean isDeleteAll;
 
@@ -23,7 +27,7 @@ public class MessageDeleteFromSlot {
         this.isDeleteAll = isDeleteAll;
     }
 
-    public static void encode(final MessageDeleteFromSlot message, final FriendlyByteBuf buf) {
+    public static void encode(final FriendlyByteBuf buf, final MessageDeleteFromSlot message) {
         buf.writeVarInt(message.slotNumber);
         buf.writeBoolean(message.isDeleteAll);
     }
@@ -61,7 +65,7 @@ public class MessageDeleteFromSlot {
                 if (attemptDeleteFromSlot(player, container, message.slotNumber)) {
                     for (int i = 0; i < container.slots.size(); i++) {
                         ItemStack slotStack = container.slots.get(i).getItem();
-                        if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(slotStack, deleteStack)) {
+                        if (!slotStack.isEmpty() && ItemStack.isSameItemSameComponents(slotStack, deleteStack)) {
                             if (!attemptDeleteFromSlot(player, container, i)) {
                                 break;
                             }
@@ -94,5 +98,10 @@ public class MessageDeleteFromSlot {
             ((ServerPlayer) player).connection.send(new ClientboundContainerSetSlotPacket(-1, 0, 0, mouseStack));
             return false;
         }
+    }
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 }

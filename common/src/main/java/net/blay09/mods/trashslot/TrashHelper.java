@@ -11,15 +11,13 @@ public class TrashHelper {
 
     public static void setTrashItem(Player player, ItemStack itemStack) {
         CompoundTag entityData = Balm.getHooks().getPersistentData(player);
-        CompoundTag trashSlot = new CompoundTag();
-        itemStack.save(trashSlot);
-        entityData.put(KEY, trashSlot);
+        entityData.put(KEY, itemStack.saveOptional(player.registryAccess()));
     }
 
     public static ItemStack getTrashItem(Player player) {
         CompoundTag entityData = Balm.getHooks().getPersistentData(player);
         CompoundTag trashSlot = entityData.getCompound(KEY);
-        return ItemStack.of(trashSlot);
+        return ItemStack.parse(player.registryAccess(), trashSlot).orElse(ItemStack.EMPTY);
     }
 
 }

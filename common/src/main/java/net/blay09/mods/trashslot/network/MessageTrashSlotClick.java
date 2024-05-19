@@ -2,12 +2,25 @@ package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
+import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-public class MessageTrashSlotClick {
+public class MessageTrashSlotClick implements CustomPacketPayload {
+
+    public static Type<MessageTrashSlotClick> TYPE = new Type<>(new ResourceLocation(TrashSlot.MOD_ID, "trash_slot_click"));
+    // Not used yet, but already created for reference
+    public static StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotClick> CODEC = StreamCodec.composite(ItemStack.STREAM_CODEC,
+            it -> it.itemStack,
+            ByteBufCodecs.BOOL,
+            it -> it.isRightClick,
+            MessageTrashSlotClick::new);
 
     private final ItemStack itemStack;
     private final boolean isRightClick;
@@ -17,13 +30,13 @@ public class MessageTrashSlotClick {
         this.isRightClick = isRightClick;
     }
 
-    public static void encode(MessageTrashSlotClick message, FriendlyByteBuf buf) {
-        buf.writeItem(message.itemStack);
+    public static void encode(RegistryFriendlyByteBuf buf, MessageTrashSlotClick message) {
+        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, message.itemStack);
         buf.writeBoolean(message.isRightClick);
     }
 
-    public static MessageTrashSlotClick decode(FriendlyByteBuf buf) {
-        ItemStack itemStack = buf.readItem();
+    public static MessageTrashSlotClick decode(RegistryFriendlyByteBuf buf) {
+        ItemStack itemStack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
         boolean isRightClick = buf.readBoolean();
         return new MessageTrashSlotClick(itemStack, isRightClick);
     }
@@ -53,4 +66,8 @@ public class MessageTrashSlotClick {
         }
     }
 
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
 }

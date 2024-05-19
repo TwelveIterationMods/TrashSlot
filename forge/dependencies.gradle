@@ -1,3 +1,6 @@
 dependencies {
+    implementation fg.deobf("net.blay09.mods:balm-forge:${balm_version}") {
+        changing = balm_version.contains("SNAPSHOT")
+    }
     compileOnly fg.deobf("mezz.jei:jei-$jei_minecraft_version-common-api:$jei_version")
 }
