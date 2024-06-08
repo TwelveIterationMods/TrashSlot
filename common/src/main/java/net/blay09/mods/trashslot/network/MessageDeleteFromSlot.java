@@ -18,7 +18,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class MessageDeleteFromSlot implements CustomPacketPayload {
 
-    public static Type<MessageDeleteFromSlot> TYPE = new Type<>(new ResourceLocation(TrashSlot.MOD_ID, "delete_from_slot"));
+    public static Type<MessageDeleteFromSlot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_from_slot"));
     private final int slotNumber;
     private final boolean isDeleteAll;
 

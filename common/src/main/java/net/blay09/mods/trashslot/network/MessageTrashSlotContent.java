@@ -11,7 +11,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class MessageTrashSlotContent implements CustomPacketPayload {
 
-    public static Type<MessageTrashSlotContent> TYPE = new Type<>(new ResourceLocation(TrashSlot.MOD_ID, "trash_slot_content"));
+    public static Type<MessageTrashSlotContent> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_content"));
     private final ItemStack itemStack;
 
     public MessageTrashSlotContent(ItemStack itemStack) {

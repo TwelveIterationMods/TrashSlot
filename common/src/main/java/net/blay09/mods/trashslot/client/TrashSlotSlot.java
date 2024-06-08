@@ -88,7 +88,7 @@ public class TrashSlotSlot extends Slot {
 
     public TrashSlotSlot() {
         super(new TrashInventory(), 0, 0, 0);
-        backgroundPair = Pair.of(InventoryMenu.BLOCK_ATLAS, new ResourceLocation(TrashSlot.MOD_ID, "item/trashcan"));
+        backgroundPair = Pair.of(InventoryMenu.BLOCK_ATLAS, ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "item/trashcan"));
     }
 
     @Nullable

@@ -24,7 +24,7 @@ import net.minecraft.util.Mth;
 
 public class TrashSlotComponent {
 
-    private static final ResourceLocation texture = new ResourceLocation(TrashSlot.MOD_ID, "textures/gui/slot.png");
+    private static final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
 
     private final AbstractContainerScreen<?> screen;
