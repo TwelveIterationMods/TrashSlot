@@ -17,7 +17,7 @@ public class JEIAddon implements IModPlugin {
 
     @Override
     public ResourceLocation getPluginUid() {
-        return new ResourceLocation("trashslot", "trashslot");
+        return ResourceLocation.fromNamespaceAndPath("trashslot", "trashslot");
     }
 
     @Override
