@@ -16,7 +16,7 @@ public class MessageTrashSlotClick implements CustomPacketPayload {
 
     public static Type<MessageTrashSlotClick> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_click"));
     // Not used yet, but already created for reference
-    public static StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotClick> CODEC = StreamCodec.composite(ItemStack.STREAM_CODEC,
+    public static StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotClick> CODEC = StreamCodec.composite(ItemStack.OPTIONAL_STREAM_CODEC,
             it -> it.itemStack,
             ByteBufCodecs.BOOL,
             it -> it.isRightClick,

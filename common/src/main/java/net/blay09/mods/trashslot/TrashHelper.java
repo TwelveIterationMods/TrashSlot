@@ -17,7 +17,7 @@ public class TrashHelper {
     public static ItemStack getTrashItem(Player player) {
         CompoundTag entityData = Balm.getHooks().getPersistentData(player);
         CompoundTag trashSlot = entityData.getCompound(KEY);
-        return ItemStack.parse(player.registryAccess(), trashSlot).orElse(ItemStack.EMPTY);
+        return ItemStack.parseOptional(player.registryAccess(), trashSlot);
     }
 
 }
