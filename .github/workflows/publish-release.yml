@@ -56,7 +56,6 @@ jobs:
             site: curseforge
           - loader: common
             site: modrinth
-      fail-fast: false
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

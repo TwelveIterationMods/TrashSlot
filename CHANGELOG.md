@@ -1,1 +1,1 @@
-- Fixed "Tried to load invalid item: 'No key id in MapLike[{}]'" when accessing an empty trash slot
+- Updated to Minecraft 1.21.1
