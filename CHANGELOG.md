@@ -1,1 +1,2 @@
 - Updated to Minecraft 1.21.1
+- Changed the way key mappings are handled to avoid conflicts with vanilla key mappings
