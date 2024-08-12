@@ -1,25 +1,36 @@
 package net.blay09.mods.trashslot.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.blay09.mods.balm.api.client.keymappings.BalmKeyMappings;
-import net.blay09.mods.balm.api.client.keymappings.KeyConflictContext;
-import net.blay09.mods.balm.api.client.keymappings.KeyModifier;
-import net.minecraft.client.KeyMapping;
-import org.lwjgl.glfw.GLFW;
+import net.blay09.mods.kuma.api.*;
+import net.blay09.mods.trashslot.TrashSlot;
+import net.minecraft.resources.ResourceLocation;
 
 public class ModKeyMappings {
 
-    public static KeyMapping keyBindToggleSlot;
-    public static KeyMapping keyBindToggleSlotLock;
-    public static KeyMapping keyBindDelete;
-    public static KeyMapping keyBindDeleteAll;
+    public static ManagedKeyMapping keyBindToggleSlot;
+    public static ManagedKeyMapping keyBindToggleSlotLock;
+    public static ManagedKeyMapping keyBindDelete;
+    public static ManagedKeyMapping keyBindDeleteAll;
 
-    public static void initialize(BalmKeyMappings keyMappings) {
-        keyBindToggleSlot = keyMappings.registerKeyMapping("key.trashslot.toggle", KeyConflictContext.GUI, KeyModifier.NONE, GLFW.GLFW_KEY_T, "key.categories.trashslot");
-        keyBindToggleSlotLock = keyMappings.registerKeyMapping("key.trashslot.toggleLock", KeyConflictContext.GUI, KeyModifier.NONE,
-                InputConstants.UNKNOWN.getValue(), "key.categories.trashslot");
-        keyBindDelete = keyMappings.registerKeyMapping("key.trashslot.delete", KeyConflictContext.GUI, KeyModifier.NONE, GLFW.GLFW_KEY_DELETE, "key.categories.trashslot");
-        keyBindDeleteAll = keyMappings.registerKeyMapping("key.trashslot.deleteAll", KeyConflictContext.GUI, KeyModifier.SHIFT, GLFW.GLFW_KEY_DELETE, "key.categories.trashslot");
+    public static void initialize() {
+        keyBindToggleSlot = Kuma.createKeyMapping(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "toggle"))
+                .withDefault(InputBinding.key(InputConstants.KEY_T))
+                .withContext(KeyConflictContext.SCREEN)
+                .build();
+
+        keyBindToggleSlotLock = Kuma.createKeyMapping(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "toggle_lock"))
+                .withContext(KeyConflictContext.SCREEN)
+                .build();
+
+        keyBindDelete = Kuma.createKeyMapping(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete"))
+                .withDefault(InputBinding.key(InputConstants.KEY_DELETE))
+                .withContext(KeyConflictContext.SCREEN)
+                .build();
+
+        keyBindDeleteAll = Kuma.createKeyMapping(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_all"))
+                .withDefault(InputBinding.key(InputConstants.KEY_DELETE, KeyModifiers.of(KeyModifier.SHIFT)))
+                .withContext(KeyConflictContext.SCREEN)
+                .build();
     }
 
 }

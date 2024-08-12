@@ -1,14 +1,11 @@
 package net.blay09.mods.trashslot.client;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.Hints;
-import net.blay09.mods.trashslot.PlatformBindings;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
@@ -87,7 +84,7 @@ public class TrashSlotGuiHandler {
                 trashSlotComponent = new TrashSlotComponent(screen, layout, currentContainerSettings, trashSlot);
 
                 if (!currentContainerSettings.isEnabled() && !layout.isEnabledByDefault()) {
-                    var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getBinding().key().getDisplayName());
                     showHint(Hints.TOGGLE_ON, hintMessage, 5000);
                 }
             } else {
@@ -121,7 +118,7 @@ public class TrashSlotGuiHandler {
         }
 
         int mouseButton = event.getButton();
-        if (runKeyBindings(event.getScreen(), InputConstants.Type.MOUSE, mouseButton, 0)) {
+        if (runKeyBindings(event.getScreen(), mouseButton, 0, 0)) {
             event.setCanceled(true);
             return;
         }
@@ -167,26 +164,19 @@ public class TrashSlotGuiHandler {
 
         int keyCode = event.getKey();
         int scanCode = event.getScanCode();
-        InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-        if (runKeyBindings(event.getScreen(), input.getType(), keyCode, scanCode)) {
+        if (runKeyBindings(event.getScreen(), keyCode, scanCode, event.getModifiers())) {
             event.setCanceled(true);
         }
     }
 
-    private static boolean runKeyBindings(Screen screen, InputConstants.Type type, int keyCode, int scanCode) {
+    private static boolean runKeyBindings(Screen screen, int keyCode, int scanCode, int modifiers) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return false;
         }
 
-        boolean isDelete = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode);
-        boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
-
-        // For Fabric: if both delete and delete all match, and we don't support key modifiers (as in Fabric), specifically require Shift for isDeleteAll
-        if (isDelete && isDeleteAll && !PlatformBindings.INSTANCE.supportsKeyModifiers()) {
-            isDelete = !Screen.hasShiftDown();
-            isDeleteAll = Screen.hasShiftDown();
-        }
+        boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
+        boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
 
         LocalPlayer player = Minecraft.getInstance().player;
 
@@ -236,22 +226,22 @@ public class TrashSlotGuiHandler {
 
         // Toggling of trashslot
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
-            if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlot, type, keyCode, scanCode)) {
+            if (ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
                 if (!currentContainerSettings.isEnabled()) {
-                    var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getBinding().key().getDisplayName());
                     showHint(Hints.TOGGLED_OFF, hintMessage, 5000);
                 }
                 TrashSlotSaveState.save();
                 return true;
-            } else if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlotLock, type, keyCode, scanCode)) {
+            } else if (ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
                 currentContainerSettings.setLocked(!currentContainerSettings.isLocked());
                 if (currentContainerSettings.isLocked()) {
-                    var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getBinding().key().getDisplayName());
                     hintMessage.withStyle(ChatFormatting.GOLD);
                     showHint(Hints.LOCKED, hintMessage, 5000, true);
                 } else {
-                    var hintMessage = Component.translatable("trashslot.hint.unlocked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.unlocked", ModKeyMappings.keyBindToggleSlotLock.getBinding().key().getDisplayName());
                     hintMessage.withStyle(ChatFormatting.GOLD);
                     showHint(Hints.UNLOCKED, hintMessage, 5000, true);
                 }
@@ -280,7 +270,7 @@ public class TrashSlotGuiHandler {
             return;
         }
 
-        if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
+        if (event.getScreen() instanceof AbstractContainerScreen<?> screen && trashSlotComponent != null) {
             trashSlotComponent.update(event.getMouseX(), event.getMouseY());
             trashSlotComponent.drawBackground(event.getGuiGraphics());
 
@@ -309,7 +299,7 @@ public class TrashSlotGuiHandler {
             return;
         }
 
-        if (event.getScreen() instanceof AbstractContainerScreen screen && trashSlotComponent != null) {
+        if (event.getScreen() instanceof AbstractContainerScreen<?> screen && trashSlotComponent != null) {
             // TODO bit ugly for now since renderSlot ignores the pose stack translation
             TrashSlotSlot trashSlot = TrashSlotGuiHandler.trashSlot;
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
