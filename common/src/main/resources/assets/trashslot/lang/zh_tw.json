@@ -12,15 +12,15 @@
   "config.trashslot.enableDeleteKeysInCreative": "在創造模式中啟用刪除鍵",
   "config.trashslot.enableDeleteKeysInCreative.tooltip": "如果你希望刪除鍵按鍵綁定也能在創造模式中運作，請設定為 true。注意：在創造模式中，物品將被永久刪除，無論立即刪除設定為何！",
   "config.trashslot.enableHints": "啟用提示",
-  "config.trashslot.enableHints.tooltip": "垃圾欄將在第一次關閉垃圾槽或在支援的螢幕上啟用時顯示提示。設定為 false 以停用。",
+  "config.trashslot.enableHints.tooltip": "垃圾欄將在第一次關閉垃圾欄位或在支援的螢幕上啟用時顯示提示。設定為 false 以停用。",
   "config.trashslot.allowDeletionWhileTrashSlotIsInvisible": "允許在垃圾欄隱藏時刪除",
-  "config.trashslot.allowDeletionWhileTrashSlotIsInvisible.tooltip": "不建議，但這將允許你使用按鍵綁定來刪除物品，即使垃圾槽本身是隱藏的。",
+  "config.trashslot.allowDeletionWhileTrashSlotIsInvisible.tooltip": "不建議，但這將允許你使用按鍵綁定來刪除物品，即使垃圾欄位本身是隱藏的。",
   "config.trashslot.deletionDenyList": "刪除拒絕清單",
   "config.trashslot.deletionDenyList.tooltip": "無法刪除的物品清單，以「模組 ID：名稱」的逗號分隔格式。",
-  "trashslot.hint.toggleOn": "按下 %s 以在此畫面啟用垃圾槽！",
-  "trashslot.hint.toggledOff": "你已關閉垃圾槽！按下 %s 重新啟用它。",
+  "trashslot.hint.toggleOn": "按下 %s 以在此畫面啟用垃圾欄位！",
+  "trashslot.hint.toggledOff": "你已關閉垃圾欄位！按下 %s 重新啟用它。",
   "trashslot.hint.deletedWhileHidden": "物品已丟棄！",
   "trashslot.hint.deletionDenied": "無法丟棄物品！",
-  "trashslot.hint.locked": "垃圾槽已鎖定。按下 %s 解鎖它。",
-  "trashslot.hint.unlocked": "垃圾槽已解鎖。按下 %s 鎖定它。"
+  "trashslot.hint.locked": "垃圾欄位已鎖定。按下 %s 解鎖它。",
+  "trashslot.hint.unlocked": "垃圾欄位已解鎖。按下 %s 鎖定它。"
 }
