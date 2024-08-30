@@ -1,12 +1,12 @@
 package net.blay09.mods.trashslot.client;
 
-import com.google.common.collect.Lists;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 public class Hint {
@@ -22,11 +22,12 @@ public class Hint {
     }
 
     public void render(Screen screen, GuiGraphics guiGraphics) {
+        final var font = Minecraft.getInstance().font;
         guiGraphics.renderTooltip(
-                Minecraft.getInstance().font,
-                Lists.newArrayList(message),
+                font,
+                List.of(message),
                 Optional.empty(),
-                ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - Minecraft.getInstance().font.width(message) / 2 - 12, ((AbstractContainerScreenAccessor) screen).getTopPos() - 20 + 12);
+                ((AbstractContainerScreenAccessor) screen).getLeftPos() + ((AbstractContainerScreenAccessor) screen).getImageWidth() / 2 - font.width(message) / 2 - 12, ((AbstractContainerScreenAccessor) screen).getTopPos() - 20 + 12);
     }
 
     public boolean isComplete() {
