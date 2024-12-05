@@ -19,7 +19,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
@@ -181,16 +180,16 @@ public class TrashSlotGuiHandler {
         boolean isDelete = type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindDelete.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindDelete.isActiveAndMatchesMouse(keyCodeOrButton);
         boolean isDeleteAll = type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesMouse(keyCodeOrButton);
 
-        LocalPlayer player = Minecraft.getInstance().player;
+        final var player = Minecraft.getInstance().player;
 
         // Special handling for creative inventory. We don't have a TrashSlot here, but we still allow deleting via DELETE key
         if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeysInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
             Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
             DeletionProvider creativeDeletionProvider = TrashSlotConfig.getCreativeDeletionProvider();
             if (mouseSlot != null && mouseSlot.getClass() == Slot.class) {
-                creativeDeletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index - 9, isDeleteAll, trashSlot);
+                creativeDeletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index - 9, isDeleteAll, trashSlot);
             } else if (mouseSlot != null && mouseSlot.getClass().getSimpleName().equals("SlotWrapper")) {
-                creativeDeletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.getContainerSlot(), isDeleteAll, trashSlot);
+                creativeDeletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.getContainerSlot(), isDeleteAll, trashSlot);
             }
         }
 
@@ -201,7 +200,7 @@ public class TrashSlotGuiHandler {
                 if (mouseSlot != null && mouseSlot.hasItem()) {
                     var registryName = Balm.getRegistries().getKey(mouseSlot.getItem().getItem());
                     if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
-                        deletionProvider.deleteContainerItem(containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
+                        deletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                         if (!currentContainerSettings.isEnabled()) {
                             var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
                             hintMessage.withStyle(ChatFormatting.GOLD);
@@ -220,7 +219,7 @@ public class TrashSlotGuiHandler {
                     double mouseY = rawMouseY * (double) mainWindow.getGuiScaledHeight() / (double) mainWindow.getHeight();
 
                     if (((AbstractContainerScreenAccessor) containerScreen).callIsHovering(trashSlot, mouseX, mouseY)) {
-                        deletionProvider.emptyTrashSlot(trashSlot);
+                        deletionProvider.emptyTrashSlot(player, trashSlot);
                     }
                 }
                 return true;
