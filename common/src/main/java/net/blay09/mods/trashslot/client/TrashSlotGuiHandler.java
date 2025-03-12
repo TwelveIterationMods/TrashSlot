@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -141,7 +142,7 @@ public class TrashSlotGuiHandler {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
                         // check deny list first
-                        var registryName = Balm.getRegistries().getKey(mouseItem.getItem());
+                        var registryName = BuiltInRegistries.ITEM.getKey(mouseItem.getItem());
                         if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
                             deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
                         } else {
@@ -202,7 +203,7 @@ public class TrashSlotGuiHandler {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
-                    var registryName = Balm.getRegistries().getKey(mouseSlot.getItem().getItem());
+                    var registryName = BuiltInRegistries.ITEM.getKey(mouseSlot.getItem().getItem());
                     if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
                         deletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                         if (!currentContainerSettings.isEnabled()) {

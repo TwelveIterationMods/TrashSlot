@@ -6,7 +6,10 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
 import net.blay09.mods.trashslot.api.TrashSlotEmptiedEvent;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -18,27 +21,15 @@ import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-public class MessageDeleteFromSlot implements CustomPacketPayload {
+public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) implements CustomPacketPayload {
 
-    public static Type<MessageDeleteFromSlot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_from_slot"));
-    private final int slotNumber;
-    private final boolean isDeleteAll;
-
-    public MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) {
-        this.slotNumber = slotNumber;
-        this.isDeleteAll = isDeleteAll;
-    }
-
-    public static void encode(final FriendlyByteBuf buf, final MessageDeleteFromSlot message) {
-        buf.writeVarInt(message.slotNumber);
-        buf.writeBoolean(message.isDeleteAll);
-    }
-
-    public static MessageDeleteFromSlot decode(final FriendlyByteBuf buf) {
-        int slotNumber = buf.readVarInt();
-        boolean isDeleteAll = buf.readBoolean();
-        return new MessageDeleteFromSlot(slotNumber, isDeleteAll);
-    }
+    public static final Type<MessageDeleteFromSlot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_from_slot"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageDeleteFromSlot> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT,
+            MessageDeleteFromSlot::slotNumber,
+            ByteBufCodecs.BOOL,
+            MessageDeleteFromSlot::isDeleteAll,
+            MessageDeleteFromSlot::new);
 
     public static void handle(ServerPlayer player, MessageDeleteFromSlot message) {
         if (player.isSpectator()) {
@@ -86,7 +77,7 @@ public class MessageDeleteFromSlot implements CustomPacketPayload {
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
         ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
-        var registryName = Balm.getRegistries().getKey(itemStack.getItem());
+        var registryName = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
         if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
             return false;
         }

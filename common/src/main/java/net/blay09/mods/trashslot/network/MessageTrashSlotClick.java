@@ -6,6 +6,7 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
 import net.blay09.mods.trashslot.api.ItemUntrashedEvent;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,34 +15,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
-public class MessageTrashSlotClick implements CustomPacketPayload {
+public record MessageTrashSlotClick(ItemStack itemStack, boolean isRightClick) implements CustomPacketPayload {
 
-    public static Type<MessageTrashSlotClick> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_click"));
-    // Not used yet, but already created for reference
-    public static StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotClick> CODEC = StreamCodec.composite(ItemStack.OPTIONAL_STREAM_CODEC,
-            it -> it.itemStack,
+    public static final Type<MessageTrashSlotClick> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_click"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotClick> STREAM_CODEC = StreamCodec.composite(
+            ItemStack.OPTIONAL_STREAM_CODEC,
+            MessageTrashSlotClick::itemStack,
             ByteBufCodecs.BOOL,
-            it -> it.isRightClick,
+            MessageTrashSlotClick::isRightClick,
             MessageTrashSlotClick::new);
-
-    private final ItemStack itemStack;
-    private final boolean isRightClick;
-
-    public MessageTrashSlotClick(ItemStack itemStack, boolean isRightClick) {
-        this.itemStack = itemStack;
-        this.isRightClick = isRightClick;
-    }
-
-    public static void encode(RegistryFriendlyByteBuf buf, MessageTrashSlotClick message) {
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, message.itemStack);
-        buf.writeBoolean(message.isRightClick);
-    }
-
-    public static MessageTrashSlotClick decode(RegistryFriendlyByteBuf buf) {
-        ItemStack itemStack = ItemStack.OPTIONAL_STREAM_CODEC.decode(buf);
-        boolean isRightClick = buf.readBoolean();
-        return new MessageTrashSlotClick(itemStack, isRightClick);
-    }
 
     public static void handle(ServerPlayer player, MessageTrashSlotClick message) {
         if (player.isSpectator()) {
@@ -49,7 +31,7 @@ public class MessageTrashSlotClick implements CustomPacketPayload {
         }
 
         ItemStack actualMouseItem = player.containerMenu.getCarried().copy();
-        var registryName = Balm.getRegistries().getKey(actualMouseItem.getItem());
+        var registryName = BuiltInRegistries.ITEM.getKey(actualMouseItem.getItem());
         if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
             return;
         }

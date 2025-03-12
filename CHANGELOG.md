@@ -1,1 +1,1 @@
-- Fixed "Press Not Bound to toggle the TrashSlot" hint showing when no toggle key is bound
+- Updated to Minecraft 1.21.5
