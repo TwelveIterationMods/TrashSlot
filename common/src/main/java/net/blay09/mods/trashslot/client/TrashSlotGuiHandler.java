@@ -8,7 +8,7 @@ import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.Hints;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.config.TrashSlotConfig;
+import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;

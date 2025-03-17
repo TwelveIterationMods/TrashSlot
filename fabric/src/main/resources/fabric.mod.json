@@ -25,9 +25,6 @@
     "client": [
       "net.blay09.mods.trashslot.fabric.client.FabricTrashSlotClient"
     ],
-    "modmenu": [
-      "net.blay09.mods.trashslot.fabric.compat.ModMenuIntegration"
-    ],
     "rei_client": [
       "net.blay09.mods.trashslot.fabric.compat.RoughlyEnoughItemsIntegration"
     ]

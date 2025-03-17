@@ -5,7 +5,7 @@ import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
 import net.blay09.mods.trashslot.api.ItemUntrashedEvent;
-import net.blay09.mods.trashslot.config.TrashSlotConfig;
+import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
