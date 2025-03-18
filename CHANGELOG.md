@@ -1,1 +1,1 @@
-- Fixed "Press Not Bound to toggle the TrashSlot" hint showing when no toggle key is bound
+- Marked mod as client/server optional to allow connections without it installed
