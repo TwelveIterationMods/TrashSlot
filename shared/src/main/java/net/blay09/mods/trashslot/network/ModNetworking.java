@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 public class ModNetworking {
 
     public static void initialize(BalmNetworking networking) {
+        networking.allowClientAndServerOnly(TrashSlot.MOD_ID);
+
         networking.registerServerboundPacket(id("delete_from_slot"), MessageDeleteFromSlot.class, MessageDeleteFromSlot::encode, MessageDeleteFromSlot::decode, MessageDeleteFromSlot::handle);
         networking.registerServerboundPacket(id("click_trash_slot"), MessageTrashSlotClick.class, MessageTrashSlotClick::encode, MessageTrashSlotClick::decode, MessageTrashSlotClick::handle);
         networking.registerClientboundPacket(id("trash_slot_content"), MessageTrashSlotContent.class, MessageTrashSlotContent::encode, MessageTrashSlotContent::decode, MessageTrashSlotContent::handle);
