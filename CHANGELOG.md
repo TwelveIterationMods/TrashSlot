@@ -1,1 +1,1 @@
-- Marked mod as client/server optional to allow connections without it installed
+- Fixed delete key not working on Forge
