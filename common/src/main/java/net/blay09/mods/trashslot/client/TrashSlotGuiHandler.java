@@ -46,7 +46,7 @@ public class TrashSlotGuiHandler {
         Balm.getEvents().onEvent(ScreenInitEvent.Post.class, TrashSlotGuiHandler::onScreenInit);
         Balm.getEvents().onEvent(ScreenMouseEvent.Release.Pre.class, TrashSlotGuiHandler::onMouseRelease);
         Balm.getEvents().onEvent(ScreenMouseEvent.Click.Pre.class, TrashSlotGuiHandler::onMouseClick);
-        Balm.getEvents().onEvent(ScreenKeyEvent.Press.Post.class, TrashSlotGuiHandler::onKeyPress);
+        Balm.getEvents().onEvent(ScreenKeyEvent.Press.Pre.class, TrashSlotGuiHandler::onKeyPress);
         Balm.getEvents().onEvent(ContainerScreenDrawEvent.Background.class, TrashSlotGuiHandler::onBackgroundDrawn);
     }
 
@@ -162,7 +162,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    private static void onKeyPress(ScreenKeyEvent.Press.Post event) {
+    private static void onKeyPress(ScreenKeyEvent.Press.Pre event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return;
