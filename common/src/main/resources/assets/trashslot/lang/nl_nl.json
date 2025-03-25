@@ -3,6 +3,6 @@
 
     "key.trashslot.toggle": "Togglen van slot",
     "key.trashslot.delete": "Item verwijderen",
-    "key.trashslot.deleteAll": "Verwijder alle items van het type",
+    "key.trashslot.delete_all": "Verwijder alle items van het type",
     "key.categories.trashslot": "TrashSlot"
 }

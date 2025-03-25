@@ -3,6 +3,6 @@
 
     "key.trashslot.toggle": "Disattiva slot",
     "key.trashslot.delete": "Elimina oggetto",
-    "key.trashslot.deleteAll": "Elimina tutti gli oggetti di un tipo",
+    "key.trashslot.delete_all": "Elimina tutti gli oggetti di un tipo",
     "key.categories.trashslot": "TrashSlot"
 }
