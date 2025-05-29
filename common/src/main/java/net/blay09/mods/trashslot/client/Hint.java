@@ -23,7 +23,7 @@ public class Hint {
 
     public void render(Screen screen, GuiGraphics guiGraphics) {
         final var font = Minecraft.getInstance().font;
-        guiGraphics.renderTooltip(
+        guiGraphics.setTooltipForNextFrame(
                 font,
                 List.of(message),
                 Optional.empty(),

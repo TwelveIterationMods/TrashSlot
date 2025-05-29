@@ -10,6 +10,6 @@ public class FabricTrashSlotClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        BalmClient.initialize(TrashSlot.MOD_ID, EmptyLoadContext.INSTANCE, TrashSlotClient::initialize);
+        BalmClient.initializeMod(TrashSlot.MOD_ID, EmptyLoadContext.INSTANCE, TrashSlotClient::initialize);
     }
 }

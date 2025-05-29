@@ -2,6 +2,8 @@ package net.blay09.mods.trashslot;
 
 import net.blay09.mods.balm.api.Balm;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -14,14 +16,13 @@ public class TrashHelper {
         if (itemStack.isEmpty()) {
             entityData.remove(KEY);
         } else {
-            entityData.put(KEY, itemStack.save(player.registryAccess()));
+            entityData.store(KEY, ItemStack.CODEC, RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), itemStack);
         }
     }
 
     public static ItemStack getTrashItem(Player player) {
         CompoundTag entityData = Balm.getHooks().getPersistentData(player);
-        return entityData.getCompound(KEY)
-                .flatMap(it -> ItemStack.parse(player.registryAccess(), it))
+        return entityData.read(KEY, ItemStack.CODEC, RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()))
                 .orElse(ItemStack.EMPTY);
     }
 

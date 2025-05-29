@@ -17,7 +17,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -141,8 +141,8 @@ public class TrashSlotComponent {
         ((SlotAccessor) trashSlot).setY(renderY - screenAccessor.getTopPos() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
 
         var poseStack = guiGraphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 1);
+        poseStack.pushMatrix();
+        poseStack.translate(0, 0); // TODO z 1
 
         renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
         renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
@@ -152,62 +152,62 @@ public class TrashSlotComponent {
             texOffsetX = 64;
         }
         switch (renderStyle) {
-            case LONE -> guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+            case LONE -> guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
             case ATTACH_BOTTOM_CENTER -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
             }
             case ATTACH_BOTTOM_LEFT -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
             }
             case ATTACH_BOTTOM_RIGHT -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
             }
             case ATTACH_TOP_CENTER -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
             }
             case ATTACH_TOP_LEFT -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
             }
             case ATTACH_TOP_RIGHT -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
             }
             case ATTACH_LEFT_CENTER -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
             }
             case ATTACH_LEFT_TOP -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
             }
             case ATTACH_LEFT_BOTTOM -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
             }
             case ATTACH_RIGHT_CENTER -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
             }
             case ATTACH_RIGHT_TOP -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
             }
             case ATTACH_RIGHT_BOTTOM -> {
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderType::guiTextured, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
             }
         }
 
-        poseStack.popPose();
+        poseStack.popMatrix();
     }
 
     private int getAnchoredX() {

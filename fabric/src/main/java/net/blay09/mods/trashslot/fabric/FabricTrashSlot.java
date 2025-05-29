@@ -16,6 +16,6 @@ public class FabricTrashSlot implements ModInitializer {
             }
         };
 
-        Balm.initialize(TrashSlot.MOD_ID, EmptyLoadContext.INSTANCE, TrashSlot::initialize);
+        Balm.initializeMod(TrashSlot.MOD_ID, EmptyLoadContext.INSTANCE, TrashSlot::initialize);
     }
 }

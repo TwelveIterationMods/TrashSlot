@@ -19,7 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -286,10 +286,10 @@ public class TrashSlotGuiHandler {
             final var screenAccessor = (AbstractContainerScreenAccessor) screen;
             final var hovering = screenAccessor.callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
             if (hovering) {
-                poseStack.pushPose();
-                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos(), 1);
-                event.getGuiGraphics().blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_BACK_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
-                poseStack.popPose();
+                poseStack.pushMatrix();
+                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 1
+                event.getGuiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
+                poseStack.popMatrix();
             }
 
             // TODO bit ugly for now since renderSlot ignores the pose stack translation
@@ -302,26 +302,26 @@ public class TrashSlotGuiHandler {
             slotAccessor.setY(trashSlot.y - screenAccessor.getTopPos());
 
             if (hovering) {
-                poseStack.pushPose();
-                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos(), 300);
-                event.getGuiGraphics().blitSprite(RenderType::guiTextured, SLOT_HIGHLIGHT_FRONT_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
-                poseStack.popPose();
+                poseStack.pushMatrix();
+                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 300
+                event.getGuiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
+                poseStack.popMatrix();
             }
 
             boolean isMouseSlot = screenAccessor.callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
             if (isMouseSlot) {
                 if (screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
-                    event.getGuiGraphics().renderTooltip(Minecraft.getInstance().font, trashSlot.getItem(), event.getMouseX(), event.getMouseY());
+                    event.getGuiGraphics().setTooltipForNextFrame(Minecraft.getInstance().font, trashSlot.getItem(), event.getMouseX(), event.getMouseY());
                 } else {
                     if (TrashSlotConfig.getActive().instantDeletion) {
                         event.getGuiGraphics()
-                                .renderTooltip(Minecraft.getInstance().font,
+                                .setTooltipForNextFrame(Minecraft.getInstance().font,
                                         Component.translatable("tooltip.trashslot.destroy_item"),
                                         event.getMouseX(),
                                         event.getMouseY());
                     } else {
                         event.getGuiGraphics()
-                                .renderTooltip(Minecraft.getInstance().font,
+                                .setTooltipForNextFrame(Minecraft.getInstance().font,
                                         Component.translatable("tooltip.trashslot.trash_item"),
                                         event.getMouseX(),
                                         event.getMouseY());
