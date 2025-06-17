@@ -17,7 +17,7 @@ public class NeoForgeTrashSlot {
         };
 
         final var loadContext = new NeoForgeLoadContext(eventBus);
-        Balm.initialize(TrashSlot.MOD_ID, loadContext, TrashSlot::initialize);
+        Balm.initializeMod(TrashSlot.MOD_ID, loadContext, TrashSlot::initialize);
     }
 
 }

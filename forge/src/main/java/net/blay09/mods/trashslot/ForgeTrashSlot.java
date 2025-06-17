@@ -20,7 +20,7 @@ public class ForgeTrashSlot {
             }
         };
 
-        Balm.initialize(TrashSlot.MOD_ID, loadContext, TrashSlot::initialize);
+        Balm.initializeMod(TrashSlot.MOD_ID, loadContext, TrashSlot::initialize);
         if (FMLEnvironment.dist.isClient()) {
             BalmClient.initialize(TrashSlot.MOD_ID, loadContext, TrashSlotClient::initialize);
         }
