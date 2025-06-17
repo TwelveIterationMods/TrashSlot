@@ -12,7 +12,7 @@ public class NeoForgeTrashSlotClient {
 
     public NeoForgeTrashSlotClient(IEventBus eventBus) {
         final var loadContext = new NeoForgeLoadContext(eventBus);
-        BalmClient.initialize(TrashSlot.MOD_ID, loadContext, TrashSlotClient::initialize);
+        BalmClient.initializeMod(TrashSlot.MOD_ID, loadContext, TrashSlotClient::initialize);
     }
 
 }
