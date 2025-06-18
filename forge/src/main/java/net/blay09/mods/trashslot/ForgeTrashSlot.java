@@ -12,7 +12,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 public class ForgeTrashSlot {
 
     public ForgeTrashSlot(FMLJavaModLoadingContext context) {
-        final var loadContext = new ForgeLoadContext(context.getModEventBus());
+        final var loadContext = new ForgeLoadContext(context.getModBusGroup());
         PlatformBindings.INSTANCE = new PlatformBindings() {
             @Override
             public boolean supportsKeyModifiers() {
