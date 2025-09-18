@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot.client;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -64,11 +65,11 @@ public class TrashSlotSlot extends Slot {
         }
 
         @Override
-        public void startOpen(Player player) {
+        public void startOpen(ContainerUser user) {
         }
 
         @Override
-        public void stopOpen(Player player) {
+        public void stopOpen(ContainerUser user) {
         }
 
         @Override

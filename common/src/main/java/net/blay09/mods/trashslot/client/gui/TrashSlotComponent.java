@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot.client.gui;
 
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
+import net.blay09.mods.kuma.api.Kuma;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
@@ -12,10 +13,12 @@ import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
+import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.ResourceLocation;
@@ -97,7 +100,7 @@ public class TrashSlotComponent {
                 }
             }
 
-            if (!Screen.hasShiftDown()) {
+            if (!Kuma.hasShiftDown()) {
                 int bestSnapDist = Integer.MAX_VALUE;
                 Snap bestSnap = null;
                 for (Snap snap : layout.getSnaps(screen, renderStyle)) {
