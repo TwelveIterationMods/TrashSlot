@@ -241,6 +241,10 @@ public class TrashSlotComponent {
         return settings.isEnabled();
     }
 
+    public boolean isDragging() {
+        return isDragging;
+    }
+
     public Rect2i getRectangle() {
         int anchoredX = getAnchoredX();
         int anchoredY = getAnchoredY();
