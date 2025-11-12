@@ -289,7 +289,7 @@ public class TrashSlotGuiHandler {
             if (isMouseSlot) {
                 if (screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
                     event.getGuiGraphics().renderTooltip(Minecraft.getInstance().font, trashSlot.getItem(), event.getMouseX(), event.getMouseY());
-                } else {
+                } else  if (!trashSlotComponent.isDragging()) {
                     if (TrashSlotConfig.getActive().instantDeletion) {
                         event.getGuiGraphics()
                                 .renderTooltip(Minecraft.getInstance().font,
