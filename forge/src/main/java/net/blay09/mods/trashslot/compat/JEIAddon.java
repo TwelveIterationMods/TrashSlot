@@ -7,7 +7,7 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -16,8 +16,8 @@ import java.util.Collections;
 public class JEIAddon implements IModPlugin {
 
     @Override
-    public ResourceLocation getPluginUid() {
-        return ResourceLocation.fromNamespaceAndPath("trashslot", "trashslot");
+    public Identifier getPluginUid() {
+        return Identifier.fromNamespaceAndPath("trashslot", "trashslot");
     }
 
     @Override

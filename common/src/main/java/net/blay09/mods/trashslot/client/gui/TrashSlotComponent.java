@@ -13,20 +13,17 @@ import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.player.KeyboardInput;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
 public class TrashSlotComponent {
 
-    private static final ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "textures/gui/slot.png");
+    private static final Identifier texture = Identifier.fromNamespaceAndPath(TrashSlot.MOD_ID, "textures/gui/slot.png");
     private static final int SNAP_SIZE = 7;
 
     private final AbstractContainerScreen<?> screen;

@@ -1,7 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
-import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.event.client.ConnectedToServerEvent;
+import net.blay09.mods.balm.client.platform.event.callback.ClientLifecycleCallback;
 import net.blay09.mods.trashslot.InternalMethodsImpl;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
@@ -24,7 +23,8 @@ public class TrashSlotClient {
 
         TrashSlotGuiHandler.initialize();
 
-        Balm.getEvents().onEvent(ConnectedToServerEvent.class, it -> TrashSlot.isServerSideInstalled = false);
+        ClientLifecycleCallback.ConnectedToServer.EVENT.register(client
+                -> TrashSlot.isServerSideInstalled = false);
     }
 
     public static void receivedTrashSlotContent(ItemStack itemStack) {

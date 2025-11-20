@@ -1,6 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
@@ -9,7 +9,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotSlot extends Slot {
 
-    private static final ResourceLocation ICON = ResourceLocation.withDefaultNamespace("container/slot/trashslot");
+    private static final Identifier ICON = Identifier.withDefaultNamespace("container/slot/trashslot");
 
     public static class TrashInventory implements Container {
         private ItemStack currentStack = ItemStack.EMPTY;
@@ -88,7 +88,7 @@ public class TrashSlotSlot extends Slot {
     }
 
     @Override
-    public ResourceLocation getNoItemIcon() {
+    public Identifier getNoItemIcon() {
         return ICON;
     }
 }

@@ -2,8 +2,7 @@ package net.blay09.mods.trashslot.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.event.client.screen.*;
+import net.blay09.mods.balm.client.platform.event.callback.ScreenCallback;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.Hints;
@@ -15,23 +14,27 @@ import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotGuiHandler {
 
-    private static final ResourceLocation SLOT_HIGHLIGHT_BACK_SPRITE = ResourceLocation.withDefaultNamespace("container/slot_highlight_back");
-    private static final ResourceLocation SLOT_HIGHLIGHT_FRONT_SPRITE = ResourceLocation.withDefaultNamespace("container/slot_highlight_front");
+    private static final Identifier SLOT_HIGHLIGHT_BACK_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_back");
+    private static final Identifier SLOT_HIGHLIGHT_FRONT_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_front");
 
     private static final TrashSlotSlot trashSlot = new TrashSlotSlot();
     private static TrashSlotComponent trashSlotComponent;
@@ -44,16 +47,17 @@ public class TrashSlotGuiHandler {
     private static Hint currentHint;
 
     public static void initialize() {
-        Balm.getEvents().onEvent(ScreenInitEvent.Post.class, TrashSlotGuiHandler::onScreenInit);
-        Balm.getEvents().onEvent(ScreenMouseEvent.Release.Pre.class, TrashSlotGuiHandler::onMouseRelease);
-        Balm.getEvents().onEvent(ScreenMouseEvent.Click.Pre.class, TrashSlotGuiHandler::onMouseClick);
-        Balm.getEvents().onEvent(ScreenKeyEvent.Press.Post.class, TrashSlotGuiHandler::onKeyPress);
-        Balm.getEvents().onEvent(ContainerScreenDrawEvent.Background.class, TrashSlotGuiHandler::onBackgroundDrawn);
+        ScreenCallback.Init.AFTER.register(TrashSlotGuiHandler::onScreenInit);
+        ScreenCallback.MouseRelease.BEFORE.register(TrashSlotGuiHandler::onMouseRelease);
+        ScreenCallback.MousePress.BEFORE.register(TrashSlotGuiHandler::onMouseClick);
+        ScreenCallback.KeyPress.AFTER.register(TrashSlotGuiHandler::onKeyPress);
+        // TODO after Background
+        ScreenCallback.Render.AFTER.register(TrashSlotGuiHandler::onBackgroundDrawn);
     }
 
-    private static void onScreenInit(ScreenInitEvent.Post event) {
+    private static void onScreenInit(Screen screen) {
         // Ignore screens from ReplayMod because they wrap every screen with their own class for some reason
-        if (event.getScreen().getClass().getName().startsWith("com.replaymod")) {
+        if (screen.getClass().getName().startsWith("com.replaymod")) {
             return;
         }
 
@@ -62,13 +66,13 @@ public class TrashSlotGuiHandler {
             return;
         }
 
-        if (event.getScreen() instanceof CreativeModeInventoryScreen) {
+        if (screen instanceof CreativeModeInventoryScreen) {
             currentContainerSettings = ContainerSettings.NONE;
             trashSlotComponent = null;
             return;
         }
 
-        if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
+        if (screen instanceof AbstractContainerScreen<?> containerScreen) {
             if (!TrashSlot.isServerSideInstalled && !sentMissingMessage) {
                 TrashSlot.logger.info("TrashSlot is not installed on the server and thus will be unavailable.");
                 MutableComponent noHabloEspanol = Component.translatable("trashslot.serverNotInstalled");
@@ -79,14 +83,14 @@ public class TrashSlotGuiHandler {
             }
 
             // For some reason this event gets fired with GuiInventory right after opening the creative menu, AFTER it got fired for GuiContainerCreative
-            if (screen instanceof InventoryScreen && player != null && player.getAbilities().instabuild) {
+            if (containerScreen instanceof InventoryScreen && player != null && player.getAbilities().instabuild) {
                 return;
             }
 
-            IGuiContainerLayout layout = LayoutManager.getLayout(screen);
-            currentContainerSettings = TrashSlotSaveState.getSettings(screen, layout);
+            IGuiContainerLayout layout = LayoutManager.getLayout(containerScreen);
+            currentContainerSettings = TrashSlotSaveState.getSettings(containerScreen, layout);
             if (currentContainerSettings != ContainerSettings.NONE) {
-                trashSlotComponent = new TrashSlotComponent(screen, layout, currentContainerSettings, trashSlot);
+                trashSlotComponent = new TrashSlotComponent(containerScreen, layout, currentContainerSettings, trashSlot);
 
                 if (!currentContainerSettings.isEnabled() && !layout.isEnabledByDefault() && !ModKeyMappings.keyBindToggleSlot.getBinding()
                         .key()
@@ -103,41 +107,39 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    private static void onMouseRelease(ScreenMouseEvent.Release.Pre event) {
-        if (event.getButton() == 0) {
+    private static boolean onMouseRelease(Screen screen, double mouseX, double mouseY, int button, boolean consumed) {
+        if (button == 0) {
             isLeftMouseDown = false;
         }
 
         if (ignoreMouseUp) {
-            event.setCanceled(true);
             ignoreMouseUp = false;
+            return true;
         }
+
+        return false;
     }
 
-    private static void onMouseClick(ScreenMouseEvent.Click.Pre event) {
-        if (event.getButton() == 0) {
+    private static boolean onMouseClick(Screen screen, MouseButtonEvent event, boolean consumed) {
+        if (event.isLeft()) {
             isLeftMouseDown = true;
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
-            return;
+            return false;
         }
 
-        int mouseButton = event.getButton();
-        if (runKeyBindings(event.getScreen(), mouseButton, 0, 0)) {
-            event.setCanceled(true);
-            return;
+        if (runKeyBindings(screen, event)) {
+            return true;
         }
 
-        if (event.getScreen() instanceof AbstractContainerScreen<?> screen) {
-            double mouseX = event.getMouseX();
-            double mouseY = event.getMouseY();
-            if (((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY)) {
+        if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+            if (((AbstractContainerScreenAccessor) containerScreen).callIsHovering(trashSlot, event.x(), event.y())) {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {
-                    ItemStack mouseItem = screen.getMenu().getCarried();
-                    boolean isRightClick = mouseButton == 1;
+                    ItemStack mouseItem = containerScreen.getMenu().getCarried();
+                    boolean isRightClick = event.isRight();
                     if (mouseItem.isEmpty()) {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
@@ -152,38 +154,35 @@ public class TrashSlotGuiHandler {
                         }
                     }
 
-                    event.setCanceled(true);
                     ignoreMouseUp = true;
+                    return true;
                 }
-            } else if (trashSlotComponent.isInside((int) mouseX, (int) mouseY)) {
+            } else if (trashSlotComponent.isInside((int) event.x(), (int) event.y())) {
                 // Prevent click-through on the background and border of the slot
-                event.setCanceled(true);
                 ignoreMouseUp = true;
+                return true;
             }
         }
+        return false;
     }
 
-    private static void onKeyPress(ScreenKeyEvent.Press.Post event) {
-        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        if (deletionProvider == null) {
-            return;
-        }
-
-        int keyCode = event.getKey();
-        int scanCode = event.getScanCode();
-        if (runKeyBindings(event.getScreen(), keyCode, scanCode, event.getModifiers())) {
-            event.setCanceled(true);
-        }
-    }
-
-    private static boolean runKeyBindings(Screen screen, int keyCode, int scanCode, int modifiers) {
+    private static boolean onKeyPress(Screen screen, KeyEvent event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return false;
         }
 
-        boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
-        boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
+        return runKeyBindings(screen, event);
+    }
+
+    private static boolean runKeyBindings(Screen screen, InputWithModifiers input) {
+        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
+        if (deletionProvider == null) {
+            return false;
+        }
+
+        boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesInput(input);
+        boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesInput(input);
 
         final var player = Minecraft.getInstance().player;
 
@@ -233,7 +232,7 @@ public class TrashSlotGuiHandler {
 
         // Toggling of trashslot
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
-            if (ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
+            if (ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesInput(input)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
                 if (!currentContainerSettings.isEnabled() && !ModKeyMappings.keyBindToggleSlot.getBinding().key().equals(InputConstants.UNKNOWN)) {
                     var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getBinding().key().getDisplayName());
@@ -241,7 +240,7 @@ public class TrashSlotGuiHandler {
                 }
                 TrashSlotSaveState.save();
                 return true;
-            } else if (ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
+            } else if (ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesInput(input)) {
                 currentContainerSettings.setLocked(!currentContainerSettings.isLocked());
                 if (currentContainerSettings.isLocked()) {
                     var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getBinding().key().getDisplayName());
@@ -272,23 +271,23 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    public static void onBackgroundDrawn(ContainerScreenDrawEvent.Background event) {
+    public static void onBackgroundDrawn(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;
         }
 
-        if (event.getScreen() instanceof AbstractContainerScreen<?> screen && trashSlotComponent != null) {
-            trashSlotComponent.update(event.getMouseX(), event.getMouseY());
-            trashSlotComponent.drawBackground(event.getGuiGraphics());
+        if (screen instanceof AbstractContainerScreen<?> containerScreen && trashSlotComponent != null) {
+            trashSlotComponent.update(mouseX, mouseY);
+            trashSlotComponent.drawBackground(guiGraphics);
 
-            final var poseStack = event.getGuiGraphics().pose();
-            final var screenAccessor = (AbstractContainerScreenAccessor) screen;
-            final var hovering = screenAccessor.callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
+            final var poseStack = guiGraphics.pose();
+            final var screenAccessor = (AbstractContainerScreenAccessor) containerScreen;
+            final var hovering = screenAccessor.callIsHovering(trashSlot, mouseX, mouseY);
             if (hovering) {
                 poseStack.pushMatrix();
                 poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 1
-                event.getGuiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
                 poseStack.popMatrix();
             }
 
@@ -297,41 +296,39 @@ public class TrashSlotGuiHandler {
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
             slotAccessor.setX(trashSlot.x + screenAccessor.getLeftPos());
             slotAccessor.setY(trashSlot.y + screenAccessor.getTopPos());
-            screenAccessor.callRenderSlot(event.getGuiGraphics(), trashSlot);
+            screenAccessor.callRenderSlot(guiGraphics, trashSlot, mouseX, mouseY);
             slotAccessor.setX(trashSlot.x - screenAccessor.getLeftPos());
             slotAccessor.setY(trashSlot.y - screenAccessor.getTopPos());
 
             if (hovering) {
                 poseStack.pushMatrix();
                 poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 300
-                event.getGuiGraphics().blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
                 poseStack.popMatrix();
             }
 
-            boolean isMouseSlot = screenAccessor.callIsHovering(trashSlot, event.getMouseX(), event.getMouseY());
+            boolean isMouseSlot = screenAccessor.callIsHovering(trashSlot, mouseX, mouseY);
             if (isMouseSlot) {
-                if (screen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
-                    event.getGuiGraphics().setTooltipForNextFrame(Minecraft.getInstance().font, trashSlot.getItem(), event.getMouseX(), event.getMouseY());
+                if (containerScreen.getMenu().getCarried().isEmpty() && trashSlot.hasItem()) {
+                    guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, trashSlot.getItem(), mouseX, mouseY);
                 } else if (!trashSlotComponent.isDragging()) {
                     if (TrashSlotConfig.getActive().instantDeletion) {
-                        event.getGuiGraphics()
-                                .setTooltipForNextFrame(Minecraft.getInstance().font,
+                        guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font,
                                         Component.translatable("tooltip.trashslot.destroy_item"),
-                                        event.getMouseX(),
-                                        event.getMouseY());
+                                        mouseX,
+                                        mouseY);
                     } else {
-                        event.getGuiGraphics()
-                                .setTooltipForNextFrame(Minecraft.getInstance().font,
+                        guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font,
                                         Component.translatable("tooltip.trashslot.trash_item"),
-                                        event.getMouseX(),
-                                        event.getMouseY());
+                                        mouseX,
+                                        mouseY);
                     }
                 }
             }
         }
 
         if (currentHint != null) {
-            currentHint.render(event.getScreen(), event.getGuiGraphics());
+            currentHint.render(screen, guiGraphics);
             if (currentHint.isComplete()) {
                 TrashSlotSaveState.getInstance().markHintAsSeen(currentHint.getId());
                 TrashSlotSaveState.save();

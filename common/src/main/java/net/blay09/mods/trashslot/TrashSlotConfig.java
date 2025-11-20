@@ -1,10 +1,10 @@
 package net.blay09.mods.trashslot;
 
-import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.config.reflection.Comment;
-import net.blay09.mods.balm.api.config.reflection.Config;
-import net.blay09.mods.balm.api.config.reflection.NestedType;
-import net.blay09.mods.balm.api.event.ConfigReloadedEvent;
+import net.blay09.mods.balm.Balm;
+import net.blay09.mods.balm.platform.config.reflection.Comment;
+import net.blay09.mods.balm.platform.config.reflection.Config;
+import net.blay09.mods.balm.platform.config.reflection.NestedType;
+import net.blay09.mods.balm.platform.event.callback.ConfigCallback;
 import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
@@ -36,13 +36,13 @@ public class TrashSlotConfig {
     private static final DeletionProvider creativeDeletionProvider = new CreativeDeletionProvider();
 
     public static TrashSlotConfig getActive() {
-        return Balm.getConfig().getActiveConfig(TrashSlotConfig.class);
+        return Balm.config().getActiveConfig(TrashSlotConfig.class);
     }
 
     public static void initialize() {
-        Balm.getConfig().registerConfig(TrashSlotConfig.class);
+        Balm.config().registerConfig(TrashSlotConfig.class);
 
-        Balm.getEvents().onEvent(ConfigReloadedEvent.class, event -> deletionProvider = null);
+        ConfigCallback.Reloaded.EVENT.register(schema -> deletionProvider = null);
     }
 
     @Nullable

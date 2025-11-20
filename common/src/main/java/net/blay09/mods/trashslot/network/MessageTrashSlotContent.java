@@ -6,13 +6,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public record MessageTrashSlotContent(ItemStack itemStack) implements CustomPacketPayload {
 
-    public static Type<MessageTrashSlotContent> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_content"));
+    public static Type<MessageTrashSlotContent> TYPE = new Type<>(Identifier.fromNamespaceAndPath(TrashSlot.MOD_ID, "trash_slot_content"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MessageTrashSlotContent> STREAM_CODEC = StreamCodec.composite(
             ItemStack.OPTIONAL_STREAM_CODEC,
             MessageTrashSlotContent::itemStack,

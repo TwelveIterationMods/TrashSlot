@@ -1,9 +1,7 @@
 package net.blay09.mods.trashslot;
 
-import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.event.PlayerLoginEvent;
-import net.blay09.mods.balm.api.event.PlayerOpenMenuEvent;
-import net.blay09.mods.balm.api.event.PlayerRespawnEvent;
+import net.blay09.mods.balm.Balm;
+import net.blay09.mods.balm.platform.event.callback.ServerPlayerCallback;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
 import net.blay09.mods.trashslot.network.MessageTrashSlotContent;
 import net.blay09.mods.trashslot.network.ModNetworking;
@@ -22,18 +20,19 @@ public class TrashSlot {
         TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
 
         TrashSlotConfig.initialize();
-        ModNetworking.initialize(Balm.getNetworking());
+        ModNetworking.initialize(Balm.networking());
 
-        Balm.getEvents().onEvent(PlayerLoginEvent.class, event -> {
-            TrashHelper.setTrashItem(event.getPlayer(), ItemStack.EMPTY);
-            Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY));
+        ServerPlayerCallback.Login.EVENT.register(player -> {
+            TrashHelper.setTrashItem(player, ItemStack.EMPTY);
+            Balm.networking().sendTo(player, new MessageTrashSlotContent(ItemStack.EMPTY));
         });
 
-        Balm.getEvents().onEvent(PlayerRespawnEvent.class, event -> Balm.getNetworking().sendTo(event.getNewPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY)));
+        ServerPlayerCallback.Respawn.EVENT.register((oldPlayer, newPlayer)
+                -> Balm.networking().sendTo(newPlayer, new MessageTrashSlotContent(ItemStack.EMPTY)));
 
-        Balm.getEvents().onEvent(PlayerOpenMenuEvent.class, event -> {
-            ItemStack trashItem = TrashHelper.getTrashItem(event.getPlayer());
-            Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(trashItem));
+        ServerPlayerCallback.OpenMenu.EVENT.register((player, menu) -> {
+            ItemStack trashItem = TrashHelper.getTrashItem(player);
+            Balm.networking().sendTo(player, new MessageTrashSlotContent(trashItem));
         });
     }
 }

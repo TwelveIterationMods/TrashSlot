@@ -1,10 +1,15 @@
 package net.blay09.mods.trashslot.api;
 
-import net.blay09.mods.balm.api.event.BalmEvent;
+import net.blay09.mods.balm.platform.event.BidirectionalEventMapper;
+import net.blay09.mods.balm.platform.event.EventMapper;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class ItemUntrashedEvent extends BalmEvent {
+import java.util.function.Consumer;
+
+public class ItemUntrashedEvent {
+
+    public static final BidirectionalEventMapper<Consumer<ItemUntrashedEvent>> EVENT = EventMapper.createBound(ItemUntrashedEvent.class);
 
     private final Player player;
     private final ItemStack itemStack;

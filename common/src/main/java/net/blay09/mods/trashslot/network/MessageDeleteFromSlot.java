@@ -1,6 +1,6 @@
 package net.blay09.mods.trashslot.network;
 
-import net.blay09.mods.balm.api.Balm;
+import net.blay09.mods.balm.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
@@ -12,7 +12,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 
 public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) implements CustomPacketPayload {
 
-    public static final Type<MessageDeleteFromSlot> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_from_slot"));
+    public static final Type<MessageDeleteFromSlot> TYPE = new Type<>(Identifier.fromNamespaceAndPath(TrashSlot.MOD_ID, "delete_from_slot"));
     public static final StreamCodec<RegistryFriendlyByteBuf, MessageDeleteFromSlot> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             MessageDeleteFromSlot::slotNumber,
@@ -39,8 +39,8 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
         if (message.slotNumber == -1) {
             final var itemStack = TrashHelper.getTrashItem(player);
             TrashHelper.setTrashItem(player, ItemStack.EMPTY);
-            Balm.getNetworking().reply(new MessageTrashSlotContent(ItemStack.EMPTY));
-            Balm.getEvents().fireEvent(new TrashSlotEmptiedEvent(player, itemStack));
+            Balm.networking().reply(new MessageTrashSlotContent(ItemStack.EMPTY));
+            TrashSlotEmptiedEvent.EVENT.invoker().accept(new TrashSlotEmptiedEvent(player, itemStack));
             return;
         }
 
@@ -72,7 +72,7 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
             attemptDeleteFromSlot(player, container, message.slotNumber);
         }
 
-        Balm.getNetworking().reply(new MessageTrashSlotContent(TrashHelper.getTrashItem(player)));
+        Balm.networking().reply(new MessageTrashSlotContent(TrashHelper.getTrashItem(player)));
     }
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
@@ -85,11 +85,11 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
         container.clicked(slotNumber, 0, ClickType.PICKUP, player);
         ItemStack mouseStack = container.getCarried();
         final var preEvent = new ItemTrashedEvent.Pre(player, mouseStack);
-        Balm.getEvents().fireEvent(preEvent);
+        ItemTrashedEvent.Pre.EVENT.invoker().accept(preEvent);
         if (!preEvent.isCanceled() && ItemStack.matches(itemStack, mouseStack)) {
             container.setCarried(ItemStack.EMPTY);
             TrashHelper.setTrashItem(player, mouseStack);
-            Balm.getEvents().fireEvent(new ItemTrashedEvent.Post(player, mouseStack));
+            ItemTrashedEvent.Post.EVENT.invoker().accept(new ItemTrashedEvent.Post(player, mouseStack));
             return !itemStack.isEmpty();
         } else {
             // Abort mission - something went weirdly wrong - sync the current mouse item to prevent desyncs
