@@ -1,5 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
+import net.blay09.mods.balm.client.BalmClientRegistrars;
 import net.blay09.mods.balm.client.platform.event.callback.ClientLifecycleCallback;
 import net.blay09.mods.trashslot.InternalMethodsImpl;
 import net.blay09.mods.trashslot.TrashSlot;
@@ -12,7 +13,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotClient {
-    public static void initialize() {
+    public static void initialize(BalmClientRegistrars registrars) {
         TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
 
         ModKeyMappings.initialize();

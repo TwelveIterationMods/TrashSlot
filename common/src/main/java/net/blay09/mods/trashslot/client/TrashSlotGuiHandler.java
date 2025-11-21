@@ -47,10 +47,10 @@ public class TrashSlotGuiHandler {
     private static Hint currentHint;
 
     public static void initialize() {
-        ScreenCallback.Init.AFTER.register(TrashSlotGuiHandler::onScreenInit);
-        ScreenCallback.MouseRelease.BEFORE.register(TrashSlotGuiHandler::onMouseRelease);
-        ScreenCallback.MousePress.BEFORE.register(TrashSlotGuiHandler::onMouseClick);
-        ScreenCallback.KeyPress.AFTER.register(TrashSlotGuiHandler::onKeyPress);
+        ScreenCallback.Init.After.EVENT.register(TrashSlotGuiHandler::onScreenInit);
+        ScreenCallback.MouseRelease.Before.EVENT.register(TrashSlotGuiHandler::onMouseRelease);
+        ScreenCallback.MousePress.Before.EVENT.register(TrashSlotGuiHandler::onMouseClick);
+        ScreenCallback.KeyPress.After.EVENT.register(TrashSlotGuiHandler::onKeyPress);
         // TODO after Background
         ScreenCallback.Render.AFTER.register(TrashSlotGuiHandler::onBackgroundDrawn);
     }
@@ -107,7 +107,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    private static boolean onMouseRelease(Screen screen, double mouseX, double mouseY, int button, boolean consumed) {
+    private static boolean onMouseRelease(Screen screen, double mouseX, double mouseY, int button) {
         if (button == 0) {
             isLeftMouseDown = false;
         }
@@ -120,7 +120,7 @@ public class TrashSlotGuiHandler {
         return false;
     }
 
-    private static boolean onMouseClick(Screen screen, MouseButtonEvent event, boolean consumed) {
+    private static boolean onMouseClick(Screen screen, MouseButtonEvent event) {
         if (event.isLeft()) {
             isLeftMouseDown = true;
         }
