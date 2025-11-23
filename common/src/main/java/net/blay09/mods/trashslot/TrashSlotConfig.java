@@ -32,6 +32,9 @@ public class TrashSlotConfig {
     @NestedType(String.class)
     public List<String> deletionDenyList = new ArrayList<>();
 
+    @Comment("Whether the trash slot is enabled by default")
+    public boolean enabledByDefault = true;
+
     private static DeletionProvider deletionProvider;
     private static final DeletionProvider creativeDeletionProvider = new CreativeDeletionProvider();
 

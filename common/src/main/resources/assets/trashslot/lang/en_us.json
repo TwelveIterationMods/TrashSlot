@@ -17,6 +17,8 @@
   "trashslot.configuration.allowDeletionWhileTrashSlotIsInvisible.tooltip": "Not recommended, but this will allow you to use the keybinds for deleting items even if the trash slot itself is hidden.",
   "trashslot.configuration.deletionDenyList": "Deletion Deny List",
   "trashslot.configuration.deletionDenyList.tooltip": "List of items that cannot be deleted, in comma-separated format of \"modid:name\".",
+  "trashslot.configuration.enabledByDefault": "Trash slot enabled by default",
+  "trashslot.configuration.enabledByDefault.tooltip": "Whether the trash slot is enabled by default",
   "trashslot.hint.toggleOn": "Press %s to enable the trash slot for this screen!",
   "trashslot.hint.toggledOff": "You've toggled off the trash slot! Press %s to re-enable it.",
   "trashslot.hint.deletedWhileHidden": "Item trashed!",

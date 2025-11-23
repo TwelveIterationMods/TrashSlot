@@ -32,7 +32,7 @@ public class TrashSlotSaveState {
     public static ContainerSettings getSettings(AbstractContainerScreen<?> gui, IGuiContainerLayout layout) {
         String containerId = layout.getContainerId(gui);
         TrashSlotSaveState saveState = getInstance();
-        return saveState.cachedSettings.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault()));
+        return saveState.cachedSettings.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault() ? null : Boolean.FALSE));
     }
 
     public static void save() {

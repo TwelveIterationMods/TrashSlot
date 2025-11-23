@@ -1,10 +1,12 @@
 package net.blay09.mods.trashslot.client;
 
+import net.blay09.mods.trashslot.TrashSlotConfig;
+
 public class ContainerSettings {
 
     public static final ContainerSettings NONE = new ContainerSettings() {
         @Override
-        public void setEnabled(boolean isEnabled) {
+        public void setEnabled(Boolean isEnabled) {
         }
 
         @Override
@@ -16,13 +18,14 @@ public class ContainerSettings {
     private int slotY;
     private float anchorX;
     private float anchorY;
-    private boolean isEnabled;
+    // Tristate boolean: TRUE -> enabled; FALSE -> disabled; null -> config.enabledByDefault
+    private Boolean isEnabled;
     private boolean isLocked;
 
     public ContainerSettings() {
     }
 
-    public ContainerSettings(int slotX, int slotY, float anchorX, float anchorY, boolean isEnabled) {
+    public ContainerSettings(int slotX, int slotY, float anchorX, float anchorY, Boolean isEnabled) {
         this.slotX = slotX;
         this.slotY = slotY;
         this.anchorX = anchorX;
@@ -31,10 +34,10 @@ public class ContainerSettings {
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return isEnabled == null ? TrashSlotConfig.getActive().enabledByDefault : isEnabled;
     }
 
-    public void setEnabled(boolean isEnabled) {
+    public void setEnabled(Boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
