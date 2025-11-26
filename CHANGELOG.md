@@ -1,1 +1,1 @@
-- Updated to Minecraft 1.21.10
+- Fixed "Delete Item" tooltip showing even while dragging the slot around
