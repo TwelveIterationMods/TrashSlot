@@ -51,8 +51,7 @@ public class TrashSlotGuiHandler {
         ScreenCallback.MouseRelease.Before.EVENT.register(TrashSlotGuiHandler::onMouseRelease);
         ScreenCallback.MousePress.Before.EVENT.register(TrashSlotGuiHandler::onMouseClick);
         ScreenCallback.KeyPress.After.EVENT.register(TrashSlotGuiHandler::onKeyPress);
-        // TODO after Background
-        ScreenCallback.Render.AFTER.register(TrashSlotGuiHandler::onBackgroundDrawn);
+        ScreenCallback.Render.AFTER_BACKGROUND.register(TrashSlotGuiHandler::onBackgroundDrawn);
     }
 
     private static void onScreenInit(Screen screen) {
