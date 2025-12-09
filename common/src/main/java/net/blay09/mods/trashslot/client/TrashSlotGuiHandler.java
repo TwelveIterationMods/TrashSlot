@@ -121,7 +121,7 @@ public class TrashSlotGuiHandler {
     }
 
     private static boolean onMouseClick(Screen screen, MouseButtonEvent event) {
-        if (event.isLeft()) {
+        if (event.button() == 0) {
             isLeftMouseDown = true;
         }
 
@@ -184,7 +184,7 @@ public class TrashSlotGuiHandler {
         boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesInput(input);
         boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesInput(input);
 
-        final var player = Minecraft.getInstance().player;
+       final var player = Minecraft.getInstance().player;
 
         // Special handling for creative inventory. We don't have a TrashSlot here, but we still allow deleting via DELETE key
         if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeysInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
