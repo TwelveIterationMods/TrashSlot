@@ -1,1 +1,1 @@
-- Updated to Minecraft 1.21.11
+- Fixed right clicks not being considered when interacting with the trash slot 
