@@ -138,7 +138,7 @@ public class TrashSlotGuiHandler {
                 Player player = Minecraft.getInstance().player;
                 if (player != null) {
                     ItemStack mouseItem = containerScreen.getMenu().getCarried();
-                    boolean isRightClick = event.isRight();
+                    boolean isRightClick = event.button() == InputConstants.MOUSE_BUTTON_RIGHT;
                     if (mouseItem.isEmpty()) {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
