@@ -3,10 +3,10 @@ package net.blay09.mods.trashslot.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
+import net.blay09.mods.kuma.api.ManagedKeyMapping;
 import net.blay09.mods.trashslot.Hints;
 import net.blay09.mods.trashslot.PlatformBindings;
 import net.blay09.mods.trashslot.TrashSlot;
@@ -87,7 +87,7 @@ public class TrashSlotGuiHandler {
                 trashSlotComponent = new TrashSlotComponent(screen, layout, currentContainerSettings, trashSlot);
 
                 if (!currentContainerSettings.isEnabled() && !layout.isEnabledByDefault() && !ModKeyMappings.keyBindToggleSlot.isUnbound()) {
-                    var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getBoundKeyDisplayName());
                     showHint(Hints.TOGGLE_ON, hintMessage, 5000);
                 }
             } else {
@@ -121,7 +121,7 @@ public class TrashSlotGuiHandler {
         }
 
         int mouseButton = event.getButton();
-        if (runKeyBindings(event.getScreen(), InputConstants.Type.MOUSE, mouseButton, 0)) {
+        if (runKeyBindings(event.getScreen(), InputConstants.Type.MOUSE, mouseButton, 0, 0)) {
             event.setCanceled(true);
             return;
         }
@@ -168,19 +168,19 @@ public class TrashSlotGuiHandler {
         int keyCode = event.getKey();
         int scanCode = event.getScanCode();
         InputConstants.Key input = InputConstants.getKey(keyCode, scanCode);
-        if (runKeyBindings(event.getScreen(), input.getType(), keyCode, scanCode)) {
+        if (runKeyBindings(event.getScreen(), input.getType(), keyCode, scanCode, event.getModifiers())) {
             event.setCanceled(true);
         }
     }
 
-    private static boolean runKeyBindings(Screen screen, InputConstants.Type type, int keyCode, int scanCode) {
+    private static boolean runKeyBindings(Screen screen, InputConstants.Type type, int keyCode, int scanCode, int modifiers) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return false;
         }
 
-        boolean isDelete = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode);
-        boolean isDeleteAll = BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode);
+        boolean isDelete = isActiveAndMatches(ModKeyMappings.keyBindDelete, type, keyCode, scanCode, modifiers);
+        boolean isDeleteAll = isActiveAndMatches(ModKeyMappings.keyBindDeleteAll, type, keyCode, scanCode, modifiers);
 
         // For Fabric: if both delete and delete all match, and we don't support key modifiers (as in Fabric), specifically require Shift for isDeleteAll
         if (isDelete && isDeleteAll && !PlatformBindings.INSTANCE.supportsKeyModifiers()) {
@@ -236,22 +236,22 @@ public class TrashSlotGuiHandler {
 
         // Toggling of trashslot
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
-            if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlot, type, keyCode, scanCode)) {
+            if (isActiveAndMatches(ModKeyMappings.keyBindToggleSlot, type, keyCode, scanCode, modifiers)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
                 if (!currentContainerSettings.isEnabled() && !ModKeyMappings.keyBindToggleSlot.isUnbound()) {
-                    var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getBoundKeyDisplayName());
                     showHint(Hints.TOGGLED_OFF, hintMessage, 5000);
                 }
                 TrashSlotSaveState.save();
                 return true;
-            } else if (BalmClient.getKeyMappings().isActiveAndMatches(ModKeyMappings.keyBindToggleSlotLock, type, keyCode, scanCode)) {
+            } else if (isActiveAndMatches(ModKeyMappings.keyBindToggleSlotLock, type, keyCode, scanCode, modifiers)) {
                 currentContainerSettings.setLocked(!currentContainerSettings.isLocked());
                 if (currentContainerSettings.isLocked()) {
-                    var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getBoundKeyDisplayName());
                     hintMessage.withStyle(ChatFormatting.GOLD);
                     showHint(Hints.LOCKED, hintMessage, 5000, true);
                 } else {
-                    var hintMessage = Component.translatable("trashslot.hint.unlocked", ModKeyMappings.keyBindToggleSlotLock.getTranslatedKeyMessage());
+                    var hintMessage = Component.translatable("trashslot.hint.unlocked", ModKeyMappings.keyBindToggleSlotLock.getBoundKeyDisplayName());
                     hintMessage.withStyle(ChatFormatting.GOLD);
                     showHint(Hints.UNLOCKED, hintMessage, 5000, true);
                 }
@@ -261,6 +261,10 @@ public class TrashSlotGuiHandler {
         }
 
         return false;
+    }
+
+    private static boolean isActiveAndMatches(ManagedKeyMapping managedKeyMapping, InputConstants.Type type, int keyCode, int scanCode, int modifiers) {
+        return type == InputConstants.Type.MOUSE ? managedKeyMapping.isActiveAndMatchesMouse(keyCode) : managedKeyMapping.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
     }
 
     private static void showHint(String id, MutableComponent message, int timeToDisplay) {

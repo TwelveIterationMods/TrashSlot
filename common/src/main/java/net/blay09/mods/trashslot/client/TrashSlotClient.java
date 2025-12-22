@@ -1,7 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
 import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.client.BalmClient;
 import net.blay09.mods.balm.api.event.client.ConnectedToServerEvent;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
@@ -14,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotClient {
     public static void initialize() {
-        ModKeyMappings.initialize(BalmClient.getKeyMappings());
+        ModKeyMappings.initialize();
 
         TrashSlotAPI.registerLayout(InventoryScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
         TrashSlotAPI.registerLayout(CraftingScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
