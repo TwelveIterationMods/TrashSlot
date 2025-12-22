@@ -1,1 +1,4 @@
-- Marked mod as client/server optional to allow connections without it installed
+- Fixed modifier key mapping resulting in other keybinds using shift not working on Fabric.
+- TrashSlot now uses Kuma for key mappings.
+  - `Delete All` currently cannot be remapped on Fabric due to modifier keys not being supported.
+  - A future Balm release that is currently being tested on 1.21.11 will be backported in the future to remove that limitation.
