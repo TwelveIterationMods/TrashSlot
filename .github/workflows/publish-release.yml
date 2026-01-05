@@ -32,21 +32,6 @@ on:
         required: true
         type: boolean
         default: true
-      maven:
-        description: 'Maven'
-        required: true
-        type: boolean
-        default: true
-      modrinth:
-        description: 'Modrinth'
-        required: true
-        type: boolean
-        default: true
-      curseforge:
-        description: 'CurseForge'
-        required: true
-        type: boolean
-        default: true
 
 jobs:
   create-release:
