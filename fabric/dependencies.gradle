@@ -2,5 +2,4 @@ dependencies {
     modImplementation(libs.balmFabric) {
         changing = libs.versions.balm.get().endsWith("SNAPSHOT")
     }
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:$rei_version"
 }
