@@ -24,9 +24,6 @@
     ],
     "client": [
       "net.blay09.mods.trashslot.fabric.client.FabricTrashSlotClient"
-    ],
-    "rei_client": [
-      "net.blay09.mods.trashslot.fabric.compat.RoughlyEnoughItemsIntegration"
     ]
   },
   "mixins": [
