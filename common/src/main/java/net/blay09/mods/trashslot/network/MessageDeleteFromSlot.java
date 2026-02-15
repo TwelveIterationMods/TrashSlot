@@ -5,8 +5,6 @@ import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
 import net.blay09.mods.trashslot.api.TrashSlotEmptiedEvent;
-import net.blay09.mods.trashslot.TrashSlotConfig;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -77,8 +75,7 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
         ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
-        var registryName = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
-        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+        if (!TrashHelper.canDelete(itemStack)) {
             return false;
         }
 

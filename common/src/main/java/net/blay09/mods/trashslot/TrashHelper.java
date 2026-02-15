@@ -1,6 +1,8 @@
 package net.blay09.mods.trashslot;
 
 import net.blay09.mods.balm.Balm;
+import net.blay09.mods.trashslot.tag.ModItemTags;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
@@ -18,6 +20,19 @@ public class TrashHelper {
         } else {
             entityData.store(KEY, ItemStack.CODEC, RegistryOps.create(NbtOps.INSTANCE, player.registryAccess()), itemStack);
         }
+    }
+
+    public static boolean canDelete(ItemStack itemStack) {
+        if (itemStack.is(ModItemTags.CANNOT_DELETE)) {
+            return false;
+        }
+
+        var registryName = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
+        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+            return false;
+        }
+
+        return true;
     }
 
     public static ItemStack getTrashItem(Player player) {

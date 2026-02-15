@@ -7,6 +7,7 @@ import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.Hints;
 import net.blay09.mods.trashslot.TrashSlot;
+import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
 import net.blay09.mods.trashslot.api.IGuiContainerLayout;
@@ -23,7 +24,6 @@ import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -142,9 +142,7 @@ public class TrashSlotGuiHandler {
                     if (mouseItem.isEmpty()) {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
-                        // check deny list first
-                        var registryName = BuiltInRegistries.ITEM.getKey(mouseItem.getItem());
-                        if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                        if (TrashHelper.canDelete(mouseItem)) {
                             deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
                         } else {
                             var hintMessage = Component.translatable("trashslot.hint.deletionDenied");
@@ -201,8 +199,7 @@ public class TrashSlotGuiHandler {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
-                    var registryName = BuiltInRegistries.ITEM.getKey(mouseSlot.getItem().getItem());
-                    if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                    if (TrashHelper.canDelete(mouseSlot.getItem())) {
                         deletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                         if (!currentContainerSettings.isEnabled()) {
                             var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
