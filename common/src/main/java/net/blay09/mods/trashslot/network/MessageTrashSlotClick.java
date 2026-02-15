@@ -49,8 +49,7 @@ public class MessageTrashSlotClick implements CustomPacketPayload {
         }
 
         ItemStack actualMouseItem = player.containerMenu.getCarried().copy();
-        var registryName = Balm.getRegistries().getKey(actualMouseItem.getItem());
-        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+        if (!TrashHelper.canDelete(actualMouseItem)) {
             return;
         }
 

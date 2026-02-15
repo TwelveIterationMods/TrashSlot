@@ -8,6 +8,7 @@ import net.blay09.mods.trashslot.api.TrashSlotAPI;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.network.MessageTrashSlotContent;
 import net.blay09.mods.trashslot.network.ModNetworking;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,5 +40,9 @@ public class TrashSlot {
             ItemStack trashItem = TrashHelper.getTrashItem(event.getPlayer());
             Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(trashItem));
         });
+    }
+
+    public static ResourceLocation id(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 }

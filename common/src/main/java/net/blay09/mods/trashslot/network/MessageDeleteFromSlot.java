@@ -86,8 +86,7 @@ public class MessageDeleteFromSlot implements CustomPacketPayload {
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
         ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
-        var registryName = Balm.getRegistries().getKey(itemStack.getItem());
-        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+        if (!TrashHelper.canDelete(itemStack)) {
             return false;
         }
 

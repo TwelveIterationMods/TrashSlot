@@ -7,6 +7,7 @@ import net.blay09.mods.balm.api.event.client.screen.*;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.trashslot.Hints;
+import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.config.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
@@ -136,9 +137,7 @@ public class TrashSlotGuiHandler {
                     if (mouseItem.isEmpty()) {
                         deletionProvider.undeleteLast(player, trashSlot, isRightClick);
                     } else {
-                        // check deny list first
-                        var registryName = Balm.getRegistries().getKey(mouseItem.getItem());
-                        if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                        if (TrashHelper.canDelete(mouseItem)) {
                             deletionProvider.deleteMouseItem(player, mouseItem, trashSlot, isRightClick);
                         } else {
                             var hintMessage = Component.translatable("trashslot.hint.deletionDenied");
@@ -198,8 +197,7 @@ public class TrashSlotGuiHandler {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
-                    var registryName = Balm.getRegistries().getKey(mouseSlot.getItem().getItem());
-                    if (registryName == null || !TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
+                    if (TrashHelper.canDelete(mouseSlot.getItem())) {
                         deletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index, isDeleteAll, trashSlot);
                         if (!currentContainerSettings.isEnabled()) {
                             var hintMessage = Component.translatable("trashslot.hint.deletedWhileHidden");
