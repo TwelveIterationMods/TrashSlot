@@ -30,7 +30,10 @@ public class TrashSlot {
             Balm.getNetworking().sendTo(event.getPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY));
         });
 
-        Balm.getEvents().onEvent(PlayerRespawnEvent.class, event -> Balm.getNetworking().sendTo(event.getNewPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY)));
+        Balm.getEvents().onEvent(PlayerRespawnEvent.class, event -> {
+            TrashHelper.setTrashItem(event.getNewPlayer(), ItemStack.EMPTY);
+            Balm.getNetworking().sendTo(event.getNewPlayer(), new MessageTrashSlotContent(ItemStack.EMPTY));
+        });
 
         Balm.getEvents().onEvent(PlayerOpenMenuEvent.class, event -> {
             ItemStack trashItem = TrashHelper.getTrashItem(event.getPlayer());
