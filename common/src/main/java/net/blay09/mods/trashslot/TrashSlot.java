@@ -36,7 +36,10 @@ public class TrashSlot {
         });
 
         ServerPlayerCallback.Respawn.EVENT.register((oldPlayer, newPlayer)
-                -> Balm.networking().sendTo(newPlayer, new MessageTrashSlotContent(ItemStack.EMPTY)));
+                -> {
+            TrashHelper.setTrashItem(newPlayer, ItemStack.EMPTY);
+            Balm.networking().sendTo(newPlayer, new MessageTrashSlotContent(ItemStack.EMPTY));
+        });
 
         ServerPlayerCallback.OpenMenu.EVENT.register((player, menu) -> {
             ItemStack trashItem = TrashHelper.getTrashItem(player);
