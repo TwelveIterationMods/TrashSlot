@@ -1,1 +1,2 @@
-- Fixed right clicks not being considered when interacting with the trash slot 
+- Added `trashslot:cannot_delete` item tag
+- Fixed trash slot content not being fully cleared on respawn
