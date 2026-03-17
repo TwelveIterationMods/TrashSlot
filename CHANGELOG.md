@@ -1,1 +1,1 @@
-- Fixed delete key not working on Forge
+- Fixed trash slot content not being fully cleared on respawn
