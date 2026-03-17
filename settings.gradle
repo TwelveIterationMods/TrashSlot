@@ -44,6 +44,13 @@ plugins {
 }
 
 include("common")
-include("fabric")
-include("neoforge")
-include("forge")
+if (include_fabric == "true") {
+    include('fabric')
+}
+if (include_neoforge == "true") {
+    include('neoforge')
+}
+if (include_forge == "true") {
+    include('forge')
+}
+
