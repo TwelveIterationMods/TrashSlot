@@ -14,7 +14,7 @@ import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -132,7 +132,7 @@ public class TrashSlotComponent {
         }
     }
 
-    public void drawBackground(GuiGraphics guiGraphics) {
+    public void drawBackground(GuiGraphicsExtractor guiGraphics) {
         int renderX = getAnchoredX();
         int renderY = getAnchoredY();
         renderStyle = layout.getSlotRenderStyle(screen, renderX, renderY);

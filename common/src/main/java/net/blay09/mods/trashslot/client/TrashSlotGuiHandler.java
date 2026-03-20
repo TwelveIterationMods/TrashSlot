@@ -15,7 +15,7 @@ import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -267,7 +267,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
-    public static void onBackgroundDrawn(Screen screen, GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+    public static void onBackgroundDrawn(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
             return;

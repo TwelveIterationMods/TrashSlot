@@ -2,7 +2,7 @@ package net.blay09.mods.trashslot.client;
 
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -21,7 +21,7 @@ public class Hint {
         this.endOfLife = System.currentTimeMillis() + timeToDisplay;
     }
 
-    public void render(Screen screen, GuiGraphics guiGraphics) {
+    public void render(Screen screen, GuiGraphicsExtractor guiGraphics) {
         final var font = Minecraft.getInstance().font;
         guiGraphics.setTooltipForNextFrame(
                 font,
