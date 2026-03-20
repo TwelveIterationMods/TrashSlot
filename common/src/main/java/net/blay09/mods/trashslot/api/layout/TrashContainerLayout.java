@@ -1,28 +1,32 @@
 package net.blay09.mods.trashslot.api.layout;
 
+import net.blay09.mods.trashslot.TrashSlotContainerContextImpl;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface TrashContainerLayout {
-    List<Rect2i> getCollisionAreas(AbstractContainerScreen<?> screen);
+    List<Rect2i> getAllBounds(TrashSlotContainerContext context);
 
-    List<Snap> getSnaps(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
+    Optional<Rect2i> getBounds(TrashSlotContainerContext context, Identifier identifier);
 
-    SlotRenderStyle getSlotRenderStyle(AbstractContainerScreen<?> screen, int slotX, int slotY);
+    Optional<Snap> getSnap(TrashSlotContainerContext context, Identifier identifier);
 
-    int getDefaultSlotX(AbstractContainerScreen<?> screen);
+    Map<Identifier, Snap> getSnaps(TrashSlotContainerContext context);
 
-    int getDefaultSlotY(AbstractContainerScreen<?> screen);
+    Optional<Snap> getDefaultSnap(TrashSlotContainerContext context);
 
-    boolean isEnabledByDefault();
+    TrashSlotAvailability getAvailability();
 
-    int getSlotOffsetX(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
+    default TrashSlotContainerContext createContext(AbstractContainerScreen<?> screen) {
+        return new TrashSlotContainerContextImpl(this, screen);
+    }
 
-    int getSlotOffsetY(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);
-
-    default String getContainerId(AbstractContainerScreen<?> screen) {
-        return screen.getClass().getName().replace('.', '/');
+    default boolean isEnabledByDefault() {
+        return getAvailability() == TrashSlotAvailability.DEFAULT;
     }
 }

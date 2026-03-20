@@ -10,7 +10,7 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
-import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashSlotAvailability;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.ChatFormatting;
@@ -30,6 +30,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
 public class TrashSlotGuiHandler {
 
@@ -38,7 +39,7 @@ public class TrashSlotGuiHandler {
 
     private static final TrashSlotSlot trashSlot = new TrashSlotSlot();
     private static TrashSlotComponent trashSlotComponent;
-    private static ContainerSettings currentContainerSettings = ContainerSettings.NONE;
+    private static @Nullable ContainerSettings currentContainerSettings;
     private static boolean ignoreMouseUp;
 
     private static boolean sentMissingMessage;
@@ -66,7 +67,7 @@ public class TrashSlotGuiHandler {
         }
 
         if (screen instanceof CreativeModeInventoryScreen) {
-            currentContainerSettings = ContainerSettings.NONE;
+            currentContainerSettings = null;
             trashSlotComponent = null;
             return;
         }
@@ -86,12 +87,14 @@ public class TrashSlotGuiHandler {
                 return;
             }
 
-            TrashContainerLayout layout = LayoutManager.getLayout(containerScreen);
-            currentContainerSettings = TrashSlotSaveState.getSettings(containerScreen, layout);
-            if (currentContainerSettings != ContainerSettings.NONE) {
-                trashSlotComponent = new TrashSlotComponent(containerScreen, layout, currentContainerSettings, trashSlot);
+            final var layout = TrashContainerLayoutManager.getLayout(containerScreen);
+            final var context = layout.createContext(containerScreen);
+            final var settings = TrashSlotSaveState.getSettings(context);
+            if (layout.getAvailability() != TrashSlotAvailability.NEVER) {
+                currentContainerSettings = settings;
+                trashSlotComponent = new TrashSlotComponent(containerScreen, layout, settings, trashSlot);
 
-                if (!currentContainerSettings.isEnabled() && !layout.isEnabledByDefault() && !ModKeyMappings.keyBindToggleSlot.getBinding()
+                if (!settings.isEnabled() && !layout.isEnabledByDefault() && !ModKeyMappings.keyBindToggleSlot.getBinding()
                         .key()
                         .equals(InputConstants.UNKNOWN)) {
                     var hintMessage = Component.translatable("trashslot.hint.toggleOn", ModKeyMappings.keyBindToggleSlot.getBinding().key().getDisplayName());
@@ -101,7 +104,7 @@ public class TrashSlotGuiHandler {
                 trashSlotComponent = null;
             }
         } else {
-            currentContainerSettings = ContainerSettings.NONE;
+            currentContainerSettings = null;
             trashSlotComponent = null;
         }
     }
@@ -125,7 +128,7 @@ public class TrashSlotGuiHandler {
         }
 
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
+        if (deletionProvider == null || currentContainerSettings == null || !currentContainerSettings.isEnabled()) {
             return false;
         }
 
@@ -195,7 +198,7 @@ public class TrashSlotGuiHandler {
         }
 
         // For all other screens, respect the normal settings
-        if ((currentContainerSettings.isEnabled() || TrashSlotConfig.getActive().allowDeletionWhileTrashSlotIsInvisible) && (isDelete || isDeleteAll)) {
+        if (((currentContainerSettings != null && currentContainerSettings.isEnabled()) || TrashSlotConfig.getActive().allowDeletionWhileTrashSlotIsInvisible) && (isDelete || isDeleteAll)) {
             if (player != null && screen instanceof AbstractContainerScreen<?> containerScreen) {
                 Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
                 if (mouseSlot != null && mouseSlot.hasItem()) {
@@ -227,7 +230,7 @@ public class TrashSlotGuiHandler {
         }
 
         // Toggling of trashslot
-        if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
+        if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != null) {
             if (ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesInput(input)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
                 if (!currentContainerSettings.isEnabled() && !ModKeyMappings.keyBindToggleSlot.getBinding().key().equals(InputConstants.UNKNOWN)) {
@@ -261,7 +264,7 @@ public class TrashSlotGuiHandler {
     }
 
     private static void showHint(String id, MutableComponent message, int timeToDisplay, boolean force) {
-        var saveState = TrashSlotSaveState.getInstance();
+        var saveState = TrashSlotSaveState.getOrLoad();
         if (force || (!saveState.hasSeenHint(id) && TrashSlotConfig.getActive().enableHints)) {
             currentHint = new Hint(id, message, timeToDisplay);
         }
@@ -269,7 +272,7 @@ public class TrashSlotGuiHandler {
 
     public static void onBackgroundDrawn(Screen screen, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        if (deletionProvider == null || !currentContainerSettings.isEnabled()) {
+        if (deletionProvider == null || currentContainerSettings == null || !currentContainerSettings.isEnabled()) {
             return;
         }
 
@@ -326,7 +329,7 @@ public class TrashSlotGuiHandler {
         if (currentHint != null) {
             currentHint.render(screen, guiGraphics);
             if (currentHint.isComplete()) {
-                TrashSlotSaveState.getInstance().markHintAsSeen(currentHint.getId());
+                TrashSlotSaveState.getOrLoad().markHintAsSeen(currentHint.getId());
                 TrashSlotSaveState.save();
                 currentHint = null;
             }

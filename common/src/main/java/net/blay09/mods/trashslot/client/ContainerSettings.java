@@ -1,49 +1,52 @@
 package net.blay09.mods.trashslot.client;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
+
+import java.util.Optional;
+
 public class ContainerSettings {
 
-    public static final ContainerSettings NONE = new ContainerSettings() {
-        @Override
-        public void setEnabled(boolean isEnabled) {
-        }
+    public static final MapCodec<ContainerSettings> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Identifier.CODEC.optionalFieldOf("snap").forGetter(settings -> Optional.ofNullable(settings.snap)),
+            Codec.INT.fieldOf("slotX").forGetter(ContainerSettings::getSlotX),
+            Codec.INT.fieldOf("slotY").forGetter(ContainerSettings::getSlotY),
+            Codec.BOOL.fieldOf("enabled").forGetter(ContainerSettings::isEnabled),
+            Codec.BOOL.fieldOf("locked").forGetter(ContainerSettings::isLocked)
+    ).apply(instance, (snap, slotX, slotY, enabled, locked) -> new ContainerSettings(snap.orElse(null), slotX, slotY, enabled, locked)));
+    public static final Codec<ContainerSettings> CODEC = MAP_CODEC.codec();
 
-        @Override
-        public void setLocked(boolean isLocked) {
-        }
-    };
-
+    private @Nullable Identifier snap;
     private int slotX;
     private int slotY;
-    private float anchorX;
-    private float anchorY;
-    private boolean isEnabled;
-    private boolean isLocked;
+    private boolean enabled;
+    private boolean locked;
 
-    public ContainerSettings() {
-    }
-
-    public ContainerSettings(int slotX, int slotY, float anchorX, float anchorY, boolean isEnabled) {
+    public ContainerSettings(@Nullable Identifier snap, int slotX, int slotY, boolean enabled, boolean locked) {
+        this.snap = snap;
         this.slotX = slotX;
         this.slotY = slotY;
-        this.anchorX = anchorX;
-        this.anchorY = anchorY;
-        this.isEnabled = isEnabled;
+        this.enabled = enabled;
+        this.locked = locked;
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
+        this.enabled = isEnabled;
     }
 
     public boolean isLocked() {
-        return isLocked;
+        return locked;
     }
 
     public void setLocked(boolean isLocked) {
-        this.isLocked = isLocked;
+        this.locked = isLocked;
     }
 
     public int getSlotX() {
@@ -62,19 +65,12 @@ public class ContainerSettings {
         this.slotY = slotY;
     }
 
-    public float getAnchorX() {
-        return anchorX;
+    @Nullable
+    public Identifier getSnap() {
+        return snap;
     }
 
-    public void setAnchorX(float anchorX) {
-        this.anchorX = anchorX;
-    }
-
-    public float getAnchorY() {
-        return anchorY;
-    }
-
-    public void setAnchorY(float anchorY) {
-        this.anchorY = anchorY;
+    public void setSnap(@Nullable Identifier snap) {
+        this.snap = snap;
     }
 }

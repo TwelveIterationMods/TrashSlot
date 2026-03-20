@@ -5,11 +5,6 @@ import net.blay09.mods.balm.client.platform.event.callback.ClientLifecycleCallba
 import net.blay09.mods.trashslot.InternalMethodsImpl;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.api.TrashSlotAPI;
-import net.blay09.mods.trashslot.client.gui.layout.ChestContainerLayout;
-import net.blay09.mods.trashslot.client.gui.layout.SimpleGuiContainerLayout;
-import net.minecraft.client.gui.screens.inventory.ContainerScreen;
-import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotClient {
@@ -18,11 +13,9 @@ public class TrashSlotClient {
 
         ModKeyMappings.initialize();
 
-        TrashSlotAPI.registerLayout(InventoryScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
-        TrashSlotAPI.registerLayout(CraftingScreen.class, SimpleGuiContainerLayout.DEFAULT_ENABLED);
-        TrashSlotAPI.registerLayout(ContainerScreen.class, new ChestContainerLayout());
-
         TrashSlotGuiHandler.initialize();
+        registrars.resourceReloadListeners(registrar ->
+                registrar.register("container_layouts", new TrashContainerLayoutReloadListener()));
 
         ClientLifecycleCallback.ConnectedToServer.EVENT.register(client
                 -> TrashSlot.isServerSideInstalled = false);

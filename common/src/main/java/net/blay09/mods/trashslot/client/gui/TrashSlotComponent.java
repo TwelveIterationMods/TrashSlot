@@ -3,16 +3,14 @@ package net.blay09.mods.trashslot.client.gui;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
 import net.blay09.mods.balm.mixin.SlotAccessor;
 import net.blay09.mods.kuma.api.Kuma;
-import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
-import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
-import net.blay09.mods.trashslot.api.layout.SlotRenderStyle;
+import net.blay09.mods.trashslot.api.layout.SlotVisual;
 import net.blay09.mods.trashslot.api.layout.Snap;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashSlotContainerContext;
 import net.blay09.mods.trashslot.client.ContainerSettings;
-import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
-import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
+import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -20,18 +18,23 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import org.joml.Vector2i;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class TrashSlotComponent {
 
-    private static final Identifier texture = Identifier.fromNamespaceAndPath(TrashSlot.MOD_ID, "textures/gui/slot.png");
-    private static final int SNAP_SIZE = 7;
+    private static final int SNAP_SIZE = 8;
 
     private final AbstractContainerScreen<?> screen;
     private final TrashContainerLayout layout;
     private final ContainerSettings settings;
     private final TrashSlotSlot trashSlot;
+    private final TrashSlotContainerContext context;
 
-    private SlotRenderStyle renderStyle = SlotRenderStyle.LONE;
+    private SlotVisual visual = SlotVisual.DEFAULT;
 
     private boolean wasMouseDown;
     private boolean isDragging;
@@ -43,28 +46,23 @@ public class TrashSlotComponent {
         this.layout = layout;
         this.settings = settings;
         this.trashSlot = trashSlot;
+        this.context = layout.createContext(screen);
     }
 
     public boolean isInside(int mouseX, int mouseY) {
-        int anchoredX = getAnchoredX();
-        int anchoredY = getAnchoredY();
-        int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
-        int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
-        return mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
+        final var bounds = visual.getBounds(getAbsoluteSlotX(), getAbsoluteSlotY());
+        return bounds.contains(mouseX, mouseY);
     }
 
     public void update(int mouseX, int mouseY) {
-        int anchoredX = getAnchoredX();
-        int anchoredY = getAnchoredY();
-        int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
-        int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
-        boolean isMouseOver = mouseX >= renderX && mouseY >= renderY && mouseX < renderX + renderStyle.getRenderWidth() && mouseY < renderY + renderStyle.getRenderHeight();
+        final var bounds = visual.getBounds(getAbsoluteSlotX(), getAbsoluteSlotY());
+        boolean isMouseOver = bounds.contains(mouseX, mouseY);
         if (TrashSlotGuiHandler.isLeftMouseDown()) {
             if (!isDragging && isMouseOver && !wasMouseDown && !settings.isLocked()) {
                 if (Minecraft.getInstance().player.containerMenu.getCarried()
                         .isEmpty() && (!trashSlot.hasItem() || !((AbstractContainerScreenAccessor) screen).callIsHovering(trashSlot, mouseX, mouseY))) {
-                    dragStartX = renderX - mouseX;
-                    dragStartY = renderY - mouseY;
+                    dragStartX = getAbsoluteSlotX() - mouseX;
+                    dragStartY = getAbsoluteSlotY() - mouseY;
                     isDragging = true;
                 }
             }
@@ -79,159 +77,65 @@ public class TrashSlotComponent {
         if (isDragging) {
             int targetX = mouseX + dragStartX;
             int targetY = mouseY + dragStartY;
-            for (Rect2i collisionArea : layout.getCollisionAreas(screen)) {
-                int targetRight = targetX + renderStyle.getWidth();
-                int targetBottom = targetY + renderStyle.getHeight();
-                int rectRight = collisionArea.getX() + collisionArea.getWidth();
-                int rectBottom = collisionArea.getY() + collisionArea.getHeight();
-                if (targetRight >= collisionArea.getX() && targetX < rectRight && targetBottom >= collisionArea.getY() && targetY < rectBottom) {
-                    int distLeft = targetRight - collisionArea.getX();
-                    int distRight = rectRight - targetX;
-                    int distTop = targetBottom - collisionArea.getY();
-                    int distBottom = rectBottom - targetY;
-                    if (anchoredX >= collisionArea.getX() && anchoredX < collisionArea.getX() + collisionArea.getWidth()) {
-                        targetY = distTop < distBottom ? collisionArea.getY() - renderStyle.getHeight() : collisionArea.getY() + collisionArea.getHeight();
-                    } else {
-                        targetX = distLeft < distRight ? collisionArea.getX() - renderStyle.getWidth() : collisionArea.getX() + collisionArea.getWidth();
-                    }
-                }
-            }
+            final var collisionAreas = layout.getAllBounds(context);
+            final var resolvedTarget = resolveCollision(targetX, targetY, collisionAreas);
+            targetX = resolvedTarget.x();
+            targetY = resolvedTarget.y();
 
+            Identifier snapId = null;
             if (!Kuma.hasShiftDown()) {
                 int bestSnapDist = Integer.MAX_VALUE;
-                Snap bestSnap = null;
-                for (Snap snap : layout.getSnaps(screen, renderStyle)) {
-                    int dist = Integer.MAX_VALUE;
-                    switch (snap.getType()) {
-                        case HORIZONTAL -> dist = Math.abs(snap.getY() - targetY);
-                        case VERTICAL -> dist = Math.abs(snap.getX() - targetX);
-                        case FIXED -> {
-                            int distX = snap.getX() - targetX;
-                            int distY = snap.getY() - targetY;
-                            dist = (int) Math.sqrt(distX * distX + distY * distY);
-                        }
+                Map.Entry<Identifier, Snap> bestSnapEntry = null;
+                for (final var entry : layout.getSnaps(context).entrySet()) {
+                    final var snap = entry.getValue();
+                    final int currentX = targetX;
+                    final int currentY = targetY;
+                    final var optDistX = snap.x(context, currentX).map(it -> Math.abs(it - currentX));
+                    final var optDistY = snap.y(context, currentY).map(it -> Math.abs(it - currentY));
+                    if (optDistX.isEmpty() || optDistY.isEmpty()) {
+                        continue;
                     }
+                    final var distX = optDistX.get();
+                    final var distY = optDistY.get();
+                    final int dist = (int) Math.sqrt(distX * distX + distY * distY);
                     if (dist < SNAP_SIZE && dist < bestSnapDist) {
-                        bestSnap = snap;
+                        bestSnapEntry = entry;
                         bestSnapDist = dist;
                     }
                 }
-                if (bestSnap != null) {
-                    if (bestSnap.getType() == Snap.Type.VERTICAL || bestSnap.getType() == Snap.Type.FIXED) {
-                        targetX = bestSnap.getX();
-                    }
-                    if (bestSnap.getType() == Snap.Type.HORIZONTAL || bestSnap.getType() == Snap.Type.FIXED) {
-                        targetY = bestSnap.getY();
-                    }
+                if (bestSnapEntry != null) {
+                    final var bestSnap = bestSnapEntry.getValue();
+                    targetX = bestSnap.x(context, targetX).orElse(targetX);
+                    targetY = bestSnap.y(context, targetY).orElse(targetY);
+                    snapId = bestSnapEntry.getKey();
                 }
             }
-            targetX = Mth.clamp(targetX, 0, screen.width - renderStyle.getRenderWidth());
-            targetY = Mth.clamp(targetY, 0, screen.height - renderStyle.getRenderHeight());
-            settings.setSlotX(getUnanchoredX(targetX));
-            settings.setSlotY(getUnanchoredY(targetY));
+            targetX = Mth.clamp(targetX, 0, screen.width - visual.getWidth());
+            targetY = Mth.clamp(targetY, 0, screen.height - visual.getHeight());
+            settings.setSlotX(toRelativeX(targetX));
+            settings.setSlotY(toRelativeY(targetY));
+            settings.setSnap(snapId);
         }
     }
 
     public void drawBackground(GuiGraphicsExtractor guiGraphics) {
-        int renderX = getAnchoredX();
-        int renderY = getAnchoredY();
-        renderStyle = layout.getSlotRenderStyle(screen, renderX, renderY);
+        int slotX = getAbsoluteSlotX();
+        int slotY = getAbsoluteSlotY();
+        visual = Optional.ofNullable(settings.getSnap())
+                .flatMap(it -> layout.getSnap(context, it))
+                .map(Snap::visual)
+                .orElse(SlotVisual.DEFAULT);
         AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        ((SlotAccessor) trashSlot).setX(renderX - screenAccessor.getLeftPos() + renderStyle.getSlotOffsetX() + layout.getSlotOffsetX(screen, renderStyle));
-        ((SlotAccessor) trashSlot).setY(renderY - screenAccessor.getTopPos() + renderStyle.getSlotOffsetY() + layout.getSlotOffsetY(screen, renderStyle));
+        ((SlotAccessor) trashSlot).setX(slotX - screenAccessor.getLeftPos());
+        ((SlotAccessor) trashSlot).setY(slotY - screenAccessor.getTopPos());
 
         var poseStack = guiGraphics.pose();
         poseStack.pushMatrix();
         poseStack.translate(0, 0); // TODO z 1
 
-        renderX += renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
-        renderY += renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
-        DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        int texOffsetX = 0;
-        if (deletionProvider == null || !deletionProvider.canUndeleteLast()) {
-            texOffsetX = 64;
-        }
-        switch (renderStyle) {
-            case LONE -> guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 56, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-            case ATTACH_BOTTOM_CENTER -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
-            }
-            case ATTACH_BOTTOM_LEFT -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 54, 29, 4, 4, 256, 256);
-            }
-            case ATTACH_BOTTOM_RIGHT -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 50, 29, 4, 4, 256, 256);
-            }
-            case ATTACH_TOP_CENTER -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
-            }
-            case ATTACH_TOP_LEFT -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 25, 4, 4, 256, 256);
-            }
-            case ATTACH_TOP_RIGHT -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 32, 0, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 25, 4, 4, 256, 256);
-            }
-            case ATTACH_LEFT_CENTER -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
-            }
-            case ATTACH_LEFT_TOP -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 50, 37, 4, 4, 256, 256);
-            }
-            case ATTACH_LEFT_BOTTOM -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 25, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX + renderStyle.getRenderWidth() - 4, renderY, texOffsetX + 50, 33, 4, 4, 256, 256);
-            }
-            case ATTACH_RIGHT_CENTER -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
-            }
-            case ATTACH_RIGHT_TOP -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY + renderStyle.getRenderHeight() - 4, texOffsetX + 54, 37, 4, 4, 256, 256);
-            }
-            case ATTACH_RIGHT_BOTTOM -> {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX, 25, renderStyle.getRenderWidth(), renderStyle.getRenderHeight(), 256, 256);
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, texture, renderX, renderY, texOffsetX + 54, 33, 4, 4, 256, 256);
-            }
-        }
-
+        final var bounds = visual.getBounds(slotX, slotY);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, visual.sprite(), bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
         poseStack.popMatrix();
-    }
-
-    private int getAnchoredX() {
-        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return Mth.clamp(settings.getSlotX() + screenAccessor.getLeftPos() + (int) (screenAccessor.getImageWidth() * settings.getAnchorX()),
-                0,
-                screen.width - renderStyle.getRenderWidth());
-    }
-
-    private int getUnanchoredX(int x) {
-        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return x - screenAccessor.getLeftPos() - (int) (screenAccessor.getImageWidth() * settings.getAnchorX());
-    }
-
-    private int getAnchoredY() {
-        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return Mth.clamp(settings.getSlotY() + screenAccessor.getTopPos() + (int) (screenAccessor.getImageHeight() * settings.getAnchorY()),
-                0,
-                screen.width - renderStyle.getRenderWidth());
-    }
-
-    private int getUnanchoredY(int y) {
-        AbstractContainerScreenAccessor screenAccessor = (AbstractContainerScreenAccessor) screen;
-        return y - screenAccessor.getTopPos() - (int) (screenAccessor.getImageHeight() * settings.getAnchorY());
     }
 
     public boolean isVisible() {
@@ -243,11 +147,100 @@ public class TrashSlotComponent {
     }
 
     public Rect2i getRectangle() {
-        int anchoredX = getAnchoredX();
-        int anchoredY = getAnchoredY();
-        int renderX = anchoredX + renderStyle.getRenderOffsetX() + layout.getSlotOffsetX(screen, renderStyle);
-        int renderY = anchoredY + renderStyle.getRenderOffsetY() + layout.getSlotOffsetY(screen, renderStyle);
-        return new Rect2i(renderX, renderY, renderStyle.getRenderWidth(), renderStyle.getRenderHeight());
+        return visual.getBounds(getAbsoluteSlotX(), getAbsoluteSlotY());
+    }
+
+    private int getAbsoluteSlotX() {
+        return settings.getSlotX() + ((AbstractContainerScreenAccessor) screen).getLeftPos();
+    }
+
+    private int getAbsoluteSlotY() {
+        return settings.getSlotY() + ((AbstractContainerScreenAccessor) screen).getTopPos();
+    }
+
+    private int toRelativeX(int absoluteX) {
+        return absoluteX - ((AbstractContainerScreenAccessor) screen).getLeftPos();
+    }
+
+    private int toRelativeY(int absoluteY) {
+        return absoluteY - ((AbstractContainerScreenAccessor) screen).getTopPos();
+    }
+
+    private Vector2i resolveCollision(int targetX, int targetY, List<Rect2i> collisionAreas) {
+        int resolvedX = targetX;
+        int resolvedY = targetY;
+        final int maxIterations = Math.max(1, collisionAreas.size() * 2);
+        for (int i = 0; i < maxIterations; i++) {
+            boolean resolvedAnyCollision = false;
+            final var targetBounds = visual.getBounds(resolvedX, resolvedY);
+            for (final var collisionArea : collisionAreas) {
+                if (!intersects(targetBounds, collisionArea)) {
+                    continue;
+                }
+
+                final var resolvedPoint = pushOutOfCollision(resolvedX, resolvedY, targetBounds, collisionArea);
+                if (resolvedPoint.x() == resolvedX && resolvedPoint.y() == resolvedY) {
+                    continue;
+                }
+
+                resolvedX = resolvedPoint.x();
+                resolvedY = resolvedPoint.y();
+                resolvedAnyCollision = true;
+                break;
+            }
+
+            if (!resolvedAnyCollision) {
+                break;
+            }
+        }
+
+        return new Vector2i(resolvedX, resolvedY);
+    }
+
+    private Vector2i pushOutOfCollision(int targetX, int targetY, Rect2i targetBounds, Rect2i collisionArea) {
+        Vector2i bestCandidate = new Vector2i(targetX, targetY);
+        long bestDistance = Long.MAX_VALUE;
+
+        final var leftCandidate = new Vector2i(collisionArea.getX() - targetBounds.getWidth() - visual.getOffsetX(), targetY);
+        bestCandidate = pickCloserCandidate(targetX, targetY, collisionArea, bestCandidate, bestDistance, leftCandidate);
+        bestDistance = distanceSquared(targetX, targetY, bestCandidate);
+
+        final var rightCandidate = new Vector2i(collisionArea.getX() + collisionArea.getWidth() - visual.getOffsetX(), targetY);
+        bestCandidate = pickCloserCandidate(targetX, targetY, collisionArea, bestCandidate, bestDistance, rightCandidate);
+        bestDistance = distanceSquared(targetX, targetY, bestCandidate);
+
+        final var topCandidate = new Vector2i(targetX, collisionArea.getY() - targetBounds.getHeight() - visual.getOffsetY());
+        bestCandidate = pickCloserCandidate(targetX, targetY, collisionArea, bestCandidate, bestDistance, topCandidate);
+        bestDistance = distanceSquared(targetX, targetY, bestCandidate);
+
+        final var bottomCandidate = new Vector2i(targetX, collisionArea.getY() + collisionArea.getHeight() - visual.getOffsetY());
+        return pickCloserCandidate(targetX, targetY, collisionArea, bestCandidate, bestDistance, bottomCandidate);
+    }
+
+    private Vector2i pickCloserCandidate(int originX, int originY, Rect2i collisionArea, Vector2i currentBest, long currentBestDistance, Vector2i candidate) {
+        if (intersects(visual.getBounds(candidate.x(), candidate.y()), collisionArea)) {
+            return currentBest;
+        }
+
+        final long candidateDistance = distanceSquared(originX, originY, candidate);
+        if (candidateDistance < currentBestDistance) {
+            return candidate;
+        }
+
+        return currentBest;
+    }
+
+    private long distanceSquared(int originX, int originY, Vector2i candidate) {
+        final long deltaX = candidate.x() - originX;
+        final long deltaY = candidate.y() - originY;
+        return deltaX * deltaX + deltaY * deltaY;
+    }
+
+    private boolean intersects(Rect2i a, Rect2i b) {
+        return a.getX() < b.getX() + b.getWidth()
+                && a.getX() + a.getWidth() > b.getX()
+                && a.getY() < b.getY() + b.getHeight()
+                && a.getY() + a.getHeight() > b.getY();
     }
 
 }
