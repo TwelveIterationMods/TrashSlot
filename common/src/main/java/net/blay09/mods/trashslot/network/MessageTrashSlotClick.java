@@ -2,8 +2,8 @@ package net.blay09.mods.trashslot.network;
 
 import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.api.ItemTrashedEvent;
-import net.blay09.mods.trashslot.api.ItemUntrashedEvent;
+import net.blay09.mods.trashslot.api.event.ItemTrashedEvent;
+import net.blay09.mods.trashslot.api.event.ItemUntrashedEvent;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

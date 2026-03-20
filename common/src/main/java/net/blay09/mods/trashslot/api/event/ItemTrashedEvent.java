@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.api;
+package net.blay09.mods.trashslot.api.event;
 
 import net.blay09.mods.balm.platform.event.BidirectionalEventMapper;
 import net.blay09.mods.balm.platform.event.EventMapper;

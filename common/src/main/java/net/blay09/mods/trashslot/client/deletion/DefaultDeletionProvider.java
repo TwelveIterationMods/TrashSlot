@@ -1,9 +1,9 @@
 package net.blay09.mods.trashslot.client.deletion;
 
 import net.blay09.mods.balm.Balm;
-import net.blay09.mods.trashslot.api.ItemTrashedEvent;
-import net.blay09.mods.trashslot.api.ItemUntrashedEvent;
-import net.blay09.mods.trashslot.api.TrashSlotEmptiedEvent;
+import net.blay09.mods.trashslot.api.event.ItemTrashedEvent;
+import net.blay09.mods.trashslot.api.event.ItemUntrashedEvent;
+import net.blay09.mods.trashslot.api.event.TrashSlotEmptiedEvent;
 import net.blay09.mods.trashslot.network.MessageDeleteFromSlot;
 import net.blay09.mods.trashslot.network.MessageTrashSlotClick;
 import net.blay09.mods.trashslot.client.TrashSlotSlot;

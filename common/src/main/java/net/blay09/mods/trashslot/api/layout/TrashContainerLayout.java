@@ -1,11 +1,11 @@
-package net.blay09.mods.trashslot.api;
+package net.blay09.mods.trashslot.api.layout;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.List;
 
-public interface IGuiContainerLayout {
+public interface TrashContainerLayout {
     List<Rect2i> getCollisionAreas(AbstractContainerScreen<?> screen);
 
     List<Snap> getSnaps(AbstractContainerScreen<?> screen, SlotRenderStyle renderStyle);

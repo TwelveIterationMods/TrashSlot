@@ -3,8 +3,8 @@ package net.blay09.mods.trashslot.network;
 import net.blay09.mods.balm.Balm;
 import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.api.ItemTrashedEvent;
-import net.blay09.mods.trashslot.api.TrashSlotEmptiedEvent;
+import net.blay09.mods.trashslot.api.event.ItemTrashedEvent;
+import net.blay09.mods.trashslot.api.event.TrashSlotEmptiedEvent;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -79,7 +79,7 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
             return false;
         }
 
-        container.clicked(slotNumber, 0, ClickType.PICKUP, player);
+        container.clicked(slotNumber, 0, ContainerInput.PICKUP, player);
         ItemStack mouseStack = container.getCarried();
         final var preEvent = new ItemTrashedEvent.Pre(player, mouseStack);
         ItemTrashedEvent.Pre.EVENT.invoker().accept(preEvent);

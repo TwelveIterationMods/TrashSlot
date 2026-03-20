@@ -6,9 +6,9 @@ import net.blay09.mods.kuma.api.Kuma;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
-import net.blay09.mods.trashslot.api.IGuiContainerLayout;
-import net.blay09.mods.trashslot.api.SlotRenderStyle;
-import net.blay09.mods.trashslot.api.Snap;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
+import net.blay09.mods.trashslot.api.layout.SlotRenderStyle;
+import net.blay09.mods.trashslot.api.layout.Snap;
 import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.client.TrashSlotGuiHandler;
@@ -27,7 +27,7 @@ public class TrashSlotComponent {
     private static final int SNAP_SIZE = 7;
 
     private final AbstractContainerScreen<?> screen;
-    private final IGuiContainerLayout layout;
+    private final TrashContainerLayout layout;
     private final ContainerSettings settings;
     private final TrashSlotSlot trashSlot;
 
@@ -38,7 +38,7 @@ public class TrashSlotComponent {
     private int dragStartX;
     private int dragStartY;
 
-    public TrashSlotComponent(AbstractContainerScreen<?> screen, IGuiContainerLayout layout, ContainerSettings settings, TrashSlotSlot trashSlot) {
+    public TrashSlotComponent(AbstractContainerScreen<?> screen, TrashContainerLayout layout, ContainerSettings settings, TrashSlotSlot trashSlot) {
         this.screen = screen;
         this.layout = layout;
         this.settings = settings;

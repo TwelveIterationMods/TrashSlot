@@ -1,5 +1,7 @@
 package net.blay09.mods.trashslot.api;
 
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayoutBuilder;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public class TrashSlotAPI {
@@ -10,11 +12,11 @@ public class TrashSlotAPI {
         internalMethods = impl;
     }
 
-    public static ISimpleGuiContainerLayout registerSimpleLayout(Class<? extends AbstractContainerScreen<?>> clazz) {
+    public static TrashContainerLayoutBuilder registerSimpleLayout(Class<? extends AbstractContainerScreen<?>> clazz) {
         return internalMethods.registerSimpleLayout(clazz);
     }
 
-    public static void registerLayout(Class<? extends AbstractContainerScreen<?>> clazz, IGuiContainerLayout layout) {
+    public static void registerLayout(Class<? extends AbstractContainerScreen<?>> clazz, TrashContainerLayout layout) {
         internalMethods.registerLayout(clazz, layout);
     }
 

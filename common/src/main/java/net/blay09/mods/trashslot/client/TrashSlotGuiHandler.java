@@ -10,7 +10,7 @@ import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.TrashHelper;
 import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.blay09.mods.trashslot.TrashSlotSaveState;
-import net.blay09.mods.trashslot.api.IGuiContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
 import net.minecraft.ChatFormatting;
@@ -86,7 +86,7 @@ public class TrashSlotGuiHandler {
                 return;
             }
 
-            IGuiContainerLayout layout = LayoutManager.getLayout(containerScreen);
+            TrashContainerLayout layout = LayoutManager.getLayout(containerScreen);
             currentContainerSettings = TrashSlotSaveState.getSettings(containerScreen, layout);
             if (currentContainerSettings != ContainerSettings.NONE) {
                 trashSlotComponent = new TrashSlotComponent(containerScreen, layout, currentContainerSettings, trashSlot);
@@ -292,7 +292,7 @@ public class TrashSlotGuiHandler {
             SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
             slotAccessor.setX(trashSlot.x + screenAccessor.getLeftPos());
             slotAccessor.setY(trashSlot.y + screenAccessor.getTopPos());
-            screenAccessor.callRenderSlot(guiGraphics, trashSlot, mouseX, mouseY);
+            screenAccessor.callExtractSlot(guiGraphics, trashSlot, mouseX, mouseY);
             slotAccessor.setX(trashSlot.x - screenAccessor.getLeftPos());
             slotAccessor.setY(trashSlot.y - screenAccessor.getTopPos());
 

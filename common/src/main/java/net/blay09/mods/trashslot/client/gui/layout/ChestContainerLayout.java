@@ -1,6 +1,6 @@
 package net.blay09.mods.trashslot.client.gui.layout;
 
-import net.blay09.mods.trashslot.api.SlotRenderStyle;
+import net.blay09.mods.trashslot.api.layout.SlotRenderStyle;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 
 public class ChestContainerLayout extends SimpleGuiContainerLayout {

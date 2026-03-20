@@ -1,7 +1,7 @@
 package net.blay09.mods.trashslot;
 
 import com.google.gson.Gson;
-import net.blay09.mods.trashslot.api.IGuiContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
 import net.blay09.mods.trashslot.client.ContainerSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -29,7 +29,7 @@ public class TrashSlotSaveState {
     private final Set<String> hintsSeen = new HashSet<>();
     private final Map<String, ContainerSettings> cachedSettings = new HashMap<>();
 
-    public static ContainerSettings getSettings(AbstractContainerScreen<?> gui, IGuiContainerLayout layout) {
+    public static ContainerSettings getSettings(AbstractContainerScreen<?> gui, TrashContainerLayout layout) {
         String containerId = layout.getContainerId(gui);
         TrashSlotSaveState saveState = getInstance();
         return saveState.cachedSettings.computeIfAbsent(containerId, it -> new ContainerSettings(layout.getDefaultSlotX(gui), layout.getDefaultSlotY(gui), 0.5f, 0.5f, layout.isEnabledByDefault()));

@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.api;
+package net.blay09.mods.trashslot.api.layout;
 
 public enum SlotRenderStyle {
 	LONE(28, 28, 6, 6, 0, 0),

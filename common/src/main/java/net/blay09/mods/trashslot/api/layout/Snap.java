@@ -1,4 +1,4 @@
-package net.blay09.mods.trashslot.api;
+package net.blay09.mods.trashslot.api.layout;
 
 public class Snap {
     public enum Type {

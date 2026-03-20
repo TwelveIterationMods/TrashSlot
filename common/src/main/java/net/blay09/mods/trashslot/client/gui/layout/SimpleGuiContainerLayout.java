@@ -2,20 +2,20 @@ package net.blay09.mods.trashslot.client.gui.layout;
 
 import com.google.common.collect.Lists;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
-import net.blay09.mods.trashslot.api.IGuiContainerLayout;
-import net.blay09.mods.trashslot.api.ISimpleGuiContainerLayout;
-import net.blay09.mods.trashslot.api.SlotRenderStyle;
-import net.blay09.mods.trashslot.api.Snap;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
+import net.blay09.mods.trashslot.api.layout.TrashContainerLayoutBuilder;
+import net.blay09.mods.trashslot.api.layout.SlotRenderStyle;
+import net.blay09.mods.trashslot.api.layout.Snap;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.Rect2i;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGuiContainerLayout {
+public class SimpleGuiContainerLayout implements TrashContainerLayout, TrashContainerLayoutBuilder {
 
-	public static final IGuiContainerLayout DEFAULT = (IGuiContainerLayout) new SimpleGuiContainerLayout().enableDefaultCollision().enableDefaultSnaps();
-	public static final IGuiContainerLayout DEFAULT_ENABLED = (IGuiContainerLayout) new SimpleGuiContainerLayout().enableDefaultCollision().enableDefaultSnaps().setEnabledByDefault();
+	public static final TrashContainerLayout DEFAULT = (TrashContainerLayout) new SimpleGuiContainerLayout().enableDefaultCollision().enableDefaultSnaps();
+	public static final TrashContainerLayout DEFAULT_ENABLED = (TrashContainerLayout) new SimpleGuiContainerLayout().enableDefaultCollision().enableDefaultSnaps().setEnabledByDefault();
 
 	private final List<Rect2i> collisionAreas = new ArrayList<>();
 	private final List<Snap> snaps = new ArrayList<>();
@@ -24,43 +24,43 @@ public class SimpleGuiContainerLayout implements IGuiContainerLayout, ISimpleGui
 	private boolean enabledByDefault;
 
 	@Override
-	public ISimpleGuiContainerLayout addCollisionArea(int x, int y, int width, int height) {
+	public TrashContainerLayoutBuilder addCollisionArea(int x, int y, int width, int height) {
 		collisionAreas.add(new Rect2i(x, y, width, height));
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout addVerticalSnap(int x) {
+	public TrashContainerLayoutBuilder addVerticalSnap(int x) {
 		snaps.add(new Snap(Snap.Type.VERTICAL, x, 0));
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout addHorizontalSnap(int y) {
+	public TrashContainerLayoutBuilder addHorizontalSnap(int y) {
 		snaps.add(new Snap(Snap.Type.HORIZONTAL, 0, y));
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout addSnappingPoint(int x, int y) {
+	public TrashContainerLayoutBuilder addSnappingPoint(int x, int y) {
 		snaps.add(new Snap(Snap.Type.FIXED, x, y));
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout enableDefaultCollision() {
+	public TrashContainerLayoutBuilder enableDefaultCollision() {
 		defaultCollision = true;
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout enableDefaultSnaps() {
+	public TrashContainerLayoutBuilder enableDefaultSnaps() {
 		defaultSnaps = true;
 		return this;
 	}
 
 	@Override
-	public ISimpleGuiContainerLayout setEnabledByDefault() {
+	public TrashContainerLayoutBuilder setEnabledByDefault() {
 		enabledByDefault = true;
 		return this;
 	}
