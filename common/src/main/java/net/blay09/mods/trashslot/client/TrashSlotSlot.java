@@ -1,5 +1,6 @@
 package net.blay09.mods.trashslot.client;
 
+import net.blay09.mods.trashslot.TrashSlotConfig;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.ContainerUser;
@@ -10,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 public class TrashSlotSlot extends Slot {
 
     private static final Identifier ICON = Identifier.withDefaultNamespace("container/slot/trashslot");
+    private static final Identifier DANGER_ICON = Identifier.withDefaultNamespace("container/slot/trashslot_danger");
 
     public static class TrashInventory implements Container {
         private ItemStack currentStack = ItemStack.EMPTY;
@@ -89,6 +91,7 @@ public class TrashSlotSlot extends Slot {
 
     @Override
     public Identifier getNoItemIcon() {
-        return ICON;
+        final var deletionProvider = TrashSlotConfig.getDeletionProvider();
+        return deletionProvider != null && deletionProvider.canUndeleteLast() ? ICON : DANGER_ICON;
     }
 }
