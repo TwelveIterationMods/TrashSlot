@@ -290,14 +290,11 @@ public class TrashSlotGuiHandler {
                 poseStack.popMatrix();
             }
 
-            // TODO bit ugly for now since renderSlot ignores the pose stack translation
+            poseStack.pushMatrix();
+            poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos());
             TrashSlotSlot trashSlot = TrashSlotGuiHandler.trashSlot;
-            SlotAccessor slotAccessor = (SlotAccessor) trashSlot;
-            slotAccessor.setX(trashSlot.x + screenAccessor.getLeftPos());
-            slotAccessor.setY(trashSlot.y + screenAccessor.getTopPos());
             screenAccessor.callExtractSlot(guiGraphics, trashSlot, mouseX, mouseY);
-            slotAccessor.setX(trashSlot.x - screenAccessor.getLeftPos());
-            slotAccessor.setY(trashSlot.y - screenAccessor.getTopPos());
+            poseStack.popMatrix();
 
             if (hovering) {
                 poseStack.pushMatrix();
