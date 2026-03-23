@@ -110,8 +110,8 @@ public class TrashSlotComponent {
                     snapId = bestSnapEntry.getKey();
                 }
             }
-            targetX = Mth.clamp(targetX, 0, screen.width - visual.getWidth());
-            targetY = Mth.clamp(targetY, 0, screen.height - visual.getHeight());
+            targetX = Mth.clamp(targetX, -visual.getOffsetX(), screen.width - visual.getWidth() - visual.getOffsetX());
+            targetY = Mth.clamp(targetY, -visual.getOffsetY(), screen.height - visual.getHeight() - visual.getOffsetY());
             settings.setSlotX(toRelativeX(targetX));
             settings.setSlotY(toRelativeY(targetY));
             settings.setSnap(snapId);
