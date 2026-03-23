@@ -285,7 +285,7 @@ public class TrashSlotGuiHandler {
             final var hovering = screenAccessor.callIsHovering(trashSlot, mouseX, mouseY);
             if (hovering) {
                 poseStack.pushMatrix();
-                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 1
+                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos());
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_BACK_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
                 poseStack.popMatrix();
             }
@@ -301,7 +301,7 @@ public class TrashSlotGuiHandler {
 
             if (hovering) {
                 poseStack.pushMatrix();
-                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos()); // TODO z 300
+                poseStack.translate(screenAccessor.getLeftPos(), screenAccessor.getTopPos());
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SLOT_HIGHLIGHT_FRONT_SPRITE, trashSlot.x - 4, trashSlot.y - 4, 24, 24);
                 poseStack.popMatrix();
             }

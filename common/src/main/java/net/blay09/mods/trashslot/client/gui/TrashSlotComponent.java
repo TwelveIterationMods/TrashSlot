@@ -131,7 +131,6 @@ public class TrashSlotComponent {
 
         var poseStack = guiGraphics.pose();
         poseStack.pushMatrix();
-        poseStack.translate(0, 0); // TODO z 1
 
         final var bounds = visual.getBounds(slotX, slotY);
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, visual.sprite(), bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
