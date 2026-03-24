@@ -1,2 +1,1 @@
-- Added `trashslot:cannot_delete` item tag
-- Fixed trash slot content not being fully cleared on respawn
+- Updated to Minecraft 26.1
