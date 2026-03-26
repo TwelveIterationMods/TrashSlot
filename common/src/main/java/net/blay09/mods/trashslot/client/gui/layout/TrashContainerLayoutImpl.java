@@ -29,7 +29,7 @@ public class TrashContainerLayoutImpl implements TrashContainerLayout {
 
     @Override
     public Optional<Rect2i> getBounds(TrashSlotContainerContext context, Identifier identifier) {
-        return Optional.ofNullable(bounds.get(identifier).get(context));
+        return Optional.of(bounds.get(identifier).get(context));
     }
 
     @Override

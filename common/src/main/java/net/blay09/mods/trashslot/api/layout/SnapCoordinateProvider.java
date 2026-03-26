@@ -93,21 +93,16 @@ public interface SnapCoordinateProvider {
     }
 
     private static DataResult<String> typeKey(SnapCoordinateProvider provider) {
-        if (provider instanceof Constant) {
-            return DataResult.success("constant");
-        } else if (provider instanceof Range) {
-            return DataResult.success("range");
-        } else if (provider instanceof Top) {
-            return DataResult.success("top");
-        } else if (provider instanceof Bottom) {
-            return DataResult.success("bottom");
-        } else if (provider instanceof Left) {
-            return DataResult.success("left");
-        } else if (provider instanceof Right) {
-            return DataResult.success("right");
-        }
+        return switch (provider) {
+            case Constant _ -> DataResult.success("constant");
+            case Range _ -> DataResult.success("range");
+            case Top _ -> DataResult.success("top");
+            case Bottom _ -> DataResult.success("bottom");
+            case Left _ -> DataResult.success("left");
+            case Right _ -> DataResult.success("right");
+            default -> DataResult.error(() -> "Unsupported snap coordinate provider: " + provider.getClass().getName());
+        };
 
-        return DataResult.error(() -> "Unsupported snap coordinate provider: " + provider.getClass().getName());
     }
 
     private static DataResult<? extends MapCodec<? extends SnapCoordinateProvider>> codecByType(String type) {

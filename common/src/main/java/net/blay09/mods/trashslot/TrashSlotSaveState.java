@@ -17,6 +17,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,7 +39,7 @@ public class TrashSlotSaveState {
             Codec.unboundedMap(Identifier.CODEC, ContainerSettings.CODEC).optionalFieldOf("settings", Map.of()).forGetter(saveState -> saveState.settings)
     ).apply(instance, TrashSlotSaveState::new));
     public static final Codec<TrashSlotSaveState> CODEC = MAP_CODEC.codec();
-    private static TrashSlotSaveState instance;
+    private static @Nullable TrashSlotSaveState instance;
 
     private final Set<String> hintsSeen = new HashSet<>();
     private final Map<Identifier, ContainerSettings> settings = new HashMap<>();
@@ -59,10 +60,12 @@ public class TrashSlotSaveState {
 
         try {
             final var menuTypeId = BuiltInRegistries.MENU.getKey(screen.getMenu().getType());
-            return getSettings(menuTypeId, context);
-        } catch (Exception e) {
-            return getSettings(TrashContainerLayoutManager.DEFAULT_LAYOUT, context);
+            if (menuTypeId != null) {
+                return getSettings(menuTypeId, context);
+            }
+        } catch (Exception ignored) {
         }
+        return getSettings(TrashContainerLayoutManager.DEFAULT_LAYOUT, context);
     }
 
     public static ContainerSettings getSettings(Identifier identifier, TrashSlotContainerContext context) {

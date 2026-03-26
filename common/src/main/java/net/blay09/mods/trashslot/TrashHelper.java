@@ -9,6 +9,8 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.Objects;
+
 public class TrashHelper {
 
     private static final String KEY = "TrashSlot";
@@ -27,12 +29,8 @@ public class TrashHelper {
             return false;
         }
 
-        var registryName = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
-        if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
-            return false;
-        }
-
-        return true;
+        final var registryName = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
+        return !TrashSlotConfig.getActive().deletionDenyList.contains(Objects.toString(registryName));
     }
 
     public static ItemStack getTrashItem(Player player) {

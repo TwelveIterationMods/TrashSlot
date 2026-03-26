@@ -15,4 +15,9 @@ public class InternalMethodsImpl implements InternalMethods {
     public TrashContainerLayout getLayout(Identifier identifier) {
         return TrashContainerLayoutManager.getLayout(identifier);
     }
+
+    @Override
+    public TrashContainerLayout getDefaultLayout() {
+        return TrashContainerLayoutManager.getDefaultLayout();
+    }
 }

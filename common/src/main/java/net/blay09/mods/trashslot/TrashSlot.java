@@ -46,15 +46,10 @@ public class TrashSlot {
             Balm.networking().sendTo(player, new MessageTrashSlotContent(trashItem));
         });
 
-        Balm.modSupport().recipeViewers().register(Identifier.fromNamespaceAndPath("trashslot", "occlusions"), new RecipeViewerInfoProvider() {
-            @Override
-            public void initialize(RecipeViewerRegistrar recipeViewerRegistrar) {
-                recipeViewerRegistrar.registerGlobalScreenOcclusion(containerScreen -> {
-                    final var trashSlot = TrashSlotGuiHandler.getTrashSlotComponent();
-                    return trashSlot != null && trashSlot.isVisible() ? List.of(trashSlot.getRectangle()) : Collections.emptyList();
-                });
-            }
-        });
+        Balm.modSupport().recipeViewers().register(Identifier.fromNamespaceAndPath("trashslot", "occlusions"), recipeViewerRegistrar -> recipeViewerRegistrar.registerGlobalScreenOcclusion(_ -> {
+            final var trashSlot = TrashSlotGuiHandler.getTrashSlotComponent();
+            return trashSlot != null && trashSlot.isVisible() ? List.of(trashSlot.getRectangle()) : Collections.emptyList();
+        }));
     }
 
     public static Identifier id(String path) {

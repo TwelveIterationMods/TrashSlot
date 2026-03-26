@@ -5,17 +5,27 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.MenuType;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class TrashSlotAPI {
 
-    private static InternalMethods internalMethods;
+    private static final InternalMethods internalMethods;
 
-    public static void __setupAPI(InternalMethods impl) {
-        internalMethods = impl;
+    static {
+        try {
+            internalMethods = (InternalMethods) Class.forName("net.blay09.mods.trashslot.InternalMethodsImpl").getConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static TrashContainerLayout getLayout(MenuType<?> menuType) {
         final var menuTypeId = BuiltInRegistries.MENU.getKey(menuType);
-        return internalMethods.getLayout(menuTypeId);
+        if (menuTypeId != null) {
+            return internalMethods.getLayout(menuTypeId);
+        } else {
+            return internalMethods.getDefaultLayout();
+        }
     }
 
     public static TrashContainerLayout getLayout(Identifier identifier) {
@@ -24,7 +34,11 @@ public class TrashSlotAPI {
 
     public static void registerLayout(MenuType<?> menuType, TrashContainerLayout layout) {
         final var menuTypeId = BuiltInRegistries.MENU.getKey(menuType);
-        registerLayout(menuTypeId, layout);
+        if (menuTypeId != null) {
+            registerLayout(menuTypeId, layout);
+        } else {
+            throw new IllegalArgumentException("Menu type is not registered, could not look up identifier");
+        }
     }
 
     public static void registerLayout(Identifier identifier, TrashContainerLayout layout) {

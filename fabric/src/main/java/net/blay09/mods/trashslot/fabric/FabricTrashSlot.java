@@ -2,7 +2,6 @@ package net.blay09.mods.trashslot.fabric;
 
 import net.blay09.mods.balm.Balm;
 import net.blay09.mods.balm.fabric.platform.runtime.FabricLoadContext;
-import net.blay09.mods.trashslot.PlatformBindings;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.fabricmc.api.ModInitializer;
 

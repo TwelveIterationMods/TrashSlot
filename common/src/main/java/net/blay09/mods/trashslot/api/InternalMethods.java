@@ -7,4 +7,6 @@ public interface InternalMethods {
     void registerLayout(Identifier identifier, TrashContainerLayout layout);
 
     TrashContainerLayout getLayout(Identifier identifier);
+
+    TrashContainerLayout getDefaultLayout();
 }

@@ -4,12 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import net.blay09.mods.balm.client.platform.event.callback.ScreenCallback;
 import net.blay09.mods.balm.mixin.AbstractContainerScreenAccessor;
-import net.blay09.mods.balm.mixin.SlotAccessor;
-import net.blay09.mods.trashslot.Hints;
-import net.blay09.mods.trashslot.TrashSlot;
-import net.blay09.mods.trashslot.TrashHelper;
-import net.blay09.mods.trashslot.TrashSlotConfig;
-import net.blay09.mods.trashslot.TrashSlotSaveState;
+import net.blay09.mods.trashslot.*;
 import net.blay09.mods.trashslot.api.layout.TrashSlotAvailability;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
 import net.blay09.mods.trashslot.client.gui.TrashSlotComponent;
@@ -38,14 +33,14 @@ public class TrashSlotGuiHandler {
     private static final Identifier SLOT_HIGHLIGHT_FRONT_SPRITE = Identifier.withDefaultNamespace("container/slot_highlight_front");
 
     private static final TrashSlotSlot trashSlot = new TrashSlotSlot();
-    private static TrashSlotComponent trashSlotComponent;
+    private static @Nullable TrashSlotComponent trashSlotComponent;
     private static @Nullable ContainerSettings currentContainerSettings;
     private static boolean ignoreMouseUp;
 
     private static boolean sentMissingMessage;
     private static boolean isLeftMouseDown;
 
-    private static Hint currentHint;
+    private static @Nullable Hint currentHint;
 
     public static void initialize() {
         ScreenCallback.Init.After.EVENT.register(TrashSlotGuiHandler::onScreenInit);
@@ -157,7 +152,7 @@ public class TrashSlotGuiHandler {
                     ignoreMouseUp = true;
                     return true;
                 }
-            } else if (trashSlotComponent.isInside((int) event.x(), (int) event.y())) {
+            } else if (trashSlotComponent != null && trashSlotComponent.isInside((int) event.x(), (int) event.y())) {
                 // Prevent click-through on the background and border of the slot
                 ignoreMouseUp = true;
                 return true;
@@ -166,13 +161,11 @@ public class TrashSlotGuiHandler {
         return false;
     }
 
-    private static boolean onKeyPress(Screen screen, KeyEvent event) {
+    private static void onKeyPress(Screen screen, KeyEvent event) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
-        if (deletionProvider == null) {
-            return false;
+        if (deletionProvider != null) {
+            runKeyBindings(screen, event);
         }
-
-        return runKeyBindings(screen, event);
     }
 
     private static boolean runKeyBindings(Screen screen, InputWithModifiers input) {
@@ -184,7 +177,7 @@ public class TrashSlotGuiHandler {
         boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesInput(input);
         boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesInput(input);
 
-       final var player = Minecraft.getInstance().player;
+        final var player = Minecraft.getInstance().player;
 
         // Special handling for creative inventory. We don't have a TrashSlot here, but we still allow deleting via DELETE key
         if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeysInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
@@ -310,14 +303,14 @@ public class TrashSlotGuiHandler {
                 } else if (!trashSlotComponent.isDragging()) {
                     if (TrashSlotConfig.getActive().instantDeletion) {
                         guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font,
-                                        Component.translatable("tooltip.trashslot.destroy_item"),
-                                        mouseX,
-                                        mouseY);
+                                Component.translatable("tooltip.trashslot.destroy_item"),
+                                mouseX,
+                                mouseY);
                     } else {
                         guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font,
-                                        Component.translatable("tooltip.trashslot.trash_item"),
-                                        mouseX,
-                                        mouseY);
+                                Component.translatable("tooltip.trashslot.trash_item"),
+                                mouseX,
+                                mouseY);
                     }
                 }
             }
@@ -333,6 +326,7 @@ public class TrashSlotGuiHandler {
         }
     }
 
+    @Nullable
     public static TrashSlotComponent getTrashSlotComponent() {
         return trashSlotComponent;
     }

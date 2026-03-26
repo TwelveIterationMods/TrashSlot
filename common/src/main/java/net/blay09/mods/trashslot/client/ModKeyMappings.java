@@ -4,6 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.blay09.mods.kuma.api.*;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullUnmarked;
 
 public class ModKeyMappings {
 

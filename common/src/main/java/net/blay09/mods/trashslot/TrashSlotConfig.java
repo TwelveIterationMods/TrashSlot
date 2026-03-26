@@ -8,10 +8,11 @@ import net.blay09.mods.balm.platform.event.callback.ConfigCallback;
 import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DeletionProvider;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Config(TrashSlot.MOD_ID)
 public class TrashSlotConfig {
@@ -32,17 +33,17 @@ public class TrashSlotConfig {
     @NestedType(String.class)
     public List<String> deletionDenyList = new ArrayList<>();
 
-    private static DeletionProvider deletionProvider;
+    private static @Nullable DeletionProvider deletionProvider;
     private static final DeletionProvider creativeDeletionProvider = new CreativeDeletionProvider();
 
     public static TrashSlotConfig getActive() {
-        return Balm.config().getActiveConfig(TrashSlotConfig.class);
+        return Objects.requireNonNull(Balm.config().getActiveConfig(TrashSlotConfig.class));
     }
 
     public static void initialize() {
         Balm.config().registerConfig(TrashSlotConfig.class);
 
-        ConfigCallback.Reloaded.EVENT.register(schema -> deletionProvider = null);
+        ConfigCallback.Reloaded.EVENT.register(_ -> deletionProvider = null);
     }
 
     @Nullable
