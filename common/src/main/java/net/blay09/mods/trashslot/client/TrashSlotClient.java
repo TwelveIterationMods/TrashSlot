@@ -9,8 +9,6 @@ import net.minecraft.world.item.ItemStack;
 
 public class TrashSlotClient {
     public static void initialize(BalmClientRegistrars registrars) {
-        TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
-
         ModKeyMappings.initialize();
 
         TrashSlotGuiHandler.initialize();

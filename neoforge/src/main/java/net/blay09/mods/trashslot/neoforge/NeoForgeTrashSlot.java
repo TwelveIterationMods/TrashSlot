@@ -11,13 +11,6 @@ import net.neoforged.fml.common.Mod;
 public class NeoForgeTrashSlot {
 
     public NeoForgeTrashSlot(ModContainer modContainer, IEventBus eventBus) {
-        PlatformBindings.INSTANCE = new PlatformBindings() {
-            @Override
-            public boolean supportsKeyModifiers() {
-                return true;
-            }
-        };
-
         final var loadContext = new NeoForgeLoadContext(modContainer, eventBus);
         Balm.initializeMod(TrashSlot.MOD_ID, loadContext, TrashSlot::initialize);
     }

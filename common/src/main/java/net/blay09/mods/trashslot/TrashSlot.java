@@ -25,8 +25,6 @@ public class TrashSlot {
     public static boolean isServerSideInstalled;
 
     public static void initialize(BalmRegistrars registrars) {
-        TrashSlotAPI.__setupAPI(new InternalMethodsImpl());
-
         TrashSlotConfig.initialize();
         ModNetworking.initialize(Balm.networking());
 
