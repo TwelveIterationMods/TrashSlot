@@ -5,6 +5,7 @@
   "key.trashslot.delete": "Удалить предмет",
   "key.trashslot.delete_all": "Удалить все типы предметов",
   "key.categories.trashslot": "TrashSlot",
+  "trashslot.config.instantDeletion": "Мгновенное удаление",
   "trashslot.configuration.title": "TrashSlot",
   "trashslot.configuration.instantDeletion": "Мгновенное удаление",
   "trashslot.configuration.instantDeletion.tooltip": "Заставляет слот для удаления незамедлительно удалять предметы, аналогично Творческому режиму.",
@@ -21,5 +22,7 @@
   "trashslot.hint.deletedWhileHidden": "Предмет удалён!",
   "trashslot.hint.deletionDenied": "Предмет не может быть удалён!",
   "trashslot.hint.locked": "Слот для мусорки заблокирован. Нажмите %s, чтобы его разблокировать.",
-  "trashslot.hint.unlocked": "Слот для мусорки разблокирован. Нажмите %s, чтобы его заблокировать."
+  "trashslot.hint.unlocked": "Слот для мусорки разблокирован. Нажмите %s, чтобы его заблокировать.",
+  "tooltip.trashslot.destroy_item": "Удалить Предмет",
+  "tooltip.trashslot.trash_item": "Мусорный Предмет"
 }
