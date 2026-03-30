@@ -52,7 +52,7 @@ public class MessageTrashSlotClick implements CustomPacketPayload {
             return;
         }
 
-        if (ItemStack.matches(actualMouseItem, message.itemStack)) {
+        if (ItemStack.isSameItem(actualMouseItem, message.itemStack)) {
             if (actualMouseItem.isEmpty()) {
                 ItemStack trashStack = TrashHelper.getTrashItem(player);
                 ItemStack mouseStack = message.isRightClick ? trashStack.split(1) : trashStack;
