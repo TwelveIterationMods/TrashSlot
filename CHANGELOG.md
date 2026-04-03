@@ -1,1 +1,1 @@
-- Fixed trash slot content not being fully cleared on respawn
+- Fixed items with differing client/server components refusing to get deleted
