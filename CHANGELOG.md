@@ -1,1 +1,1 @@
-- Updated to Minecraft 26.1
+- Fixed items with differing client/server components refusing to get deleted
