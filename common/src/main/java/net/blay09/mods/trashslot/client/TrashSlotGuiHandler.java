@@ -121,7 +121,7 @@ public class TrashSlotGuiHandler {
         }
 
         int mouseButton = event.getButton();
-        if (runKeyBindings(event.getScreen(), mouseButton, 0, 0)) {
+        if (runKeyBindings(event.getScreen(), InputConstants.Type.MOUSE, mouseButton, 0, 0)) {
             event.setCanceled(true);
             return;
         }
@@ -167,19 +167,19 @@ public class TrashSlotGuiHandler {
 
         int keyCode = event.getKey();
         int scanCode = event.getScanCode();
-        if (runKeyBindings(event.getScreen(), keyCode, scanCode, event.getModifiers())) {
+        if (runKeyBindings(event.getScreen(), InputConstants.Type.KEYSYM, keyCode, scanCode, event.getModifiers())) {
             event.setCanceled(true);
         }
     }
 
-    private static boolean runKeyBindings(Screen screen, int keyCode, int scanCode, int modifiers) {
+    private static boolean runKeyBindings(Screen screen, InputConstants.Type type, int keyCodeOrButton, int scanCode, int modifiers) {
         DeletionProvider deletionProvider = TrashSlotConfig.getDeletionProvider();
         if (deletionProvider == null) {
             return false;
         }
 
-        boolean isDelete = ModKeyMappings.keyBindDelete.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
-        boolean isDeleteAll = ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesKey(keyCode, scanCode, modifiers);
+        boolean isDelete = type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindDelete.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindDelete.isActiveAndMatchesMouse(keyCodeOrButton);
+        boolean isDeleteAll = type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindDeleteAll.isActiveAndMatchesMouse(keyCodeOrButton);
 
         LocalPlayer player = Minecraft.getInstance().player;
 
@@ -229,7 +229,7 @@ public class TrashSlotGuiHandler {
 
         // Toggling of trashslot
         if (screen instanceof AbstractContainerScreen<?> && currentContainerSettings != ContainerSettings.NONE) {
-            if (ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
+            if (type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindToggleSlot.isActiveAndMatchesMouse(keyCodeOrButton)) {
                 currentContainerSettings.setEnabled(!currentContainerSettings.isEnabled());
                 if (!currentContainerSettings.isEnabled() && !ModKeyMappings.keyBindToggleSlot.getBinding().key().equals(InputConstants.UNKNOWN)) {
                     var hintMessage = Component.translatable("trashslot.hint.toggledOff", ModKeyMappings.keyBindToggleSlot.getBinding().key().getDisplayName());
@@ -237,7 +237,7 @@ public class TrashSlotGuiHandler {
                 }
                 TrashSlotSaveState.save();
                 return true;
-            } else if (ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesKey(keyCode, scanCode, modifiers)) {
+            } else if (type == InputConstants.Type.KEYSYM ? ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesKey(keyCodeOrButton, scanCode, modifiers) : ModKeyMappings.keyBindToggleSlotLock.isActiveAndMatchesMouse(keyCodeOrButton)) {
                 currentContainerSettings.setLocked(!currentContainerSettings.isLocked());
                 if (currentContainerSettings.isLocked()) {
                     var hintMessage = Component.translatable("trashslot.hint.locked", ModKeyMappings.keyBindToggleSlotLock.getBinding().key().getDisplayName());
