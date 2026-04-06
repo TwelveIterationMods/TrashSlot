@@ -1,1 +1,1 @@
-- Fixed items with differing client/server components refusing to get deleted
+- Fixed mouse buttons not working for TrashSlot keybinds
