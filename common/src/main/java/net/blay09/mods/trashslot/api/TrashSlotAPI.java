@@ -32,6 +32,11 @@ public class TrashSlotAPI {
         return internalMethods.getLayout(identifier);
     }
 
+    /**
+     * Registers a layout. Must be called after every client resource reload. Use the new event instead.
+     * @deprecated Use {@link net.blay09.mods.trashslot.api.event.RegisterTrashSlotContainerLayoutsEvent#EVENT} instead.
+     */
+    @Deprecated
     public static void registerLayout(MenuType<?> menuType, TrashContainerLayout layout) {
         final var menuTypeId = BuiltInRegistries.MENU.getKey(menuType);
         if (menuTypeId != null) {
@@ -41,6 +46,11 @@ public class TrashSlotAPI {
         }
     }
 
+    /**
+     * Registers a layout. Must be called after every client resource reload. Use the new event instead.
+     * @deprecated Use {@link net.blay09.mods.trashslot.api.event.RegisterTrashSlotContainerLayoutsEvent#EVENT} instead.
+     */
+    @Deprecated
     public static void registerLayout(Identifier identifier, TrashContainerLayout layout) {
         internalMethods.registerLayout(identifier, layout);
     }

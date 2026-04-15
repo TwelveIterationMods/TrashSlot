@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import net.blay09.mods.trashslot.TrashSlot;
+import net.blay09.mods.trashslot.api.event.RegisterTrashSlotContainerLayoutsEvent;
 import net.blay09.mods.trashslot.api.layout.TrashContainerLayout;
 import net.blay09.mods.trashslot.api.layout.TrashSlotAvailability;
 import net.blay09.mods.trashslot.data.DataDrivenTrashContainerLayout;
@@ -50,5 +51,8 @@ public class TrashContainerLayoutReloadListener extends SimplePreparableReloadLi
             layouts.put(entry.getKey(), entry.getValue().createLayout(defaultLayoutData));
         }
         TrashContainerLayoutManager.replaceLayouts(layouts);
+
+        final var event = new RegisterTrashSlotContainerLayoutsEvent(TrashContainerLayoutManager::registerLayout);
+        RegisterTrashSlotContainerLayoutsEvent.EVENT.invoker().accept(event);
     }
 }
