@@ -32,6 +32,10 @@ public class TrashSlotAPI {
         return internalMethods.getLayout(identifier);
     }
 
+    public static TrashContainerLayout getDefaultLayout() {
+        return internalMethods.getDefaultLayout();
+    }
+
     /**
      * Registers a layout. Must be called after every client resource reload. Use the new event instead.
      * @deprecated Use {@link net.blay09.mods.trashslot.api.event.RegisterTrashSlotContainerLayoutsEvent#EVENT} instead.
