@@ -96,6 +96,7 @@ public class TrashSlotGuiHandler {
                     showHint(Hints.TOGGLE_ON, hintMessage, 5000);
                 }
             } else {
+                currentContainerSettings = null;
                 trashSlotComponent = null;
             }
         } else {
