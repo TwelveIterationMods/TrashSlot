@@ -1,1 +1,4 @@
-- Fixed items with differing client/server components refusing to get deleted
+- Fixed invisible clickable trash slot on screens with Availability.NEVER
+- API: Added `TrashSlotAPI#getDefaultLayout`
+- API: Added `RegisterTrashSlotContainerLayoutsEvent`
+- API: Fixed `TrashContainerLayoutImpl#getBounds` NPE when bounds with id is not found
