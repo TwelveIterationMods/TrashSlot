@@ -2,6 +2,7 @@ package net.blay09.mods.trashslot.config;
 
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.event.ConfigReloadedEvent;
+import net.blay09.mods.balm.common.config.ConfigLocalization;
 import net.blay09.mods.trashslot.TrashSlot;
 import net.blay09.mods.trashslot.client.deletion.CreativeDeletionProvider;
 import net.blay09.mods.trashslot.client.deletion.DefaultDeletionProvider;
@@ -18,6 +19,7 @@ public class TrashSlotConfig {
     }
 
     public static void initialize() {
+        ConfigLocalization.enableModernTranslationKeys(TrashSlot.MOD_ID);
         Balm.getConfig().registerConfig(TrashSlotConfigData.class, null);
 
         Balm.getEvents().onEvent(ConfigReloadedEvent.class, event -> deletionProvider = null);
