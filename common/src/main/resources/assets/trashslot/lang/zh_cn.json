@@ -5,6 +5,6 @@
   "key.trashslot.deleteAll": "删除所有此类物品",
   "key.categories.trashslot": "垃圾桶",
   "trashslot.config.instantDeletion": "立刻删除",
-  "config.trashslot.title": "垃圾桶",
-  "config.trashslot.instantDeletion": "立刻删除"
+  "trashslot.configuration.title": "垃圾桶",
+  "trashslot.configuration.instantDeletion": "立刻删除"
 }
