@@ -1,1 +1,4 @@
-- Fixed mouse buttons not working for TrashSlot keybinds
+- Added `trashslot:cannot_delete` item tag to prevent items from being deleted
+- Added `Trash Item` tooltip to trash slot
+- Added events for `ItemAddedToTrashSlotEvent`, `ItemRemovedFromTrashSlotEvent`, `TrashSlotEmptiedEvent`
+- Fixed config translation keys
