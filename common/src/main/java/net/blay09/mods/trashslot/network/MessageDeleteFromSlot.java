@@ -89,7 +89,7 @@ public class MessageDeleteFromSlot implements CustomPacketPayload {
     }
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
-        ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
+        ItemStack itemStack = container.getSlot(slotNumber).getItem().copy();
         if (!TrashHelper.canDelete(itemStack)) {
             return false;
         }
