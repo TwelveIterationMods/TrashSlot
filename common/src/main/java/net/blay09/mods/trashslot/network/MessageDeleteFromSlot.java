@@ -58,7 +58,11 @@ public class MessageDeleteFromSlot implements CustomPacketPayload {
         }
 
         AbstractContainerMenu container = player.containerMenu;
-        Slot deleteSlot = container.slots.get(message.slotNumber);
+        if (!container.isValidSlotIndex(message.slotNumber)) {
+            return;
+        }
+
+        Slot deleteSlot = container.getSlot(message.slotNumber);
         if (deleteSlot instanceof ResultSlot) {
             return;
         }
