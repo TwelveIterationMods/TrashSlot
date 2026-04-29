@@ -50,7 +50,11 @@ public class MessageDeleteFromSlot {
         }
 
         AbstractContainerMenu container = player.containerMenu;
-        Slot deleteSlot = container.slots.get(message.slotNumber);
+        if (!container.isValidSlotIndex(message.slotNumber)) {
+            return;
+        }
+
+        Slot deleteSlot = container.getSlot(message.slotNumber);
         if (deleteSlot instanceof ResultSlot) {
             return;
         }
@@ -77,7 +81,7 @@ public class MessageDeleteFromSlot {
     }
 
     private static boolean attemptDeleteFromSlot(Player player, AbstractContainerMenu container, int slotNumber) {
-        ItemStack itemStack = container.slots.get(slotNumber).getItem().copy();
+        ItemStack itemStack = container.getSlot(slotNumber).getItem().copy();
         var registryName = Balm.getRegistries().getKey(itemStack.getItem());
         if (registryName != null && TrashSlotConfig.getActive().deletionDenyList.contains(registryName.toString())) {
             return false;
