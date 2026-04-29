@@ -47,7 +47,11 @@ public record MessageDeleteFromSlot(int slotNumber, boolean isDeleteAll) impleme
         }
 
         AbstractContainerMenu container = player.containerMenu;
-        Slot deleteSlot = container.slots.get(message.slotNumber);
+        if (!container.isValidSlotIndex(message.slotNumber)) {
+            return;
+        }
+
+        Slot deleteSlot = container.getSlot(message.slotNumber);
         if (deleteSlot instanceof ResultSlot) {
             return;
         }
