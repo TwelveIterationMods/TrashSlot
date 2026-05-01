@@ -1,1 +1,1 @@
-- Fixed trash slot content not being fully cleared on respawn
+- Fixed wrong slots being sometimes affected by delete keybinds (e.g. in Sophisticated Storage with upgraded slots)
