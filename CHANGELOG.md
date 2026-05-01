@@ -1,4 +1,1 @@
-- Added `trashslot:cannot_delete` item tag to prevent items from being deleted
-- Added `Trash Item` tooltip to trash slot
-- Added events for `ItemAddedToTrashSlotEvent`, `ItemRemovedFromTrashSlotEvent`, `TrashSlotEmptiedEvent`
-- Fixed config translation keys
+- Fixed wrong slots being sometimes affected by delete keybinds (e.g. in Sophisticated Storage with upgraded slots)
