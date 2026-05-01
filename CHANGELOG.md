@@ -1,4 +1,1 @@
-- Fixed invisible clickable trash slot on screens with Availability.NEVER
-- API: Added `TrashSlotAPI#getDefaultLayout`
-- API: Added `RegisterTrashSlotContainerLayoutsEvent`
-- API: Fixed `TrashContainerLayoutImpl#getBounds` NPE when bounds with id is not found
+- Fixed wrong slots being sometimes affected by delete keybinds (e.g. in Sophisticated Storage with upgraded slots)
