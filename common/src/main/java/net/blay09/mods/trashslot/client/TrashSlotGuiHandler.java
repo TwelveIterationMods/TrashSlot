@@ -184,7 +184,7 @@ public class TrashSlotGuiHandler {
         if ((isDelete || isDeleteAll) && TrashSlotConfig.getActive().enableDeleteKeysInCreative && screen instanceof CreativeModeInventoryScreen containerScreen && player != null) {
             Slot mouseSlot = ((AbstractContainerScreenAccessor) containerScreen).getHoveredSlot();
             DeletionProvider creativeDeletionProvider = TrashSlotConfig.getCreativeDeletionProvider();
-            if (mouseSlot != null && mouseSlot.getClass() == Slot.class) {
+            if (mouseSlot != null && mouseSlot.getClass() == Slot.class && mouseSlot.container == player.getInventory()) {
                 creativeDeletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.index - 9, isDeleteAll, trashSlot);
             } else if (mouseSlot != null && mouseSlot.getClass().getSimpleName().equals("SlotWrapper")) {
                 creativeDeletionProvider.deleteContainerItem(player, containerScreen.getMenu(), mouseSlot.getContainerSlot(), isDeleteAll, trashSlot);
