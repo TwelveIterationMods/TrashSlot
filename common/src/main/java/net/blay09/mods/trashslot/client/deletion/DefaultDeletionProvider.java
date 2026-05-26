@@ -4,9 +4,9 @@ import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.trashslot.api.ItemTrashedEvent;
 import net.blay09.mods.trashslot.api.ItemUntrashedEvent;
 import net.blay09.mods.trashslot.api.TrashSlotEmptiedEvent;
+import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.blay09.mods.trashslot.network.MessageDeleteFromSlot;
 import net.blay09.mods.trashslot.network.MessageTrashSlotClick;
-import net.blay09.mods.trashslot.client.TrashSlotSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -44,6 +44,10 @@ public class DefaultDeletionProvider implements DeletionProvider {
 
     @Override
     public void deleteContainerItem(Player player, AbstractContainerMenu container, int slotNumber, boolean isDeleteAll, TrashSlotSlot slotTrash) {
+        if (!container.isValidSlotIndex(slotNumber)) {
+            return;
+        }
+
         final var itemStack = container.getSlot(slotNumber).getItem();
         final var preEvent = new ItemTrashedEvent.Pre(player, itemStack);
         Balm.getEvents().fireEvent(preEvent);
