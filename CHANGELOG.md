@@ -1,1 +1,1 @@
-- Fixed wrong slots being sometimes affected by delete keybinds (e.g. in Sophisticated Storage with upgraded slots)
+- Fixed crash when pressing delete key over invalid slot
