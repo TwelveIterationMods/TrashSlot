@@ -1,1 +1,1 @@
-- Fixed crash when pressing delete key over invalid slot
+- Updated to Minecraft 26.2
