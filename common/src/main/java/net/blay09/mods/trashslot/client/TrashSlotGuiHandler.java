@@ -106,7 +106,7 @@ public class TrashSlotGuiHandler {
     }
 
     private static boolean onMouseRelease(Screen screen, double mouseX, double mouseY, int button) {
-        if (button == 0) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
             isLeftMouseDown = false;
         }
 
@@ -119,7 +119,7 @@ public class TrashSlotGuiHandler {
     }
 
     private static boolean onMouseClick(Screen screen, MouseButtonEvent event) {
-        if (event.button() == 0) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             isLeftMouseDown = true;
         }
 
