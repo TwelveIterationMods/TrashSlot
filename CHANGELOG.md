@@ -1,1 +1,2 @@
-- Fixed crash when pressing delete key over invalid slot
+- Fixed missing language key in Controls menu
+- Fixed harmless log warnings about refmaps
