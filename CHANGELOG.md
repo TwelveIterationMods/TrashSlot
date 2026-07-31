@@ -1,1 +1,2 @@
-- Updated to Minecraft 26.2
+- Fixed missing language key in Controls menu
+- Fixed harmless log warnings about refmaps
